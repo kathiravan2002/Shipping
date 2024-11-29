@@ -3,7 +3,10 @@ import Order from '../../shared/components/Order'
 
 function Orderpage() {
   return (
-    <div><Order/></div>
+    <div>
+          <Order />
+
+    </div>
   )
 }
 
