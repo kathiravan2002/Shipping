@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 function Sidebar() {
-    const [isHovered, setIsHovered] = useState(true);
+    const [isHovered, setIsHovered] = useState(false);
 
     const menuItems = [
       { name: "Home", icon: "🏠", path: "/" },

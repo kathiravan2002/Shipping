@@ -1,8 +1,11 @@
 import React from 'react'
+import Home from '../../shared/components/Home'
 
 function Homepage() {
   return (
-    <div>Homepage</div>
+    <div>
+      <Home />
+    </div>
   )
 }
 
