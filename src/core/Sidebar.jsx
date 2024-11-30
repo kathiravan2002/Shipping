@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 
 function Sidebar() {
-    const [isHovered, setIsHovered] = useState(false);
+    const [isHovered, setIsHovered] = useState(true);
 
     const menuItems = [
       { name: "Home", icon: "🏠", path: "/" },
       { name: "Dashboard", icon: "📊", path: "/dashboard" },
-      { name: "Orders", icon: "🛒", path: "/Orders" },
+      { name: "Order", icon: "🛒", path: "/Order" },
       { name: "Returns", icon: "↪️", path: "/Returns" },
       { name: "Delivery Boost", icon: "🚀", path: "/Delivery Boost" },
       { name: "Quick-Instant Delivery", icon: "📍", path: "/Quick-Instant Delivery" },
