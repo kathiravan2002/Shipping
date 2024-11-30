@@ -149,7 +149,7 @@ function Dashboard() {
                 </div>
                 <div className="bg-purple-100 rounded-lg p-4 shadow-md">
                     <h3 className="text-gray-600 font-semibold mb-4 mr-96"></h3>
-                    
+                    ghjgh
                 </div>
             </div>
         </div>
