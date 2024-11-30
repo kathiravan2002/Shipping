@@ -2,7 +2,7 @@ import React from 'react'
 
 function Order() {
   return (
-    <div className='text-center'>Order</div>
+    <div className='text-center'>kathiravan order</div>
   )
 }
 
