@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function Order() {
-  return (
-    <div className='text-center'>kathiravan order</div>
-  )
+  return <div className="text-center">kathiravan order</div>;
 }
 
-export default Order
+export default Order;

@@ -1,24 +1,28 @@
 import React, { useState } from "react";
 
 function Sidebar() {
-    const [isHovered, setIsHovered] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-    const menuItems = [
-      { name: "Home", icon: "🏠", path: "/" },
-      { name: "Dashboard", icon: "📊", path: "/dashboard" },
-      { name: "Order", icon: "🛒", path: "/Order" },
-      { name: "Returns", icon: "↪️", path: "/Returns" },
-      { name: "Delivery Boost", icon: "🚀", path: "/Delivery Boost" },
-      { name: "Quick-Instant Delivery", icon: "📍", path: "/Quick-Instant Delivery" },
-      { name: "Weight Management", icon: "🗂️", path: "/Weight Management" },
-      { name: "Buyer Experience", icon: "🤵🏻", path: "/Buyer Experience" },
-      { name: "Setup & Manage", icon: "🏗", path: "/Setup & Manage" },
-      { name: "Tools", icon: "🛠", path: "/Tools" },
-      { name: "Apps", icon: "📱", path: "/Apps" },
-      { name: "Billing", icon: "📑", path: "/Billing" },
-      { name: "Settting", icon: "⚙️", path: "/Settting" },
-      { name: "Help & Support", icon: "⁉", path: "/Help & Supportt" },
-    ];
+  const menuItems = [
+    { name: "Home", icon: "🏠", path: "/" },
+    { name: "Dashboard", icon: "📊", path: "/dashboard" },
+    { name: "Order", icon: "🛒", path: "/Order" },
+    { name: "Returns", icon: "↪️", path: "/Returns" },
+    { name: "Delivery Boost", icon: "🚀", path: "/Delivery Boost" },
+    {
+      name: "Quick-Instant Delivery",
+      icon: "📍",
+      path: "/Quick-Instant Delivery",
+    },
+    { name: "Weight Management", icon: "🗂️", path: "/Weight Management" },
+    { name: "Buyer Experience", icon: "🤵🏻", path: "/Buyer Experience" },
+    { name: "Setup & Manage", icon: "🏗", path: "/Setup & Manage" },
+    { name: "Tools", icon: "🛠", path: "/Tools" },
+    { name: "Apps", icon: "📱", path: "/Apps" },
+    { name: "Billing", icon: "📑", path: "/Billing" },
+    { name: "Settting", icon: "⚙️", path: "/Settting" },
+    { name: "Help & Support", icon: "⁉", path: "/Help & Supportt" },
+  ];
 
   return (
     <div
@@ -61,7 +65,7 @@ function Sidebar() {
         ))}
       </nav>
     </div>
-  )
+  );
 }
 
-export default Sidebar
+export default Sidebar;
