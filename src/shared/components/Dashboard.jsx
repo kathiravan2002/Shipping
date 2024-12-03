@@ -1,8 +1,8 @@
 import React from 'react'
 
 function Dashboard() {
-  return (
-    <div>
+    return (
+        <div>
 
             <div className="grid grid-cols-1 sm:grid-cols-1 gap-8 p-2 max-w-full lg:grid-cols-3">
                 {/* <!-- Today's Orders Section --> */}
@@ -137,7 +137,7 @@ function Dashboard() {
                         <div className="sm:mr-4 mt-44 lg:ml-52">
                             <h3 className="text-gray-600 font-semibold">Today </h3>
                             <p className="text-2xl font-bold text-gray-900">0</p>
-                            
+
                         </div>
                     </div>
                 </div>
@@ -145,15 +145,15 @@ function Dashboard() {
                 {/* <!-- NDR Details Section --> */}
                 <div className="bg-purple-100 rounded-lg p-4 shadow-md">
                     <h3 className="text-gray-600 font-semibold mb-4 mr-96"></h3>
-                    
+
                 </div>
                 <div className="bg-purple-100 rounded-lg p-4 shadow-md">
                     <h3 className="text-gray-600 font-semibold mb-4 mr-96"></h3>
-                    
+
                 </div>
             </div>
         </div>
-  )
+    )
 }
 
 export default Dashboard
