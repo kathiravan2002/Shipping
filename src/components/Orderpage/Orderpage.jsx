@@ -1,13 +1,12 @@
-import React from 'react'
-import Order from '../../shared/components/Order'
+import React from "react";
+import Order from "../../shared/components/Order";
 
 function Orderpage() {
   return (
     <div>
-          <Order />
-
+      <Order />
     </div>
-  )
+  );
 }
 
-export default Orderpage
+export default Orderpage;

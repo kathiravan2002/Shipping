@@ -6,19 +6,19 @@ import Homepage from '../components/Home/Homepage'
 import Orderpage from '../components/Orderpage/Orderpage'
 
 function Approuter() {
-    return (
-        <div>
-            <BrowserRouter>
-                <Routes>
-                    <Route element={<Main />}>
-                    <Route path='/' element={<Homepage />}> </Route>
-                     <Route path='/dashboard' element={<Dashboardpage />}> </Route>
-                     <Route path='/Order' element={<Orderpage />}> </Route>
-                    </Route>
-                </Routes>
-            </BrowserRouter>
-        </div>
-    )
+  return (
+    <div>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Main />}>
+            <Route path="/" element={<Homepage />}></Route>
+            <Route path="/dashboard" element={<Dashboardpage />}></Route>
+            <Route path="/Order" element={<Orderpage />}></Route>
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </div>
+  );
 }
 
-export default Approuter
+export default Approuter;

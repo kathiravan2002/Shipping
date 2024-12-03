@@ -8,9 +8,7 @@ function Header() {
       <nav className="bg-white border-gray-200 px-4 lg:px-8 py-2.5 dark:bg-gray-800 shadow mx-6 hidden sm:block">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-lg">
           <a href="#" className="flex items-center">
-            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-             
-            </span>
+            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white"></span>
           </a>
 
           <div
@@ -104,7 +102,6 @@ function Header() {
         </div>
       </nav>
     </header>
-
   );
 }
 
