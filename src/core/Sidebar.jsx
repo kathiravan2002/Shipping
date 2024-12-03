@@ -9,15 +9,7 @@ function Sidebar() {
     { name: "Order", icon: "🛒", path: "/Order" },
     { name: "Returns", icon: "↪️", path: "/Returns" },
     { name: "Delivery Boost", icon: "🚀", path: "/Delivery Boost" },
-<<<<<<< HEAD
     { name: "Quick-Instant Delivery", icon: "📍", path: "/Quick-Instant Delivery" },
-=======
-    {
-      name: "Quick-Instant Delivery",
-      icon: "📍",
-      path: "/Quick-Instant Delivery",
-    },
->>>>>>> 01c2d32b53d3f51a1658e6563860f1b13b701614
     { name: "Weight Management", icon: "🗂️", path: "/Weight Management" },
     { name: "Buyer Experience", icon: "🤵🏻", path: "/Buyer Experience" },
     { name: "Setup & Manage", icon: "🏗", path: "/Setup & Manage" },
