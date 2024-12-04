@@ -1,6 +1,6 @@
-import React from 'react'
-import first from '/images/first.jpeg'
-import img2 from '/images/img2.jpeg'
+import React from "react";
+import first from "/images/first.jpeg";
+import img2 from "/images/img2.jpeg";
 
 function Home() {
     return (
@@ -142,4 +142,4 @@ function Home() {
     )
 }
 
-export default Home
+export default Home;
