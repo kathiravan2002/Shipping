@@ -1,36 +1,163 @@
-import React from 'react';
-import { Search, Plus, RefreshCw } from 'lucide-react';
+import React from "react";
+import { Search, Plus, RefreshCw } from "lucide-react"; // Replace with your icons
+import image3 from "/images/image3.jpeg";
 
 const Orderheader = () => {
   return (
-    <header className="flex items-center justify-between p-4 border-b">
-      <div className="flex items-center gap-4">
-        <h1 className="text-xl font-semibold">Orders</h1>
-        <select className="px-3 py-1.5 border rounded-md bg-white">
-          <option>Domestic</option>
-          <option>International</option>
-        </select>
-      </div>
-      
-      <div className="flex items-center gap-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <input
-            type="text"
-            placeholder="Search for AWB, Order ID, Buyer Mobile Number, Email, SKU, Pickup ID"
-            className="pl-10 pr-4 py-2 border rounded-md w-[500px]"
-          />
+    <div className="p-4">
+      {/* Header Section */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        {/* Left Section */}
+        <div className="flex items-center gap-4">
+          <h1 className="text-lg sm:text-xl font-semibold">Orders</h1>
+          <select className="px-3 py-1.5 border rounded-md bg-white text-sm sm:text-base">
+            <option>All</option>
+            <option>Domestic</option>
+            <option>International</option>
+          </select>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-md">
-          <Plus className="h-4 w-4" />
-          Add Order
-        </button>
-        <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 rounded-md">
-          <RefreshCw className="h-4 w-4" />
-          Sync Orders
-        </button>
+
+        {/* Search Bar */}
+        <div className="flex-1 flex justify-center">
+          <div className="relative w-full sm:max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <input
+              type="text"
+              placeholder="Search for AWB, Order ID, Buyer Mobile Number, Email, SKU, Pickup ID"
+              className="pl-10 pr-4 py-2 border rounded-md w-full"
+            />
+          </div>
+        </div>
+
+        {/* Right Section */}
+        <div className="flex gap-4">
+          <button className="flex items-center gap-2 px-4 py-2 text-purple-600 bg-purple-50 rounded-md">
+            <Plus className="h-4 w-4" />
+            Add Order
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 rounded-md">
+            <RefreshCw className="h-4 w-4" />
+            Sync Orders
+          </button>
+        </div>
+      </header>
+
+      {/* Tabs Section */}
+      <div class="border-b">
+        <ul class="flex gap-8 px-4">
+          <li>
+            <a
+              href="#"
+              class="block py-2 text-gray-900 font-medium hover:text-purple-600 border-b-2 border-transparent hover:border-purple-600"
+            >
+              New
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="block py-2 text-gray-900 font-medium hover:text-purple-600 border-b-2 border-transparent hover:border-purple-600"
+            >
+              Ready To Ship
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="block py-2 text-gray-900 font-medium hover:text-purple-600 border-b-2 border-transparent hover:border-purple-600"
+            >
+              Pickups & Manifests
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="block py-2 text-gray-900 font-medium hover:text-purple-600 border-b-2 border-transparent hover:border-purple-600"
+            >
+              In Transit
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="block py-2 text-gray-900 font-medium hover:text-purple-600 border-b-2 border-transparent hover:border-purple-600"
+            >
+              Delivered
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="block py-2 text-gray-900 font-medium hover:text-purple-600 border-b-2 border-transparent hover:border-purple-600"
+            >
+              RTO
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="block py-2 text-gray-900 font-medium hover:text-purple-600 border-b-2 border-transparent hover:border-purple-600"
+            >
+              All
+            </a>
+          </li>
+        </ul>
       </div>
-    </header>
+
+      {/* Filter Section */}
+      <div className="flex flex-col md:flex-row items-center justify-between px-4 py-4">
+        <div className="flex items-center gap-4">
+          <select className="px-3 py-1.5 border rounded-md bg-white text-sm sm:text-base">
+            <option>Last 30 days</option>
+            <option>Last 7 days</option>
+            <option>Last 90 days</option>
+          </select>
+          <button className="px-3 py-1.5 border text-purple-600 border-purple-600 rounded-md text-sm">
+            More Filters
+          </button>
+        </div>
+        <div className="flex items-center gap-4 mt-4 md:mt-0">
+          <button className="flex items-center px-4 py-2 border rounded-md">
+            <span>Bulk Action</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Table Section */}
+      <div class="overflow-x-auto">
+  <table class="w-full">
+    <thead>
+      <tr class="bg-gray-100">
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Order Details</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Customer Details</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Product Details</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Package Details</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Payment</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Pickup Address</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Status</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colSpan="8" class="text-center py-10">
+          <div class="flex flex-col items-center">
+            <div class="mt-16">
+              <img src={image3} alt="Illustration" class="w-52 h-52 object-contain" />
+            </div>
+            <p class="text-gray-600 mt-4">Add your first order to get started</p>
+            <div class="flex gap-4 mt-4">
+              <button class="px-4 py-2 bg-purple-600 text-white rounded-md">Add Order</button>
+              <button class="px-4 py-2 bg-gray-100 text-gray-600 rounded-md">Sync Website Orders</button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+    </div>
   );
 };
 
