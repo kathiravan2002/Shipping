@@ -5,7 +5,7 @@ import Sidebar from "./core/Sidebar";
 export default function App() {
   return (
     <div>
-     <Approuter/>
+      <Approuter />
     </div>
-  )
+  );
 }

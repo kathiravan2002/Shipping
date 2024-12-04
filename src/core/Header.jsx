@@ -8,16 +8,15 @@ function Header() {
       <nav className="bg-white border-gray-200 px-4 lg:px-8 py-2.5 dark:bg-gray-800 shadow mx-6 hidden sm:block">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-lg">
           <a href="#" className="flex items-center">
-            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-
-            </span>
+            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white"></span>
           </a>
 
           <div
-            className={`flex-col md:flex md:flex-row items-center w-full md:w-auto md:order-2 transition-all duration-300 ${nav
+            className={`flex-col md:flex md:flex-row items-center w-full md:w-auto md:order-2 transition-all duration-300 ${
+              nav
                 ? "absolute top-14 left-0 w-full bg-white shadow-md p-4 md:relative md:top-0 md:w-auto md:bg-transparent md:shadow-none"
                 : "hidden md:flex gap-6"
-              }`}
+            }`}
           >
             <ul className="flex flex-col md:flex-row md:gap-8 gap-0">
               <li>
@@ -103,7 +102,6 @@ function Header() {
         </div>
       </nav>
     </header>
-
   );
 }
 

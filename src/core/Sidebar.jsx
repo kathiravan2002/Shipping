@@ -58,7 +58,7 @@ function Sidebar() {
         ))}
       </nav>
     </div>
-  )
+  );
 }
 
-export default Sidebar
+export default Sidebar;
