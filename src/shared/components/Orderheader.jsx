@@ -149,7 +149,7 @@ const Orderheader = () => {
             </div>
             <p class="text-gray-600 mt-4">Add your first order to get started</p>
             <div class="flex gap-4 mt-4">
-              <button class="px-4 py-2 bg-purple-600 text-white rounded-md">Add Order</button>
+              <button  onClick={() => navigate("/Addorder")} class="px-4 py-2 bg-purple-600 text-white rounded-md">Add Order</button>
               <button class="px-4 py-2 bg-gray-100 text-gray-600 rounded-md">Sync Website Orders</button>
             </div>
           </div>
