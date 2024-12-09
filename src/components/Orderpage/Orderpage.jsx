@@ -5,9 +5,9 @@ import Orderheader from '../../shared/components/Orderheader'
 function Orderpage() {
   return (
     <div>
-          <Orderheader />
-        
-       
+      <Orderheader />
+
+
 
 
     </div>

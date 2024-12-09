@@ -15,7 +15,7 @@ function Approuter() {
             <Route path="/" element={<Homepage />}></Route>
             <Route path="/dashboard" element={<Dashboardpage />}></Route>
             <Route path="/Order" element={<Orderpage />}></Route>
-            <Route path="/Addorder" element={<Addorder />} />
+            <Route path="/Addorder" element={<Addorder />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>
