@@ -1,8 +1,11 @@
 import React from "react";
 import { Search, Plus, RefreshCw } from "lucide-react"; // Replace with your icons
-import image3 from "/images/image3.jpeg";
+import image3 from "/images/image3.jpeg"; 
+import { useNavigate } from "react-router-dom";
+
 
 const Orderheader = () => {
+  const navigate = useNavigate();
   return (
     <div className="p-4">
       {/* Header Section */}
@@ -147,7 +150,7 @@ const Orderheader = () => {
             </div>
             <p class="text-gray-600 mt-4">Add your first order to get started</p>
             <div class="flex gap-4 mt-4">
-              <button class="px-4 py-2 bg-purple-600 text-white rounded-md">Add Order</button>
+              <button onClick={() => navigate("/Addorder")} class="px-4 py-2 bg-purple-600 text-white rounded-md">Add Order</button>
               <button class="px-4 py-2 bg-gray-100 text-gray-600 rounded-md">Sync Website Orders</button>
             </div>
           </div>

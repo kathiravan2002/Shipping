@@ -4,6 +4,7 @@ import Dashboardpage from '../components/Dashboardpage/Dashboardpage'
 import Main from '../core/Main'
 import Homepage from '../components/Home/Homepage'
 import Orderpage from '../components/Orderpage/Orderpage'
+import Addorder from '../shared/components/Addorder'
 
 function Approuter() {
   return (
@@ -14,6 +15,7 @@ function Approuter() {
             <Route path="/" element={<Homepage />}></Route>
             <Route path="/dashboard" element={<Dashboardpage />}></Route>
             <Route path="/Order" element={<Orderpage />}></Route>
+            <Route path="/Addorder" element={<Addorder />} />
           </Route>
         </Routes>
       </BrowserRouter>
