@@ -1,8 +1,6 @@
 import React from "react";
 import { Search, Plus, RefreshCw } from "lucide-react"; // Replace with your icons
-import image3 from "/images/image3.jpeg"; 
-import { useNavigate } from "react-router-dom";
-
+import image3 from "/images/image3.jpeg";
 
 const Orderheader = () => {
   const navigate = useNavigate();
@@ -34,7 +32,7 @@ const Orderheader = () => {
 
         {/* Right Section */}
         <div className="flex gap-4">
-          <button className="flex items-center gap-2 px-4 py-2 text-purple-600 bg-purple-50 rounded-md">
+          <button onClick={() => navigate("/Addorder")} className="flex items-center gap-2 px-4 py-2 text-purple-600 bg-purple-50 rounded-md">
             <Plus className="h-4 w-4" />
             Add Order
           </button>
@@ -146,11 +144,11 @@ const Orderheader = () => {
         <td colSpan="8" class="text-center py-10">
           <div class="flex flex-col items-center">
             <div class="mt-16">
-              <img src={image3} alt="Illustration" class="w-52 h-52 object-contain" />
+              <img src={image3} alt="Illustration" class="w-52 h-52 object-contain"/>
             </div>
             <p class="text-gray-600 mt-4">Add your first order to get started</p>
             <div class="flex gap-4 mt-4">
-              <button onClick={() => navigate("/Addorder")} class="px-4 py-2 bg-purple-600 text-white rounded-md">Add Order</button>
+              <button class="px-4 py-2 bg-purple-600 text-white rounded-md">Add Order</button>
               <button class="px-4 py-2 bg-gray-100 text-gray-600 rounded-md">Sync Website Orders</button>
             </div>
           </div>
