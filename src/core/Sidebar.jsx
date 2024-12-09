@@ -8,21 +8,21 @@ function Sidebar() {
     { name: "Dashboard", icon: "📊", path: "/dashboard" },
     { name: "Order", icon: "🛒", path: "/Order" },
     { name: "Returns", icon: "↪️", path: "/Returns" },
-    { name: "Delivery Boost", icon: "🚀", path: "/Delivery Boost" },
-    { name: "Quick-Instant Delivery", icon: "📍", path: "/Quick-Instant Delivery" },
+    // { name: "Delivery Boost", icon: "🚀", path: "/Delivery Boost" },
+    // { name: "Quick-Instant Delivery", icon: "📍", path: "/Quick-Instant Delivery" },
     { name: "Weight Management", icon: "🗂️", path: "/Weight Management" },
     { name: "Buyer Experience", icon: "🤵🏻", path: "/Buyer Experience" },
-    { name: "Setup & Manage", icon: "🏗", path: "/Setup & Manage" },
-    { name: "Tools", icon: "🛠", path: "/Tools" },
-    { name: "Apps", icon: "📱", path: "/Apps" },
-    { name: "Billing", icon: "📑", path: "/Billing" },
+    // { name: "Setup & Manage", icon: "🏗", path: "/Setup & Manage" },
+    // { name: "Tools", icon: "🛠", path: "/Tools" },
+    // { name: "Apps", icon: "📱", path: "/Apps" },
+    // { name: "Billing", icon: "📑", path: "/Billing" },
     { name: "Settting", icon: "⚙️", path: "/Settting" },
     { name: "Help & Support", icon: "⁉", path: "/Help & Supportt" },
   ];
 
   return (
     <div
-      className={`fixed top-0 left-0 h-full bg-purple-800 text-white shadow-lg transition-all duration-300 ${isHovered ? "w-64" : "w-16"
+      className={`fixed top-0 left-0 h-full bg-purple-800 text-white shadow-lg transition-all duration-500 ${isHovered ? "w-64" : "w-16"
         }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
