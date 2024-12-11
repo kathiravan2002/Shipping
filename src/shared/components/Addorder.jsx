@@ -22,7 +22,7 @@ const Addorder = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+        <div className=" min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8 md:max-w-md lg:max-w-lg sm:w-3/5  max-w-xs lg:place-self-center">
             <div className="bg-white p-6 rounded-lg shadow-md">
                 <h1 className="text-2xl font-bold text-gray-800 mb-4">Add order</h1>
 
