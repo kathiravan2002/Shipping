@@ -3,8 +3,10 @@ import { Search, Plus, RefreshCw } from "lucide-react"; // Replace with your ico
 import image3 from "/images/image3.jpeg";
 import { useNavigate } from "react-router-dom";
 
-const Orderheader = () => {
+const Orderheader = ({order}) => {
   const navigate = useNavigate();
+
+  console.log(order)
   return (
     <div className="p-4">
       {/* Header Section */}
@@ -127,37 +129,57 @@ const Orderheader = () => {
 
       {/* Table Section */}
       <div class="overflow-x-auto">
-  <table class="w-full">
-    <thead>
-      <tr class="bg-gray-100">
-        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Order Details</th>
-        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Customer Details</th>
-        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Product Details</th>
-        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Package Details</th>
-        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Payment</th>
-        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Pickup Address</th>
-        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Status</th>
-        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td colSpan="8" class="text-center py-10">
-          <div class="flex flex-col items-center">
-            <div class="mt-16">
-              <img src={image3} alt="Illustration" class="w-52 h-52 object-contain"/>
-            </div>
-            <p class="text-gray-600 mt-4">Add your first order to get started</p>
-            <div class="flex gap-4 mt-4">
-              <button  onClick={() => navigate("/Addorder")} class="px-4 py-2 bg-purple-600 text-white rounded-md">Add Order</button>
-              <button class="px-4 py-2 bg-gray-100 text-gray-600 rounded-md">Sync Website Orders</button>
-            </div>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-100">
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">orderId</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">orderDate</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">customerName</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">contact</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">productName</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">amountPaid</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {order?.length > 0 ? (
+              order.map((user, index) => (
+                <tr key={index}>
+                  <td className="pl-6">{user.orderId}</td>
+                  <td className="pl-4">{user.orderDate}</td>
+                  <td className="pl-6">{user.customerName}</td>
+                  <td className="pl-3">{user.contact}</td>
+                  <td className="pl-6">{user.productName}</td>
+                  <td className="pl-6">{user.amountPaid}</td>
+                  <td className="pl-4">{user.status}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="text-center py-10">
+                  <div className="flex flex-col items-center">
+                    <div className="mt-16">
+                      <img src={image3} alt="Illustration" className="w-52 h-52 object-contain" />
+                    </div>
+                    <p className="text-gray-600 mt-4">Add your first order to get started</p>
+                    <div className="flex gap-4 mt-4">
+                      <button
+                        onClick={() => navigate("/Addorder")}
+                        className="px-4 py-2 bg-purple-600 text-white rounded-md"
+                      >
+                        Add Order
+                      </button>
+                      <button className="px-4 py-2 bg-gray-100 text-gray-600 rounded-md">
+                        Sync Website Orders
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
     </div>
   );

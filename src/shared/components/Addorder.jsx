@@ -1,12 +1,19 @@
+import axios from "axios";
 import React, { useState } from "react";
 
 const Addorder = () => {
-    // State to manage form data
     const [formData, setFormData] = useState({
-
+        orderId: "",
+        orderDate: "",
+        customerName: "",
+        contact: "",
+        productName: "",
+        quantity: "",
+        paymentMethod: "",
+        amountPaid: "",
+        status: "",
     });
 
-    // Handle changes in form fields
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
@@ -15,18 +22,30 @@ const Addorder = () => {
         }));
     };
 
-    // Handle form submission
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form Data Submitted:", formData);
+
+        if (!formData.orderId || !formData.customerName || !formData.productName) {
+            alert("Please fill in all required fields!");
+            return;
+        }
+
+        try {
+            console.log(formData)
+            const response = await axios.post("http://192.168.29.71:5000/api/order/createorder", formData);
+
+            console.log(response.data)
+
+           
+        } catch (error) {
+            console.error("Error:", error);
+        }
     };
 
     return (
         <div className=" min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8 md:max-w-md lg:max-w-lg sm:w-3/5  max-w-xs lg:place-self-center">
             <div className="bg-white p-6 rounded-lg shadow-md">
-                <h1 className="text-2xl font-bold text-gray-800 mb-4">Add order</h1>
-
-                {/* Form */}
+                <h1 className="text-2xl font-bold text-gray-800 mb-4">Add Order</h1>
                 <form onSubmit={handleSubmit}>
                     {/* Order Details */}
                     <section className="mb-4">
@@ -50,7 +69,7 @@ const Addorder = () => {
                                     Order Date:
                                 </label>
                                 <input
-                                    type="text"
+                                    type="date"
                                     id="orderDate"
                                     name="orderDate"
                                     className="w-full mt-1 p-2 border rounded-lg"
@@ -123,7 +142,7 @@ const Addorder = () => {
                     <section className="mb-4">
                         <h2 className="text-xl font-semibold text-gray-700">Payment</h2>
                         <div className="p-4 border rounded-lg">
-
+{/* 
                             <div className="flex place-items-baseline gap-4">
                                 <label className="font-medium text-gray-600  py-10 " htmlFor="amountPaid">
                                     Payment Method :
@@ -134,7 +153,7 @@ const Addorder = () => {
                                     <option value="debitCard">Debit Card</option>
                                     <option value="paypal">PayPal</option>
                                 </select>
-                            </div>
+                            </div> */}
 
 
 
@@ -171,13 +190,14 @@ const Addorder = () => {
                         </div>
                     </section>
 
-                    {/* Submit Button */}
+                    {/* Add remaining sections as in your original code */}
+
                     <section className="mt-4">
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow  hover:bg-blue-600"
+                            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600"
                         >
-                            Submitted
+                            Submit
                         </button>
                     </section>
                 </form>
@@ -187,4 +207,3 @@ const Addorder = () => {
 };
 
 export default Addorder;
-
