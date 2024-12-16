@@ -10,7 +10,7 @@ function Sidebar() {
     { name: "Returns", icon: "↪️", path: "/Returns" },
     // { name: "Delivery Boost", icon: "🚀", path: "/Delivery Boost" },
     // { name: "Quick-Instant Delivery", icon: "📍", path: "/Quick-Instant Delivery" },
-    { name: "Weight Management", icon: "🗂️", path: "/Weight Management" },
+    { name: "Weight Management", icon: "🗂️", path: "/Weightmanagementpage" },
     { name: "Buyer Experience", icon: "🤵🏻", path: "/Buyer Experience" },
     // { name: "Setup & Manage", icon: "🏗", path: "/Setup & Manage" },
     // { name: "Tools", icon: "🛠", path: "/Tools" },

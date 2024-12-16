@@ -3,8 +3,9 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Dashboardpage from '../components/Dashboardpage/Dashboardpage'
 import Main from '../core/Main'
 import Homepage from '../components/Home/Homepage'
-import Orderpage from '../components/orderpage/Orderpage'
+import Orderpage from '../components/Orderpage/Orderpage'
 import Addorder from '../shared/components/Addorder'
+import Weightmanagementpage from '../components/Weightmanagementpage/Weightmanagementpage'
 
 function Approuter() {
   return (
@@ -16,6 +17,7 @@ function Approuter() {
             <Route path="/dashboard" element={<Dashboardpage />}></Route>
             <Route path="/Order" element={<Orderpage />}></Route>
             <Route path="/Addorder" element={<Addorder />}></Route>
+            <Route path="/Weightmanagementpage" element={<Weightmanagementpage />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>
