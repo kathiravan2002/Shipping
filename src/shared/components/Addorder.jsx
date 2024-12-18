@@ -117,7 +117,7 @@ const Addorder = () => {
       return "₹360";
     } else if (weight > 10 && weight <= 20) {
       return "₹600";
-    } else {
+    } else { 
       return "₹1000";
     }
   };
