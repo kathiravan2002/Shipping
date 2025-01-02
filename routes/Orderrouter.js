@@ -45,11 +45,44 @@ router.get("/getorder" ,async (req ,res)  => {
     }
 }) 
 
+router.get("/", async (req, res) => {
+    try {
+        const { search } = req.query;
+
+        // If search query is empty, return all orders
+        if (!search) {
+            const orders = await Order.find();
+            return res.json(orders);
+        }
+
+        // Build a search condition for multiple fields
+        const searchCondition = {
+            $or: [
+                { orderId: { $regex: search, $options: "i" } },
+                { ConsignerName: { $regex: search, $options: "i" } }, // Example of field to search for
+                { consignermobileNumber: { $regex: search, $options: "i" } }, // Another example field
+                { email: { $regex: search, $options: "i" } }, // Example field
+                { SKU: { $regex: search, $options: "i" } }, // Example SKU field
+                { pickupId: { $regex: search, $options: "i" } }, // Example Pickup ID field
+            ]
+        };
+
+        const orders = await Order.find(searchCondition); // Search the orders collection
+
+        // Send the result as a JSON response
+        res.json(orders);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+
 //readone(getone)
-router.get("/:id" , async (res ,req) => {
+router.get("/:id" , async (req ,res) => {
     try{
-        const order = await Order.findById(req.params.id);
-        res.json(order);
+        const ordered = await Order.findById(req.params.id);
+        res.json(ordered);
     }catch (err) {
         console.error(err);
         // res.status(500).json({ error: err.message })
@@ -57,12 +90,13 @@ router.get("/:id" , async (res ,req) => {
 })
 
 //update(put)
-router.put("/:id" , async (res ,req) => {
+router.put("/:id" , async (req ,res) => {
     try{
         const updateorder = await Order.findByIdAndUpdate(
             req.params.id ,
-            {orderid ,orderdate},
-            {new : true }
+            req.body,
+            //   {contact},
+           {new : true }
         );
         res.json(updateorder);
     }catch(err){
@@ -72,13 +106,14 @@ router.put("/:id" , async (res ,req) => {
 })
 
 //Delete(delete)
-router.delete("/:id" , async (res ,req) => {
+router.delete("/:id" , async (req ,res) => {
     try{
-        const deleteorder = await Order.findByIdAndDelete(req,params.id);
-        // res.status(201).json(deleteorder);
+        const deleteOrder = await Order.findByIdAndDelete(req.params.id);
+        // res.json(deleteOrder);
+       res.status(200).json({deleteOrder : " Deleted successfully"});
     }catch(err){
         console.error(err)
-        // res.status(500).json({ error: err.message})
+       res.status(500).json({ error: err.message})
     }
 })
 
