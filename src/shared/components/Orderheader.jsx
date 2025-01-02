@@ -1,10 +1,36 @@
-import React from "react";
-import { Search, Plus, RefreshCw } from "lucide-react"; // Replace with your icons
-import image3 from "/images/image3.jpeg";
+import React, { useState } from "react";
+import { Search, Plus, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-const Orderheader = ({ order }) => {
+import image3 from "/images/image3.jpeg";
+import axios from "axios";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+import { Trash2,Pencil  } from 'lucide-react';
+const Orderheader = ({ order, deleteOrder, setOrder }) => {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState(""); // State to track the search query
+  const editOrder = ({ _id }) => {
+    navigate(`/Addorder/${_id}`); // Redirect to Add Order page with the order ID
+  };
+
+  // Function to handle search
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get(
+        `http://192.168.29.11:5000/api/order?search=${encodeURIComponent(
+          searchQuery
+        )}`
+      );
+      if (response.data.length === 0) {
+        // Show toast message if no results are found
+        toast.error("No orders found for the given search.");
+      }
+      setOrder(response.data); // Update the table data with search results
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      toast.error("Error fetching search results. Please try again.");
+    }
+  };
 
   return (
     <div className="p-4">
@@ -26,8 +52,11 @@ const Orderheader = ({ order }) => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
             <input
               type="text"
-              placeholder="Search for AWB, Order ID, Buyer Mobile Number, Email, SKU, Pickup ID"
+              placeholder="Search for Order ID ,Consigneer Name, Consigneer Mobile Number, Email, SKU, Pickup ID"
               className="pl-10 pr-4 py-2 border rounded-md w-full text-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)} // Correctly update the query state
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()} // Trigger search on Enter key
             />
           </div>
         </div>
@@ -48,48 +77,45 @@ const Orderheader = ({ order }) => {
         </div>
       </header>
 
-      {/* Tabs Section */}
-      <div className="border-b">
-        <ul className="flex flex-wrap gap-4 md:gap-8 px-4 overflow-x-auto">
-          {["New", "Ready To Ship", "Pickups & Manifests", "In Transit", "Delivered", "RTO", "All"].map((tab) => (
-            <li key={tab}>
-              <a
-                href="#"
-                className="block py-2 text-gray-900 font-medium hover:text-purple-600 border-b-2 border-transparent hover:border-purple-600"
-              >
-                {tab}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Filter Section */}
-      <div className="flex flex-col md:flex-row items-center justify-between px-4 py-4 gap-4">
-        <div className="flex items-center gap-4">
-          <select className="px-3 py-2 border rounded-md bg-white text-sm">
-            <option>Last 30 days</option>
-            <option>Last 7 days</option>
-            <option>Last 90 days</option>
-          </select>
-          <button className="px-3 py-2 border text-purple-600 border-purple-600 rounded-md text-sm">
-            More Filters
-          </button>
-        </div>
-        <div className="flex items-center gap-4">
-          <button className="flex items-center px-4 py-2 border rounded-md text-sm">
-            <span>Bulk Action</span>
-          </button>
-        </div>
-      </div>
-
       {/* Table Section */}
-      <div className="overflow-x-auto shadow-md rounded-lg">
-        <table className="w-full">
-          <thead className="uppercase bg-gray-200 text-sm">
+      <div
+        className="overflow-x-auto shadow-md rounded-lg"
+        style={{
+          marginRight: "16px", // Margin on the right
+          maxHeight: "700px", // Optional: Set max height if needed for vertical scroll
+        }}
+      >
+        <table className="w-full border-collapse ">
+          <thead className="bg-gray-200 uppercase text-sm sticky top-0">
             <tr>
-              {["Order ID", "Order Date", "Customer Name", "Contact", "Product Name", "Quantity", "Amount Paid", "Status"].map((header) => (
-                <th key={header} className="px-4 py-3 text-left font-medium text-gray-600">
+              <th>Action</th>
+              <th className="px-6 py-3 text-left font-semibold text-gray-600 sticky  top-0 bg-gray-200 ">
+                Orderid
+              </th>
+              {[
+                "ConsignerName",
+                "consignermobileNumber",
+                "consignerAddress",
+                "consignermail",
+                "consignerdistrict",
+                "consignerstate",
+                "consignerpincode",
+                "Consigneename",
+                "consigneemobileno",
+                "consigneealterno",
+                "consigneedistrict",
+                "consigneeaddress",
+                "consigneestate",
+                "consigneepin",
+                "productname",
+                "packageWeight",
+                "packagetype",
+                "price",
+              ].map((header) => (
+                <th
+                  key={header}
+                  className="px-6 py-3 text-left font-semibold text-gray-600"
+                >
                   {header}
                 </th>
               ))}
@@ -99,14 +125,46 @@ const Orderheader = ({ order }) => {
             {order?.length > 0 ? (
               order.map((user, index) => (
                 <tr key={index} className="border-t text-sm">
-                  <td className="px-4 py-2">{user.orderId}</td>
-                  <td className="px-4 py-2">{user.orderDate}</td>
-                  <td className="px-4 py-2">{user.customerName}</td>
-                  <td className="px-4 py-2">{user.contact}</td>
-                  <td className="px-4 py-2">{user.productName}</td>
-                  <td className="px-4 py-2">{user.quantity}</td>
-                  <td className="px-4 py-2">{user.amountPaid}</td>
-                  <td className="px-4 py-2">{user.status}</td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => editOrder({ _id: user._id })}
+                      className="text-purple-500 hover:underline ml-4"
+                    >
+                      <Pencil />
+                    </button>
+
+                    <button
+                      onClick={() => deleteOrder({ _id: user._id })}
+                      className="text-red-500 hover:underline ml-4"
+                    >
+                      {" "}
+                      {console.log(user._id)}
+                      <Trash2 />
+                    </button>
+                  </td>
+
+                  <td className="px-6 py-4 font-medium text-gray-900  bg-white z-10">
+                    {user.orderId}
+                  </td>
+
+                  <td className="px-6 py-4">{user.ConsignerName}</td>
+                  <td className="px-6 py-4">{user.consignermobileNumber}</td>
+                  <td className="px-6 py-4">{user.consignerAddress}</td>
+                  <td className="px-6 py-4">{user.consignermail}</td>
+                  <td className="px-6 py-4">{user.consignerdistrict}</td>
+                  <td className="px-6 py-4">{user.consignerstate}</td>
+                  <td className="px-6 py-4">{user.consignerpincode}</td>
+                  <td className="px-6 py-4">{user.Consigneename}</td>
+                  <td className="px-6 py-4">{user.consigneemobileno}</td>
+                  <td className="px-6 py-4">{user.consigneealterno}</td>
+                  <td className="px-6 py-4">{user.consigneedistrict}</td>
+                  <td className="px-6 py-4">{user.consigneeaddress}</td>
+                  <td className="px-6 py-4">{user.consigneestate}</td>
+                  <td className="px-6 py-4">{user.consigneepin}</td>
+                  <td className="px-6 py-4">{user.productname}</td>
+                  <td className="px-6 py-4">{user.packageWeight}</td>
+                  <td className="px-6 py-4">{user.packagetype}</td>
+                  <td className="px-6 py-4">{user.price}</td>
                 </tr>
               ))
             ) : (

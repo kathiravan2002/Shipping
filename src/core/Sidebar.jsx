@@ -22,7 +22,7 @@ function Sidebar() {
 
   return (
     <div
-      className={`fixed top-0 left-0 h-full bg-purple-800 text-white shadow-lg transition-all duration-500 ${isHovered ? "w-64" : "w-16"
+      className={`fixed z-20 top-0 left-0 h-full bg-purple-800 text-white shadow-lg transition-all duration-500 ${isHovered ? "w-64" : "w-16"
         }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
