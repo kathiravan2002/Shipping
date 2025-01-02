@@ -4,7 +4,7 @@ import img2 from "/images/img2.jpeg";
 
 function Home() {
     return (
-        <>
+        <> 
             <div className='space-y-3'> <h1 className="font-bold text-2xl ml-2">Getting started</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-1 gap-8 p-2 max-w-full lg:grid-cols-3">
 

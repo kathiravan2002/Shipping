@@ -1,18 +1,39 @@
-import React from "react";
+import React, { useEffect, useState } from 'react'
+import axios from 'axios';
+
 
 function Dashboard() {
+  const [order,setorder] = useState([]);
+  
+  const getAllorder = async () => {
+    try {
+      const response =await axios.get("http://192.168.29.71:5000/api/order/getorder");
+      console.log(response.data)
+      setorder( response.data || []);
+      console.log(order);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      setorder([]); 
+    }
+    
+};
+
+    useEffect(() => {
+      getAllorder();
+    },[]);
   return (
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-1 gap-8 p-2 max-w-full lg:grid-cols-3">
+
         {/* <!-- Today's Orders Section --> */}
         <div className="bg-purple-100 rounded-lg p-4  shadow-md">
           <div className="flex items-center">
             <div className="bg-purple-300 p-3 rounded-full"></div>
             <div className="sm:mr-4 lg:ml-52">
-              <h3 className="text-gray-600 font-semibold">Today's Orders</h3>
-              <p className="text-2xl font-bold text-gray-900">0</p>
-              <p className="text-sm text-gray-500">Yesterday</p>
-              <p className="text-2  text-gray-900">0</p>
+              <h3 className="text-gray-600 font-semibold">Total Orders</h3>
+              <p className="text-2xl font-bold text-gray-900">{order?.length}</p>
+              {/* <p className="text-sm text-gray-500">Yesterday</p>
+              <p className="text-2  text-gray-900">0</p> */}
             </div>
           </div>
         </div>
