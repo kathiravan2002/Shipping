@@ -20,7 +20,7 @@ function Orderpage() {
 };
 
     useEffect(() => {
-      getAllorder();
+    getAllorder();
     },[]);
     // const editOrder = async ({_id ,data }) => {
     //   const response =await axios.put(`http://192.168.29.11:5000/api/order/${_id}` , data);
@@ -28,18 +28,25 @@ function Orderpage() {
 
     // }
 
+ 
+    
     const deleteOrder = async ({ _id }) => {
-      const response = await axios.delete(`http://192.168.29.71:5000/api/order/${_id}`);
-      getAllorder()
-      console.log(response.data)
-    }
-
-
+      if (window.confirm("Are you sure you want to delete this order?")) {
+        try {
+          await axios.delete(`http://192.168.29.11:5000/api/order/${_id}`);
+          getAllorder();
+          console.log("Order deleted successfully");
+        } catch (error) {
+          console.error("Error deleting order:", error);
+        }
+      }
+    };
+    
   return (
     <div>
-      <Orderheader order={order} deleteOrder={deleteOrder} setOrder={setOrder}  />
+      <Orderheader order={order}  deleteOrder={deleteOrder} setOrder={setOrder} />
     </div>
   );
 }
-
+  
 export default Orderpage;

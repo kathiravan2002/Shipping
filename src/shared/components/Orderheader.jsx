@@ -1,24 +1,25 @@
 import React, { useState } from "react";
-import { Search, Plus, RefreshCw ,Trash2, Pencil} from "lucide-react";
+import { Search, Plus, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import image3 from "/images/image3.jpeg";
 import axios from "axios";
-import image3 from '/images/image3.jpeg';
-import { toast } from "react-toastify";  // Import toast
-import "react-toastify/dist/ReactToastify.css";  // Import toast CSS
-
-const Orderheader = ({ order, setOrder, deleteOrder }) => {
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+import { Trash2,Pencil  } from 'lucide-react';
+const Orderheader = ({ order, deleteOrder, setOrder }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState(""); // State to track the search query
-  
   const editOrder = ({ _id }) => {
     navigate(`/Addorder/${_id}`); // Redirect to Add Order page with the order ID
   };
-  
+
   // Function to handle search
   const handleSearch = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.71:5000/api/order?search=${encodeURIComponent(searchQuery)}`
+        `http://192.168.29.11:5000/api/order?search=${encodeURIComponent(
+          searchQuery
+        )}`
       );
       if (response.data.length === 0) {
         // Show toast message if no results are found
@@ -30,7 +31,6 @@ const Orderheader = ({ order, setOrder, deleteOrder }) => {
       toast.error("Error fetching search results. Please try again.");
     }
   };
-  
 
   return (
     <div className="p-4">
@@ -78,12 +78,20 @@ const Orderheader = ({ order, setOrder, deleteOrder }) => {
       </header>
 
       {/* Table Section */}
-      <div className="overflow-x-auto shadow-md rounded-lg">
-        <table className="w-full border-collapse">
-          <thead className="bg-gray-200 uppercase sticky top-0 text-sm">
+      <div
+        className="overflow-x-auto shadow-md rounded-lg"
+        style={{
+          marginRight: "16px", // Margin on the right
+          maxHeight: "700px", // Optional: Set max height if needed for vertical scroll
+        }}
+      >
+        <table className="w-full border-collapse ">
+          <thead className="bg-gray-200 uppercase text-sm sticky top-0">
             <tr>
-              <th className="px-6 py-3 text-left font-semibold text-gray-600">Action</th>
-              <th className="px-6 py-3 text-left font-semibold text-gray-600">Order ID</th>
+              <th>Action</th>
+              <th className="px-6 py-3 text-left font-semibold text-gray-600 sticky  top-0 bg-gray-200 ">
+                Orderid
+              </th>
               {[
                 "ConsignerName",
                 "consignermobileNumber",
@@ -104,7 +112,10 @@ const Orderheader = ({ order, setOrder, deleteOrder }) => {
                 "packagetype",
                 "price",
               ].map((header) => (
-                <th key={header} className="px-6 py-3 text-left font-semibold text-gray-600">
+                <th
+                  key={header}
+                  className="px-6 py-3 text-left font-semibold text-gray-600"
+                >
                   {header}
                 </th>
               ))}
@@ -116,19 +127,26 @@ const Orderheader = ({ order, setOrder, deleteOrder }) => {
                 <tr key={index} className="border-t text-sm">
                   <td className="px-6 py-4">
                     <button
-                        onClick={() => editOrder({ _id: user._id })}
+                      onClick={() => editOrder({ _id: user._id })}
                       className="text-purple-500 hover:underline ml-4"
                     >
-                      < Pencil />
+                      <Pencil />
                     </button>
+
                     <button
                       onClick={() => deleteOrder({ _id: user._id })}
                       className="text-red-500 hover:underline ml-4"
                     >
-                       <Trash2 />
+                      {" "}
+                      {console.log(user._id)}
+                      <Trash2 />
                     </button>
                   </td>
-                  <td className="px-6 py-4">{user.orderId}</td>
+
+                  <td className="px-6 py-4 font-medium text-gray-900  bg-white z-10">
+                    {user.orderId}
+                  </td>
+
                   <td className="px-6 py-4">{user.ConsignerName}</td>
                   <td className="px-6 py-4">{user.consignermobileNumber}</td>
                   <td className="px-6 py-4">{user.consignerAddress}</td>

@@ -1,23 +1,9 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import {useParams, useNavigate } from "react-router-dom";
-
+import {useParams,useNavigate} from "react-router-dom";
 const Addorder = () => {
   const { id } = useParams(); // Get the order ID from the URL
-   const navigate = useNavigate();
-  //  const navigate = useNavigate();
-
-  const handleClick = () => {
-    if (isDataSubmitted) {
-      setIsNavigating(true);
-      setTimeout(() => {
-        navigate("/Order");
-        // setIsNavigating(false);
-      }, 500); // Delay navigation
-    } 
-  };
-  
   const [formData, setFormData] = useState({
     ConsignerName: "",
     consignermobileNumber: "",
@@ -47,6 +33,8 @@ const Addorder = () => {
   const [showPriceDialog, setShowPriceDialog] = useState(false);
   const [isDataSubmitted, setIsDataSubmitted] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
+  const navigate = useNavigate();
+ 
 
   // Function to convert strings to sentence case
   const toSentenceCase = (str) =>
@@ -131,16 +119,15 @@ const Addorder = () => {
       setConsigneePincodes(filteredPincodes);
     }
   }, [formData.consigneedistrict, apiData]);
-
   useEffect(() => {
     if (id) {
-      // Fetch the order details when editing
+      // Fetch order details for editing
       const fetchOrderDetails = async () => {
         try {
           const response = await axios.get(
-            `http://192.168.29.71:5000/api/order/${id}`
+            `http://192.168.29.11:5000/api/order/${id}`
           );
-          setFormData(response.data); // Pre-fill the form with the fetched data
+          setFormData(response.data); // Pre-fill the form
         } catch (error) {
           console.error("Error fetching order details:", error);
         }
@@ -166,34 +153,38 @@ const Addorder = () => {
 
   // const handleSubmit = async(e) => {
   //   e.preventDefault();
-  //   await axios.post("http://192.168.29.71:5000/api/order/createorder" , formData, );
-  //    toast.success('Form submitted successfully!')
-     
-  //    setIsDataSubmitted(true);
+  //   await axios.post("http://192.168.29.11:5000/api/order/createorder",formData,);
+  //   toast.success("Form submitted successfully!");
+   
+  //   setIsDataSubmitted(true);
 
   //    // Add a delay before navigating
   //    setIsNavigating(true);
   //    setTimeout(() => {
   //      navigate("/Order");
   //      setIsNavigating(false);
-  //    }, 500); // Adjust time (in ms) as needed
+  //    }, 500); // Ad
+   
   // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (id) {
-        // Update existing order
-        await axios.put(`http://192.168.29.71:5000/api/order/${id}`,  formData);
-       toast.success("Order updated successfully!");
+        // Update order
+        await axios.put(
+          `http://192.168.29.11:5000/api/order/${id}`,
+          formData
+        );
+        toast.success("Order updated successfully!");
       } else {
         // Add new order
-        await axios.post(`http://192.168.29.71:5000/api/order/createorder`,  formData);
-        toast.success('Form submitted successfully!')
+        await axios.post(`http://192.168.29.11:5000/api/order/createorder`, formData);
+        toast.success("Form submitted successfully!");
       }
-      navigate("/orders"); // Redirect back to orders page
+      navigate("/orders"); // Redirect to orders page
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("Failed to submit order. Please try again.");
+      alert("Failed to submit order.");
     }
     setIsDataSubmitted(true);
 
@@ -202,7 +193,8 @@ const Addorder = () => {
      setTimeout(() => {
        navigate("/Order");
        setIsNavigating(false);
-     }, 500); // Adjust time (in ms) as needed
+     }, 500); // Ad
+   
   };
 
   const [length, setLength] = useState("");
@@ -242,7 +234,17 @@ const Addorder = () => {
       return "₹1000";
     }
   };
-
+  const handleClick = () => {
+    if (isDataSubmitted) {
+      setIsNavigating(true);
+      setTimeout(() => {
+        navigate("/Order");
+        // setIsNavigating(false);
+      }, 1000); // Delay navigation
+    } 
+ 
+  };
+  console.log(formData);
 
   return (
     <div className="max-w-full mx-auto p-4 bg-white shadow-lg shadow-purple-300 rounded-lg">
@@ -299,6 +301,8 @@ const Addorder = () => {
             onChange={handleInputChange}
             placeholder="Email (optional)"
             className="w-full p-4 border rounded mb-2"
+           
+         
           />
 
           {/* State Dropdown */}
@@ -307,6 +311,7 @@ const Addorder = () => {
             value={formData.consignerstate}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
+            required
           >
             <option value="">Select State</option>
             {states.length > 0 ? (
@@ -326,6 +331,7 @@ const Addorder = () => {
             value={formData.consignerdistrict}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
+            required
           >
             <option value="">Select District</option>
             {consignerDistricts.length > 0 ? (
@@ -345,6 +351,7 @@ const Addorder = () => {
             value={formData.consignerpincode}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
+            required
           >
             <option value="">Select Pincode</option>
             {consignerPincodes.length > 0 ? (
@@ -408,6 +415,7 @@ const Addorder = () => {
             value={formData.consigneestate}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
+            required
           >
             <option value="">Select State</option>
             {states.length > 0 ? (
@@ -427,6 +435,7 @@ const Addorder = () => {
             value={formData.consigneedistrict}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
+            required
           >
             <option value="">Select District</option>
             {consigneeDistricts.length > 0 ? (
@@ -446,6 +455,7 @@ const Addorder = () => {
             value={formData.consigneepin}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
+            required
           >
             <option value="">Select Pincode</option>
             {consigneePincodes.length > 0 ? (
@@ -482,7 +492,8 @@ const Addorder = () => {
               value={length}
               onChange={(e) => setLength(e.target.value)}
               className="w-full p-4 border rounded lg:col-span-1 col-span-3"
-              
+             
+             
             />
             <input
               type="number"
@@ -490,6 +501,7 @@ const Addorder = () => {
               value={width}
               onChange={(e) => setWidth(e.target.value)}
               className="w-full p-4 border rounded lg:col-span-1 col-span-3"
+             
             />
             <input
               type="number"
@@ -497,6 +509,7 @@ const Addorder = () => {
               value={height}
               onChange={(e) => setHeight(e.target.value)}
               className="w-full p-4 border rounded lg:col-span-1 col-span-3"
+             
             />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-2">
@@ -562,7 +575,7 @@ const Addorder = () => {
                             class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
                            Medium Parcels 
-                           (1.1-2 kg)
+                           (1-2 kg)
                           </th>
                           <td class="px-6 py-4">Rs. 80</td>
                           <td class="px-6 py-4">Rs. 110</td>
@@ -574,7 +587,7 @@ const Addorder = () => {
                             class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
                           Large Parcels
-                          (2.1-5 kg)
+                          (2-5 kg)
                           </th>
                           <td class="px-6 py-4">Rs. 120</td>
                           <td class="px-6 py-4">Rs. 135</td>
@@ -586,7 +599,7 @@ const Addorder = () => {
                             class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
                           Extra Large Parcels
-                          (5.1-10 kg)
+                          (5-10 kg)
                           </th>
                           <td class="px-6 py-4">Rs. 360</td>
                           <td class="px-6 py-4">Rs. 360</td>
@@ -598,7 +611,7 @@ const Addorder = () => {
                             class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
                           Bulk Shipments 
-                          (10.1-20 kg)
+                          (10-20 kg)
                           </th>
                           <td class="px-6 py-4">Rs. 600</td>
                           <td class="px-6 py-4">Rs. 700</td>
@@ -641,6 +654,7 @@ const Addorder = () => {
             onChange={handleInputChange}
             placeholder="Package Weight (kg)"
             className="w-full p-4 border rounded mb-2"
+            required
           />
           <input
             type="text"
@@ -649,12 +663,14 @@ const Addorder = () => {
             placeholder="Price (₹)"
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
+            required
           />
           <select
             name="packagetype"
             value={formData.packagetype}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
+            required
           >
             <option>Select package type</option>
             <option>Perishable goods</option>
@@ -669,6 +685,7 @@ const Addorder = () => {
             value={formData.instruction}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
+            required
           >
             <option>Select Handling Instruction</option>
             <option>Do not Tilt</option>
@@ -677,29 +694,26 @@ const Addorder = () => {
         </div>
 
         {/* Submit Button */}
-        <div className="col-span-3 relative mt-4 p-4">
+        <div className="col-span-3 text-center mt-4 p-4 relative">
           <button
-          
             type="submit"
-            onClick={handleClick}  disabled={isNavigating}
-            className="bg-gradient-to-r from-purple-600 to-green-500 text-white px-7 py-3 rounded absolute right-0"
+            className="bg-gradient-to-r from-purple-600 to-green-500 text-white px-7 py-3 rounded absolute right-0"  onClick={handleClick}
           >
             {id ? "Update Order" : "Add Order"}
           </button>
         </div>
       </form>
       <button
-           onClick={() => navigate("/Order")}
-            className="bg-gradient-to-r from-purple-600 to-green-500 text-white px-7 py-3 rounded "
+            type=""  onClick={() => navigate("/Order")}
+            className="bg-gradient-to-r from-purple-600 to-green-500 text-white px-7 py-3 rounded"
           >
-            Back
+          Back
           </button>
     </div>
   );
 };
 
 export default Addorder;
-
 
 // import React, { useState } from "react";
 
@@ -795,8 +809,7 @@ export default Addorder;
 //           <input type="tel" name="consignermobileNumber" value={formData.consignermobileNumber} onChange={handleInputChange} placeholder="Mobile Number" className="w-full p-4 border rounded mb-2" />
 //           <input type="text" name="consignerAddress" value={formData.consignerAddress} onChange={handleInputChange} placeholder="Address" className="w-full p-4 border rounded mb-2" />
 //           <input type="email" name="consignermail" value={formData.consignermail} onChange={handleInputChange} placeholder="Email (optional)" className="w-full p-4 border rounded mb-2" />
-           
-     
+
 //           <input type="text" name="consignerstate" value={formData.consignerstate} onChange={handleInputChange} placeholder="State" className="w-full p-4 border rounded mb-2" />
 //           <select name="consignerdistrict" value={formData.consignerdistrict} onChange={handleInputChange} className="w-full p-4 border rounded mb-2">
 //           <option >Select District</option>
@@ -841,7 +854,7 @@ export default Addorder;
 //             {/* Add other districts */}
 //           </select>
 //           <input type="text" name="consignerpincode" value={formData.consignerpincode} onChange={handleInputChange} placeholder="Pincode" className="w-full p-4 border rounded" />
-        
+
 //         </div>
 
 //         {/* Consignee Details */}
@@ -850,8 +863,8 @@ export default Addorder;
 //           <input type="text" name="Consigneename" value={formData.Consigneename} onChange={handleInputChange} placeholder="Consignee Name" className="w-full p-4 border rounded mb-2" />
 //           <input type="tel" name="consigneemobileno" value={formData.consigneemobileno} onChange={handleInputChange} placeholder="Mobile Number" className="w-full p-4 border rounded mb-2" />
 //           <input type="tel" name="consigneealterno" value={formData.consigneealterno} onChange={handleInputChange} placeholder="Alternate Mobile No" className="w-full p-4 border rounded mb-2" />
-//           <input type="text" name="consigneeaddress" value={formData.consigneeaddress} onChange={handleInputChange} placeholder="Address" className="w-full p-4 border rounded mb-2" />  
-          
+//           <input type="text" name="consigneeaddress" value={formData.consigneeaddress} onChange={handleInputChange} placeholder="Address" className="w-full p-4 border rounded mb-2" />
+
 //           <input type="text" name="consigneepin" value={formData.consigneepin} onChange={handleInputChange} placeholder="Pincode" className="w-full p-4 border rounded" />
 //           <input type="text" name="consigneestate" value={formData.consigneestate} onChange={handleInputChange} placeholder="State" className="w-full p-4 border rounded mb-2" />
 //           <select name="consigneedistrict" value={formData.consigneedistrict} onChange={handleInputChange} className="w-full p-4 border rounded mb-2">
@@ -896,7 +909,7 @@ export default Addorder;
 //               <option >Virudhunagar</option>
 //             {/* Add other districts */}
 //           </select>
-         
+
 //         </div>
 
 //         {/* Product Details */}
@@ -929,7 +942,7 @@ export default Addorder;
 //             <option>Handle with care</option>
 
 //           </select>
-         
+
 //         </div>
 
 //         {/* Submit Button */}
@@ -938,15 +951,13 @@ export default Addorder;
 //             Submit
 //           </button>
 //         </div>
-        
+
 //       </form>
 //     </div>
 //   );
 // };
 
 // export default Addorder;
-
-
 
 // import axios from "axios";
 // import React, { useState } from "react";

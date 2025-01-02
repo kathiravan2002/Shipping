@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios';
 
+import React, { useEffect, useState } from 'react'
+import axios from "axios";
 
 function Dashboard() {
   const [order,setorder] = useState([]);
   
   const getAllorder = async () => {
     try {
-      const response =await axios.get("http://192.168.29.71:5000/api/order/getorder");
+      const response =await axios.get("http://192.168.29.11:5000/api/order/getorder");
       console.log(response.data)
       setorder( response.data || []);
       console.log(order);
@@ -21,6 +21,16 @@ function Dashboard() {
     useEffect(() => {
       getAllorder();
     },[]);
+    
+    const today = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayDate = yesterday.toISOString().split('T')[0];
+    
+    const todaysOrders = order?.filter(o => o.createdAt?.startsWith(today)).length || 0;
+    const yesterdaysOrders = order?.filter(o => o.createdAt?.startsWith(yesterdayDate)).length || 0;
+    
+
   return (
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-1 gap-8 p-2 max-w-full lg:grid-cols-3">
@@ -30,10 +40,13 @@ function Dashboard() {
           <div className="flex items-center">
             <div className="bg-purple-300 p-3 rounded-full"></div>
             <div className="sm:mr-4 lg:ml-52">
-              <h3 className="text-gray-600 font-semibold">Total Orders</h3>
-              <p className="text-2xl font-bold text-gray-900">{order?.length}</p>
-              {/* <p className="text-sm text-gray-500">Yesterday</p>
-              <p className="text-2  text-gray-900">0</p> */}
+              <h3 className="text-gray-600 font-semibold">Today's Orders</h3>
+              <p className="text-2xl font-bold text-gray-900">
+                {order.length || 0}
+                {/* Display total orders or 0 if the array is undefined */}
+              </p>
+              <p className="text-sm text-gray-500">Yesterday</p>
+              <p className="text-2xl text-gray-900">0</p>
             </div>
           </div>
         </div>
