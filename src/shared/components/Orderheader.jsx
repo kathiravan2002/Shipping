@@ -17,7 +17,7 @@ const Orderheader = ({ order, deleteOrder, setOrder }) => {
   const handleSearch = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.11:5000/api/order?search=${encodeURIComponent(
+        `http://192.168.29.71:5000/api/order?search=${encodeURIComponent(
           searchQuery
         )}`
       );
@@ -176,9 +176,7 @@ const Orderheader = ({ order, deleteOrder, setOrder }) => {
                       alt="Illustration"
                       className="w-32 h-32 object-contain"
                     />
-                    <p className="text-gray-600 mt-4">
-                      Add your first order to get started
-                    </p>
+                    <p className="text-gray-600 mt-4">Add your first order to get started</p>
                     <div className="flex gap-4 mt-4">
                       <button
                         onClick={() => navigate("/Addorder")}
