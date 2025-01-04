@@ -128,7 +128,7 @@ const Addorder = () => {
       const fetchOrderDetails = async () => {
         try {
           const response = await axios.get(
-            `http://192.168.29.11:5000/api/order/${id}`
+            `http://192.168.29.71:5000/api/order/${id}`
           );
           setFormData(response.data); // Pre-fill the form
         } catch (error) {
@@ -160,13 +160,13 @@ const Addorder = () => {
       if (id) {
         // Update order
         await axios.put(
-          `http://192.168.29.11:5000/api/order/${id}`,
+          `http://192.168.29.71:5000/api/order/${id}`,
           formData
         );
         toast.success("Order updated successfully!");
       } else {
         // Add new order
-        await axios.post(`http://192.168.29.11:5000/api/order/createorder`, formData);
+        await axios.post(`http://192.168.29.71:5000/api/order/createorder`, formData);
         toast.success("Form submitted successfully!");
       }
       navigate("/orders"); // Redirect to orders page
