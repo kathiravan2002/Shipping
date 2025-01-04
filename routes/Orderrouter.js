@@ -89,6 +89,24 @@ router.get("/:id" , async (req ,res) => {
     }
 })
 
+router.get("/orders/today", async (req, res) => {
+    try {
+      // Get the start and end of today
+      const today = new Date();
+      const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+  
+      // Filter orders for today
+      const todayOrders = await Order.find({
+        orderDate: { $gte: startOfDay, $lt: endOfDay },
+      });
+  
+      res.json(todayOrders);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
 //update(put)
 router.put("/:id" , async (req ,res) => {
     try{

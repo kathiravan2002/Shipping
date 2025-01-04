@@ -29,6 +29,8 @@ const orderschema = mongoose.Schema({
 
     consignerpincode: String,
 
+    consignermail: String,
+
     Consigneename: String,
 
     consigneemobileno: String,
@@ -51,7 +53,10 @@ const orderschema = mongoose.Schema({
 
     price: String,
 
-    instruction: String
+    instruction: String,
+
+    orderDate: { type: Date,
+        default: Date.now, }
 
 })
 
