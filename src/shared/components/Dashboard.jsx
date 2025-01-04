@@ -22,13 +22,13 @@ function Dashboard() {
       getAllorder();
     },[]);
     
-    const today = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayDate = yesterday.toISOString().split('T')[0];
+    // const today = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD
+    // const yesterday = new Date();
+    // yesterday.setDate(yesterday.getDate() - 1);
+    // const yesterdayDate = yesterday.toISOString().split('T')[0];
     
-    const todaysOrders = order?.filter(o => o.createdAt?.startsWith(today)).length || 0;
-    const yesterdaysOrders = order?.filter(o => o.createdAt?.startsWith(yesterdayDate)).length || 0;
+    // const todaysOrders = order?.filter(o => o.createdAt?.startsWith(today)).length || 0;
+    // const yesterdaysOrders = order?.filter(o => o.createdAt?.startsWith(yesterdayDate)).length || 0;
     
 
   return (
@@ -39,13 +39,13 @@ function Dashboard() {
           <div className="flex items-center">
             <div className="bg-purple-300 p-3 rounded-full"></div>
             <div className="sm:mr-4 lg:ml-52">
-              <h3 className="text-gray-600 font-semibold">Today's Orders</h3>
+              <h3 className="text-gray-600 font-semibold">Total Orders</h3>
               <p className="text-2xl font-bold text-gray-900">
                 {order.length || 0}
                 {/* Display total orders or 0 if the array is undefined */}
               </p>
-              <p className="text-sm text-gray-500">Yesterday</p>
-              <p className="text-2xl text-gray-900">0</p>
+              {/* <p className="text-sm text-gray-500">Yesterday</p>
+              <p className="text-2xl text-gray-900">0</p> */}
             </div>
           </div>
         </div>
@@ -89,10 +89,10 @@ function Dashboard() {
           <div className="flex items-center">
             <div className="bg-green-300 p-3 rounded-full"></div>
             <div className="sm:mr-4 lg:ml-52">
-              <h3 className="text-gray-600 font-semibold">Today revenue</h3>
+              <h3 className="text-gray-600 font-semibold">Total revenue</h3>
               <p className="text-2xl font-bold text-gray-900">0</p>
-              <p className="text-sm text-gray-500">Yesterday</p>
-              <p className="text-2  text-gray-900">0</p>
+              {/* <p className="text-sm text-gray-500">Yesterday</p>
+              <p className="text-2  text-gray-900">0</p> */}
             </div>
           </div>
         </div>

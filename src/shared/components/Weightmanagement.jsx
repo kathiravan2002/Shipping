@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CornerDownLeft } from 'lucide-react';
+import { CornerDownLeft,Trash2} from 'lucide-react';
 
 const Weightmanagement = () => {
   const [rows, setRows] = useState([
@@ -122,10 +122,10 @@ const Weightmanagement = () => {
                 </td>
                 <td className="border border-gray-300 p-2 text-center">
                   <button
-                    className="text-red-500 hover:underline"
+                    className="text-red-500 hover:underline hover:text-red-600"
                     onClick={() => deleteRow(index)}
                   >
-                    Delete
+                    <Trash2 />
                   </button>
                 </td>
               </tr>
@@ -164,7 +164,7 @@ const Weightmanagement = () => {
           <div className="flex items-center">
             <label className="text-gray-700 mr-2">Freight Rate Per (Kg):</label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">₹</span>
               <input
                 type="number"
                 value={freightRate}
@@ -183,7 +183,7 @@ const Weightmanagement = () => {
           {/* Total Chargeable Amount */}
           <div className="flex justify-between items-center pt-4">
             <label className="font-semibold text-gray-700">Total Chargeable Amount:</label>
-            <p className="font-bold text-gray-800">${totalChargeableAmount.toFixed(2)}</p>
+            <p className="font-bold text-gray-800">₹{totalChargeableAmount.toFixed(2)}</p>
           </div>
         </div>
       </div>
