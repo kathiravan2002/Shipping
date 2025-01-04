@@ -33,7 +33,7 @@ function Orderpage() {
     const deleteOrder = async ({ _id }) => {
       if (window.confirm("Are you sure you want to delete this order?")) {
         try {
-          await axios.delete(`http://192.168.29.11:5000/api/order/${_id}`);
+          await axios.delete(`http://192.168.29.71:5000/api/order/${_id}`);
           getAllorder();
           console.log("Order deleted successfully");
         } catch (error) {
