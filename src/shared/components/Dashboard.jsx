@@ -4,14 +4,15 @@ import axios from "axios";
 import Spinner from './Spinner';
 
 function Dashboard() {
-  const [order,setorder] = useState([]);
+  const [totalorder,settotalorder] = useState([]);
+  const [todayorder, settodayorder] = useState([])
   const [loading, setLoading] = useState(true);
   
   const getAllorder = async () => {
     try {
       const response =await axios.get("http://192.168.29.11:5000/api/order/getorder");
       console.log(response.data)
-      setorder( response.data || []);
+      settotalorder( response.data || []);
       console.log(order);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -23,6 +24,8 @@ function Dashboard() {
     useEffect(() => {
       getAllorder();
     },[]);
+    
+
     useEffect(() => {
       const fetchOrders = async () => {
         try {
@@ -34,18 +37,27 @@ function Dashboard() {
         } 
         const timer = setTimeout(() => {
           setLoading(false);
-        }, 300);
+        }, 800);
     
         return () => clearTimeout(timer);
       };
   
       fetchOrders();
     }, []);
-    if(loading) return <Spinner />;
+    // const today = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD
+    // const yesterday = new Date();
+    // yesterday.setDate(yesterday.getDate() - 1);
+    // const yesterdayDate = yesterday.toISOString().split('T')[0];
+    
+    // const todaysOrders = order?.filter(o => o.createdAt?.startsWith(today)).length || 0;
+    // const yesterdaysOrders = order?.filter(o => o.createdAt?.startsWith(yesterdayDate)).length || 0;
+    if (loading) return <Spinner />;
+
 
   return (
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-1 gap-8 p-2 max-w-full lg:grid-cols-3">
+
         {/* <!-- Today's Orders Section --> */}
         <div className="bg-purple-100 rounded-lg p-4  shadow-md">
           <div className="flex items-center">
@@ -53,7 +65,7 @@ function Dashboard() {
             <div className="sm:mr-4 lg:ml-52">
               <h3 className="text-gray-600 font-semibold">Total Orders</h3>
               <p className="text-2xl font-bold text-gray-900">
-                {order.length || 0}
+              {totalorder.length || 0}
                 {/* Display total orders or 0 if the array is undefined */}
               </p>
               {/* <p className="text-sm text-gray-500">Yesterday</p>
@@ -101,8 +113,8 @@ function Dashboard() {
           <div className="flex items-center">
             <div className="bg-green-300 p-3 rounded-full"></div>
             <div className="sm:mr-4 lg:ml-52">
-              <h3 className="text-gray-600 font-semibold">Total revenue</h3>
-              <p className="text-2xl font-bold text-gray-900">0</p>
+              <h3 className="text-gray-600 font-semibold">Today orders</h3>
+              <p className="text-2xl font-bold text-gray-900">{todayorder.length}</p>
               {/* <p className="text-sm text-gray-500">Yesterday</p>
               <p className="text-2  text-gray-900">0</p> */}
             </div>
@@ -179,8 +191,8 @@ function Dashboard() {
           <div className="flex items-center">
             <div className="bg-purple-300 p-3 rounded-full"></div>
             <div className="sm:mr-4 mt-44 lg:ml-52">
-              <h3 className="text-gray-600 font-semibold">Today </h3>
-              <p className="text-2xl font-bold text-gray-900">0</p>
+              <h3 className="text-gray-600 font-semibold"> </h3>
+              <p className="text-2xl font-bold text-gray-900"></p>
             </div>
           </div>
         </div>
