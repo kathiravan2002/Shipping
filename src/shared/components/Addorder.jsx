@@ -1,9 +1,9 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { useParams, useNavigate } from "react-router-dom";
-import { CornerDownLeft } from 'lucide-react';
-
+import {useParams,useNavigate} from "react-router-dom";
+import { Dialog } from 'primereact/dialog';
+import { CornerDownLeft,Trash } from 'lucide-react';
 const Addorder = () => {
   const { id } = useParams(); // Get the order ID from the URL
   const [formData, setFormData] = useState({
@@ -24,7 +24,8 @@ const Addorder = () => {
     productname: "",
     packageWeight: "",
     packagetype: "",
-    price: "",
+    price: ""
+    
   });
 
   const [apiData, setApiData] = useState([]);
@@ -36,38 +37,7 @@ const Addorder = () => {
   const [isDataSubmitted, setIsDataSubmitted] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
   const navigate = useNavigate();
-  const [rows, setRows] = useState([
-    { length: "", width: "", height: "", weight: "", packages: "1" },
-  ]);
-  const [freightRate, setFreightRate] = useState("");
-
-  // Add a new line
-  const addRow = () => {
-    setRows([...rows, { length: "", width: "", height: "", weight: "", packages: "1" }]);
-  };
-
-  const [showDialog, setShowDialog] = useState(false);
-  const deleteRow = (index) => {
-    setRows(rows.filter((_, i) => i !== index));
-  };
  
-  // Update a row's data
-  const updateRow = (index, field, value) => {
-    const newRows = [...rows];
-    newRows[index][field] = parseFloat(value) || "";
-    setRows(newRows);
-  };
-  const totalPackages = rows.reduce((sum, row) => sum + (parseFloat(row.packages) || 0), 0);
-  const totalWeight = rows.reduce((sum, row) => sum + (parseFloat(row.weight) || 0) * (parseFloat(row.packages) || 0), 0);
-  const totalVolumetricWeight = rows.reduce((sum, row) =>
-    sum + ((parseFloat(row.length) || 0) * (parseFloat(row.width) || 0) * (parseFloat(row.height) || 0)) / 5000 * (parseFloat(row.packages) || 0),
-    0
-  );
-
-  const chargeableWeight = Math.max(totalWeight, totalVolumetricWeight);
-  const totalChargeableAmount = chargeableWeight * (parseFloat(freightRate) || 0);
-
-
 
   // Function to convert strings to sentence case
   const toSentenceCase = (str) =>
@@ -158,7 +128,7 @@ const Addorder = () => {
       const fetchOrderDetails = async () => {
         try {
           const response = await axios.get(
-            `http://192.168.29.71:5000/api/order/${id}`
+            `http://192.168.29.11:5000/api/order/${id}`
           );
           setFormData(response.data); // Pre-fill the form
         } catch (error) {
@@ -183,35 +153,20 @@ const Addorder = () => {
       return updatedData;
     });
   };
-
-  // const handleSubmit = async(e) => {
-  //   e.preventDefault();
-  //   await axios.post("http://192.168.29.71:5000/api/order/createorder",formData,);
-  //   toast.success("Form submitted successfully!");
-
-  //   setIsDataSubmitted(true);
-
-  //    // Add a delay before navigating
-  //    setIsNavigating(true);
-  //    setTimeout(() => {
-  //      navigate("/Order");
-  //      setIsNavigating(false);
-  //    }, 500); // Ad
-
-  // };
   const handleSubmit = async (e) => {
+    console.log(formData)
     e.preventDefault();
     try {
       if (id) {
         // Update order
         await axios.put(
-          `http://192.168.29.71:5000/api/order/${id}`,
+          `http://192.168.29.11:5000/api/order/${id}`,
           formData
         );
         toast.success("Order updated successfully!");
       } else {
         // Add new order
-        await axios.post(`http://192.168.29.71:5000/api/order/createorder`, formData);
+        await axios.post(`http://192.168.29.11:5000/api/order/createorder`, formData);
         toast.success("Form submitted successfully!");
       }
       navigate("/orders"); // Redirect to orders page
@@ -221,13 +176,13 @@ const Addorder = () => {
     }
     setIsDataSubmitted(true);
 
-    // Add a delay before navigating
-    setIsNavigating(true);
-    setTimeout(() => {
-      navigate("/Order");
-      setIsNavigating(false);
-    }, 500); // Ad
-
+     // Add a delay before navigating
+     setIsNavigating(true);
+     setTimeout(() => {
+       navigate("/Order");
+       setIsNavigating(false);
+     }, 500); // Ad
+   
   };
 
   const [length, setLength] = useState("");
@@ -274,10 +229,57 @@ const Addorder = () => {
         navigate("/Order");
         // setIsNavigating(false);
       }, 1000); // Delay navigation
-    }
-
+    } 
+ 
   };
   console.log(formData);
+//Dialogbox for weight calculation
+const [visible, setVisible] = useState(false);
+// weight calculation
+
+
+  const [rows, setRows] = useState([
+    { length: "", width: "", height: "", weight: "", packages: "" },
+  ]);
+  const [freightRate, setFreightRate] = useState("");
+
+  // Add a new line
+  const addRow = () => {
+    setRows([...rows, { length: "", width: "", height: "", weight: "", packages: "1" }]);
+  };
+
+  // Delete a row
+  const deleteRow = (index) => {
+    setRows(rows.filter((_, i) => i !== index));
+  };
+
+  // Update a row's data
+  const updateRow = (index, field, value) => {
+    const newRows = [...rows];
+    newRows[index][field] = parseFloat(value) || "";
+    setRows(newRows);
+  };
+
+  // Calculate totals
+  const totalPackages = rows.reduce((sum, row) => sum + (parseFloat(row.packages) || 0), 0);
+  const totalWeight = rows.reduce((sum, row) => sum + (parseFloat(row.weight) || 0) * (parseFloat(row.packages) || 0), 0);
+  const totalVolumetricWeight = rows.reduce((sum, row) =>
+    sum + ((parseFloat(row.length) || 0) * (parseFloat(row.width) || 0) * (parseFloat(row.height) || 0)) / 5000 * (parseFloat(row.packages) || 0),
+    0
+  );
+
+  const chargeableWeight = Math.max(totalWeight, totalVolumetricWeight);
+  const totalChargeableAmount = chargeableWeight * (parseFloat(freightRate) || 0);
+  
+     // Update formData's packageWeight whenever chargeableWeight changes
+  useEffect(() => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      packageWeight: chargeableWeight, // Update packageWeight
+      price:totalChargeableAmount,
+
+    }));
+  }, [chargeableWeight,totalChargeableAmount]); {/* The dependency array [chargeableWeight] ensures that the effect runs only when chargeableWeight is recalculated. */}
 
   return (
     <div className="max-w-full mx-auto p-4 bg-white shadow-lg shadow-purple-300 rounded-lg">
@@ -291,15 +293,6 @@ const Addorder = () => {
         {/* Consigner Details */}
         <div className="col-span-3 lg:col-span-1 md:col-span-1">
           <h2 className="font-semibold text-xl mb-6">1. Consigner Details</h2>
-          {/* <input
-            type="text"
-            name="orderId"
-            value={formData.orderId}
-            onChange={handleInputChange}
-            placeholder="orderId"
-            className="w-full p-4 border rounded mb-2"
-  
-          /> */}
           <input
             type="text"
             name="ConsignerName"
@@ -334,8 +327,8 @@ const Addorder = () => {
             onChange={handleInputChange}
             placeholder="Email (optional)"
             className="w-full p-4 border rounded mb-2"
-
-
+           
+         
           />
 
           {/* State Dropdown */}
@@ -518,15 +511,15 @@ const Addorder = () => {
             className="w-full p-4 border rounded mb-2"
             required
           />
-          <div className="grid grid-cols-3 lg:grid-cols-3 gap-2 mb-2">
+          {/* <div className="grid grid-cols-3 lg:grid-cols-3 gap-2 mb-2">
             <input
               type="number"
               placeholder="Length (cm)"
               value={length}
               onChange={(e) => setLength(e.target.value)}
               className="w-full p-4 border rounded lg:col-span-1 col-span-3"
-
-
+             
+             
             />
             <input
               type="number"
@@ -534,7 +527,7 @@ const Addorder = () => {
               value={width}
               onChange={(e) => setWidth(e.target.value)}
               className="w-full p-4 border rounded lg:col-span-1 col-span-3"
-
+             
             />
             <input
               type="number"
@@ -542,13 +535,13 @@ const Addorder = () => {
               value={height}
               onChange={(e) => setHeight(e.target.value)}
               className="w-full p-4 border rounded lg:col-span-1 col-span-3"
-
+             
             />
-          </div>
+          </div> */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-2">
             <button
               type="button"
-              className="bg-purple-600 text-white p-3 rounded mb-2 shadow-md shadow-gray-700"
+              className="bg-purple-700 text-white p-3 rounded mb-2 shadow-md shadow-gray-700"
               onClick={() => setShowPriceDialog(true)}
             >
               {" "}
@@ -556,6 +549,7 @@ const Addorder = () => {
             </button>
 
             {showPriceDialog && (
+              
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ">
                 <div className="bg-white p-5 rounded shadow-md w-3/4 lg:w-1/3 shadow-gray-700">
                   <h2 className="text-lg font-bold mb-4 text-center">
@@ -567,15 +561,15 @@ const Addorder = () => {
                       <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                           <th scope="col" class="px-6 py-3">
-                            Service Type
+                          Service Type
                           </th>
                           <th scope="col" class="px-6 py-3">
-                            Within Tamil Nadu
+                          Within Tamil Nadu
                           </th>
                           <th scope="col" class="px-6 py-3">
-                            Other States
+                          Other States
                           </th>
-
+                         
                         </tr>
                       </thead>
                       <tbody>
@@ -588,67 +582,67 @@ const Addorder = () => {
                           </th>
                           <td class="px-6 py-4">Rs. 40</td>
                           <td class="px-6 py-4">Rs. 60</td>
-
+                        
                         </tr>
                         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                           <th
                             scope="row"
                             class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
-                            Small Parcels
-                            (up to 1 kg)
+                         Small Parcels
+                         (up to 1 kg)
                           </th>
                           <td class="px-6 py-4">Rs. 45</td>
                           <td class="px-6 py-4">Rs. 70</td>
-
+                         
                         </tr>
                         <tr class="bg-white  border-b dark:bg-gray-800 dark:border-gray-700">
                           <th
                             scope="row"
                             class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
-                            Medium Parcels
-                            (1-2 kg)
+                           Medium Parcels 
+                           (1-2 kg)
                           </th>
                           <td class="px-6 py-4">Rs. 80</td>
                           <td class="px-6 py-4">Rs. 110</td>
-
+                       
                         </tr>
                         <tr class="bg-white  border-b dark:bg-gray-800 dark:border-gray-700">
                           <th
                             scope="row"
                             class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
-                            Large Parcels
-                            (2-5 kg)
+                          Large Parcels
+                          (2-5 kg)
                           </th>
                           <td class="px-6 py-4">Rs. 120</td>
                           <td class="px-6 py-4">Rs. 135</td>
-
+                       
                         </tr>
                         <tr class="bg-white  border-b dark:bg-gray-800 dark:border-gray-700">
                           <th
                             scope="row"
                             class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
-                            Extra Large Parcels
-                            (5-10 kg)
+                          Extra Large Parcels
+                          (5-10 kg)
                           </th>
                           <td class="px-6 py-4">Rs. 360</td>
                           <td class="px-6 py-4">Rs. 360</td>
-
+                       
                         </tr>
                         <tr class="bg-white  border-b dark:bg-gray-800 dark:border-gray-700">
                           <th
                             scope="row"
                             class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
-                            Bulk Shipments
-                            (10-20 kg)
+                          Bulk Shipments 
+                          (10-20 kg)
                           </th>
                           <td class="px-6 py-4">Rs. 600</td>
                           <td class="px-6 py-4">Rs. 700</td>
-
+                       
                         </tr>
                       </tbody>
                     </table>
@@ -662,234 +656,62 @@ const Addorder = () => {
                     {" "}
                     close
                   </button>
+
+                  
                 </div>
               </div>
             )}
-            <button
+            {/* <button
               type="button"
               onClick={calculateVolumetricWeight}
               className="bg-purple-600 text-white  p-3  rounded mb-2 shadow-md shadow-gray-700"
             >
               {" "}
               Calculate Volumetric Weight
+            </button> */}
+            <button
+              type="button"
+              onClick={() => setVisible(true)}
+              className="bg-purple-700 text-white  p-3  rounded mb-2 shadow-md shadow-gray-700" icon="pi pi-external-link" 
+            >
+              {" "}
+              Calculate  Weight
             </button>
-
+           
             {volumetricWeight && (
               <p className="text-sm">
                 Volumetric Weight: {volumetricWeight} kg{" "}
               </p>
             )}
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-2" >
-            <button
-             type="button" // Change to type="button"
-             onClick={(e) => {
-               e.preventDefault(); // Prevent form submission
-               setShowDialog(true);
-             }}
-              className="bg-blue-500 text-white rounded mb-2 shadow-md shadow-gray-700"
-            >
-              Calculate  Weight
-            </button>
-
-            {/* Dialog box */}
-            {showDialog && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center max-h-full overflow-y-scroll"
-              onClick={(e) => {
-                // Close dialog when clicking outside
-                if (e.target === e.currentTarget) {
-                  setShowDialog(false);
-                }
-              }} >
-                <div className="bg-white p-6 rounded shadow-md w-auto shadow-gray-700 ">
-                  <h2 className="text-lg font-bold mb-4 text-center">
-                    Calculate Volumetric Weight
-                  </h2>
-                  <div className="p-6 space-y-6 bg-white shadow-lg shadow-violet-400 rounded-lg">
-                    {/* Table Section */}
-                    <table className="w-full border-collapse border border-gray-300 text-sm">
-                      <thead className="bg-gray-100">
-                        <tr>
-                          <th className="border border-gray-300 p-2">Unit of Measure</th>
-                          <th className="border border-gray-300 p-2">Length</th>
-                          <th className="border border-gray-300 p-2">Width</th>
-                          <th className="border border-gray-300 p-2">Height</th>
-                          <th className="border border-gray-300 p-2">Gross Weight</th>
-                          <th className="border border-gray-300 p-2">No. of Packages</th>
-                          <th className="border border-gray-300 p-2">Total Gross Weight</th>
-                          <th className="border border-gray-300 p-2">Volumetric Weight</th>
-                          <th className="border border-gray-300 p-2">Total Volumetric Weight</th>
-                          <th className="border border-gray-300 p-2">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {rows.map((row, index) => (
-                          <tr key={index}>
-                            <td className="border border-gray-300 p-2">
-                              <select className="border rounded p-1">
-                                <option value="cm">cm</option>
-                              </select>
-                            </td>
-                            <td className="border border-gray-300 p-2">
-                              <input
-                                type="number"
-                                value={row.length}
-                                placeholder="Length"
-                                onChange={(e) => updateRow(index, "length", e.target.value)}
-                                className="w-full border p-1 rounded"
-                              />
-                            </td>
-                            <td className="border border-gray-300 p-2">
-                              <input
-                                type="number"
-                                value={row.width}
-                                placeholder="Width"
-                                onChange={(e) => updateRow(index, "width", e.target.value)}
-                                className="w-full border p-1 rounded"
-                              />
-                            </td>
-                            <td className="border border-gray-300 p-2">
-                              <input
-                                type="number"
-                                value={row.height}
-                                placeholder="Height"
-                                onChange={(e) => updateRow(index, "height", e.target.value)}
-                                className="w-full border p-1 rounded"
-                              />
-                            </td>
-                            <td className="border border-gray-300 p-2">
-                              <input
-                                type="number"
-                                value={row.weight}
-                                placeholder="Weight"
-                                onChange={(e) => updateRow(index, "weight", e.target.value)}
-                                className="w-full border p-1 rounded"
-                              />
-                            </td>
-                            <td className="border border-gray-300 p-2">
-                              <input
-                                type="number"
-                                value={row.packages}
-                                placeholder="Packages"
-                                onChange={(e) => updateRow(index, "packages", e.target.value)}
-                                className="w-full border p-1 rounded"
-                              />
-                            </td>
-                            <td className="border border-gray-300 p-2">
-                              {(parseFloat(row.weight) || 0) * (parseFloat(row.packages) || 0)} Kg
-                            </td>
-                            <td className="border border-gray-300 p-2">
-                              {(((row.length || 0) * (row.width || 0) * (row.height || 0)) / 5000).toFixed(2)} Kg
-                            </td>
-                            <td className="border border-gray-300 p-2">
-                              {(
-                                (((row.length || 0) * (row.width || 0) * (row.height || 0)) / 5000) *
-                                (row.packages || 0)
-                              ).toFixed(2)}{" "}
-                              Kg
-                            </td>
-                            <td className="border border-gray-300 p-2 text-center">
-                              <button
-                                className="text-red-500 hover:underline"
-                                onClick={() => deleteRow(index)}
-                              >
-                                Delete
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                        <tr className="bg-gray-100">
-                          <td className="border border-gray-300 p-2" colSpan="5">
-                            Totals
-                          </td>
-                          <td className="border border-gray-300 p-2">{totalPackages}</td>
-                          <td className="border border-gray-300 p-2">{totalWeight.toFixed(2)} Kg</td>
-                          <td className="border border-gray-300 p-2">
-                            {totalVolumetricWeight.toFixed(2)} Kg
-                          </td>
-                          <td className="border border-gray-300 p-2">
-                            {totalVolumetricWeight.toFixed(2)} Kg
-                          </td>
-                          <td className="border border-gray-300 p-2"></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <div className="flex justify-end">
-                      <button
-                        className="text-white border p-2 rounded bg-purple-500 flex items-center"
-                        onClick={addRow}
-                      >
-                        Add Line <CornerDownLeft className="ml-2" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Freight Rate Section */}
-                  <div className="p-6 mt-8 bg-white shadow-lg shadow-violet-400 rounded-lg space-y-6">
-                    <h3 className="font-semibold text-lg text-center">Enter Freight Rate to move this Cargo</h3>
-                    <div className="grid justify-self-center">
-                      {/* Freight Rate Input */}
-                      <div className="flex items-center">
-                        <label className="text-gray-700 mr-2">Freight Rate Per (Kg):</label>
-                        <div className="relative">
-                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">₹</span>
-                          <input
-                            type="number"
-                            value={freightRate}
-                            onChange={(e) => setFreightRate(parseFloat(e.target.value))}
-                            className="pl-8 pr-2 py-1 border border-gray-300 rounded-md bg-purple-100 w-32"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Chargeable Rate */}
-                      <div className="flex justify-between items-center">
-                        <label className="text-gray-700">Chargeable Rate (Kg):</label>
-                        <p className="text-gray-700 font-medium">{chargeableWeight.toFixed(2)} Kg</p>
-                      </div>
-
-                      {/* Total Chargeable Amount */}
-                      <div className="flex justify-between items-center pt-4">
-                        <label className="font-semibold text-gray-700">Total Chargeable Amount:</label>
-                        <p className="font-bold text-gray-800">${totalChargeableAmount.toFixed(2)}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Close button */}
-                  <button
-                    type="button" // Add type="button"
-                    onClick={(e) => {
-                      e.preventDefault(); // Prevent form submission
-                      setShowDialog(false);
-                    }}
-                    className="bg-red-500 text-white px-4 py-2 rounded mt-4 w-44"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <input
-              type="text"
-              name="packageWeight"
-              value={formData.packageWeight}
-              onChange={handleInputChange}
-              placeholder="Package Weight (kg)"
-              className="w-full p-4 border rounded mb-2"
-              required
-            />
-          </div>
           <input
             type="text"
+            name="packageWeight"
+            value={chargeableWeight  > 0 ? `${ chargeableWeight}` : formData.packageWeight || ""}
+            onChange={handleInputChange}
+            placeholder="Package Weight (kg)"
+            className="w-full p-4 border rounded mb-2"
+            required
+          />
+            <input
+            type="text"
+            name="noofpackages"
+            value={totalPackages > 0 ? `${totalPackages}` : formData.noofpackages || ""}
+            onChange={handleInputChange}
+            placeholder="No of Packages"
+            className="w-full p-4 border rounded mb-2"
+            required
+          />
+       <input
+            type="text"
             name="price"
-            value={formData.price}
+            value={totalChargeableAmount > 0 ? `₹${totalChargeableAmount }` : formData.price || ""}
             placeholder="Price (₹)"
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
             required
           />
+
           <select
             name="packagetype"
             value={formData.packagetype}
@@ -901,7 +723,6 @@ const Addorder = () => {
             <option>Perishable goods</option>
             <option>Fragile items</option>
             <option>Crates</option>
-            <option>Cardboard box</option>
             <option>Document</option>
             <option>Envelope</option>
           </select>
@@ -918,29 +739,195 @@ const Addorder = () => {
           </select>
         </div>
 
-
         {/* Submit Button */}
         <div className="col-span-3 text-center mt-4 p-4 relative">
           <button
             type="submit"
-            className="bg-gradient-to-r from-purple-600 to-green-500 text-white px-7 py-3 rounded absolute right-0" onClick={handleClick}
+            className="bg-gradient-to-r from-purple-600 to-green-500 text-white px-7 py-3 rounded absolute right-0"  onClick={handleClick}
           >
             {id ? "Update Order" : "Add Order"}
           </button>
         </div>
       </form>
-
       <button
-        type="" onClick={() => navigate("/Order")}
-        className="bg-gradient-to-r from-purple-600 to-green-500 text-white px-7 py-3 rounded"
-      >
-        Back
-      </button>
+            type=""  onClick={() => navigate("/Order")}
+            className="bg-gradient-to-r from-purple-600 to-green-500 text-white px-7 py-3 rounded"
+          >
+          Back
+          </button>
+         
+            {/* Dialog box for Calculation */}
+            <div className="relative  top-2 right-2">
+           {visible && (
+                <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
+            )}
+          <div className="card flex justify-content-center z-50">           
+          <Dialog  className="bg-white rounded-lg m-8 relative" visible={visible} style={{ width: '80vw', height:'60vh' }} closable={false} >
+             {/* Close Button */}
+             <button
+                  onClick={() => setVisible(false)}
+                  className="absolute top-1 right-2 text-gray-700 hover:text-gray-500 text-3xl"
+                  aria-label="Close"
+             >
+               &times;
+             </button>
+            <div className="p-6 space-y-6 bg-white rounded-lg mt-5">
+        {/* Table Section */}
+        <table className="w-full border-collapse border border-gray-300 text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="border border-gray-300 p-2">Unit of Measure</th>
+              <th className="border border-gray-300 p-2">Length</th>
+              <th className="border border-gray-300 p-2">Width</th>
+              <th className="border border-gray-300 p-2">Height</th>
+              <th className="border border-gray-300 p-2">Gross Weight</th>
+              <th className="border border-gray-300 p-2">No. of Packages</th>
+              <th className="border border-gray-300 p-2">Total Gross Weight</th>
+              <th className="border border-gray-300 p-2">Volumetric Weight</th>
+              <th className="border border-gray-300 p-2">Total Volumetric Weight</th>
+              <th className="border border-gray-300 p-2">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => (
+              <tr key={index}>
+                <td className="border border-gray-300 p-2">
+                  <select className="border rounded p-1">
+                    <option value="cm">cm</option>
+                  </select>
+                </td>
+                <td className="border border-gray-300 p-2">
+                  <input
+                    type="number"
+                    value={row.length}
+                    placeholder="Length"
+                    onChange={(e) => updateRow(index, "length", e.target.value)}
+                    className="w-full border p-1 rounded"
+                  />
+                </td>
+                <td className="border border-gray-300 p-2">
+                  <input
+                    type="number"
+                    value={row.width}
+                    placeholder="Width"
+                    onChange={(e) => updateRow(index, "width", e.target.value)}
+                    className="w-full border p-1 rounded"
+                  />
+                </td>
+                <td className="border border-gray-300 p-2">
+                  <input
+                    type="number"
+                    value={row.height}
+                    placeholder="Height"
+                    onChange={(e) => updateRow(index, "height", e.target.value)}
+                    className="w-full border p-1 rounded"
+                  />
+                </td>
+                <td className="border border-gray-300 p-2">
+                  <input
+                    type="number"
+                    value={row.weight}
+                    placeholder="Weight"
+                    onChange={(e) => updateRow(index, "weight", e.target.value)}
+                    className="w-full border p-1 rounded"
+                  />
+                </td>
+                <td className="border border-gray-300 p-2">
+                  <input
+                    type="number"
+                    value={row.packages}
+                    placeholder="Packages"
+                    onChange={(e) => updateRow(index, "packages", e.target.value)}
+                    className="w-full border p-1 rounded"
+                  />
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {(parseFloat(row.weight) || 0) * (parseFloat(row.packages) || 0)} Kg
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {(((row.length || 0) * (row.width || 0) * (row.height || 0)) / 5000).toFixed(2)} Kg
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {(
+                    (((row.length || 0) * (row.width || 0) * (row.height || 0)) / 5000) *
+                    (row.packages || 0)
+                  ).toFixed(2)}{" "}
+                  Kg
+                </td>
+                <td className="border border-gray-300 p-2 text-center">
+                  <button
+                    className="text-red-500 hover:underline"
+                    onClick={() => deleteRow(index)}
+                  >
+                     <Trash />
+                  </button>
+                </td>
+              </tr>
+            ))}
+            <tr className="bg-gray-100">
+              <td className="border border-gray-300 p-2" colSpan="5">
+                Totals
+              </td>
+              <td className="border border-gray-300 p-2">{totalPackages}</td>
+              <td className="border border-gray-300 p-2">{totalWeight.toFixed(2)} Kg</td>
+              <td className="border border-gray-300 p-2">
+                {totalVolumetricWeight.toFixed(2)} Kg
+              </td>
+              <td className="border border-gray-300 p-2">
+                {totalVolumetricWeight.toFixed(2)} Kg
+              </td>
+              <td className="border border-gray-300 p-2"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div className="flex justify-end">
+          <button
+            className="text-white border p-2 rounded bg-purple-500 flex items-center"
+            onClick={addRow}
+          >
+            Add Line <CornerDownLeft className="ml-2" />
+          </button>
+        </div>
+     
 
+      {/* Freight Rate Section */}
+      
+        <h3 className="font-semibold text-lg text-center">Enter Freight Rate to move this Cargo</h3>
+        <div className="grid justify-self-center">
+          {/* Freight Rate Input */}
+          <div className="flex items-center">
+            <label className="text-gray-700 mr-2">Freight Rate Per (Kg):</label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">₹</span>
+              <input
+                type="number"
+                value={freightRate}
+                onChange={(e) => setFreightRate(parseFloat(e.target.value))}
+                className="pl-8 pr-2 py-1 border border-gray-300 rounded-md bg-purple-100 w-32"
+              />
+            </div>
+          </div>
+
+          {/* Chargeable Rate */}
+          <div className="flex justify-between items-center">
+            <label className="text-gray-700">Chargeable Rate (Kg):</label>
+            <p className="text-gray-700 font-medium"> {chargeableWeight > 0 ? `${chargeableWeight.toFixed(2)} Kg` : ""}</p>
+          </div>
+
+          {/* Total Chargeable Amount */}
+          <div className="flex justify-between items-center pt-4">
+            <label className="font-semibold text-gray-700">Total Chargeable Amount:</label>
+            <p className="font-bold text-gray-800"> {totalChargeableAmount > 0 ? `₹${totalChargeableAmount.toFixed(2)}` : ""}</p>
+          </div>
+        </div>
+      </div>
+          </Dialog>
+          </div>
+          </div>
 
     </div>
   );
 };
 
-export default Addorder;
 
+export default Addorder;

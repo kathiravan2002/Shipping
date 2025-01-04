@@ -7,4 +7,4 @@ function Weightmanagementpage() {
   )
 }
 
-export default Weightmanagementpage
+export default Weightmanagementpage;
