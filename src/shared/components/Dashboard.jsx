@@ -1,9 +1,11 @@
 
 import React, { useEffect, useState } from 'react'
 import axios from "axios";
+import Spinner from './Spinner';
 
 function Dashboard() {
   const [order,setorder] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   const getAllorder = async () => {
     try {
@@ -21,15 +23,25 @@ function Dashboard() {
     useEffect(() => {
       getAllorder();
     },[]);
+    useEffect(() => {
+      const fetchOrders = async () => {
+        try {
+          const response = await axios.get("http://192.168.29.11:5000/api/order/orders/today"); // Update with your API endpoint
+          //  const data = await response.json();
+          settodayorder(response.data || []);
+        } catch (error) {
+          console.error("Error fetching today's orders:", error);
+        } 
+        const timer = setTimeout(() => {
+          setLoading(false);
+        }, 300);
     
-    // const today = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD
-    // const yesterday = new Date();
-    // yesterday.setDate(yesterday.getDate() - 1);
-    // const yesterdayDate = yesterday.toISOString().split('T')[0];
-    
-    // const todaysOrders = order?.filter(o => o.createdAt?.startsWith(today)).length || 0;
-    // const yesterdaysOrders = order?.filter(o => o.createdAt?.startsWith(yesterdayDate)).length || 0;
-    
+        return () => clearTimeout(timer);
+      };
+  
+      fetchOrders();
+    }, []);
+    if(loading) return <Spinner />;
 
   return (
     <div>
