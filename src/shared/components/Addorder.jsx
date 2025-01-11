@@ -22,6 +22,7 @@ const Addorder = () => {
     consigneestate: "",
     consigneepin: "",
     productname: "",
+    noofpackage: "",
     packageWeight: "",
     packagetype: "",
     price: ""
@@ -43,7 +44,7 @@ const Addorder = () => {
   const toSentenceCase = (str) =>
     str.toLowerCase().replace(/(^\w|\s\w)/g, (match) => match.toUpperCase());
 
-  // Fetch data from the API on component mount
+  // Fetch data from the API on component mount  
   useEffect(() => {
     fetch(
       "https://api.data.gov.in/resource/5c2f62fe-5afa-4119-a499-fec9d604d5bd?api-key=579b464db66ec23bdd0000019029558117064dd17c6931b0f89fb6ba&format=json&filters[statename]=Tamil Nadu&limit=40000"
@@ -277,9 +278,11 @@ const [visible, setVisible] = useState(false);
       ...prevFormData,
       packageWeight: chargeableWeight, // Update packageWeight
       price:totalChargeableAmount,
+      noofpackage:totalPackages,
+
 
     }));
-  }, [chargeableWeight,totalChargeableAmount]); {/* The dependency array [chargeableWeight] ensures that the effect runs only when chargeableWeight is recalculated. */}
+  }, [chargeableWeight,totalChargeableAmount,totalPackages]); {/* The dependency array [chargeableWeight] ensures that the effect runs only when chargeableWeight is recalculated. */}
 
   return (
     <div className="max-w-full mx-auto p-4 bg-white shadow-lg shadow-purple-300 rounded-lg">
@@ -300,16 +303,17 @@ const [visible, setVisible] = useState(false);
             onChange={handleInputChange}
             placeholder="Consigner Name"
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           />
           <input
-            type="tel"
+            type="number"
+          
             name="consignermobileNumber"
             value={formData.consignermobileNumber}
             onChange={handleInputChange}
             placeholder="Mobile Number"
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           />
           <input
             type="text"
@@ -318,7 +322,7 @@ const [visible, setVisible] = useState(false);
             onChange={handleInputChange}
             placeholder="Address"
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           />
           <input
             type="email"
@@ -337,7 +341,7 @@ const [visible, setVisible] = useState(false);
             value={formData.consignerstate}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           >
             <option value="">Select State</option>
             {states.length > 0 ? (
@@ -357,7 +361,7 @@ const [visible, setVisible] = useState(false);
             value={formData.consignerdistrict}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           >
             <option value="">Select District</option>
             {consignerDistricts.length > 0 ? (
@@ -377,7 +381,7 @@ const [visible, setVisible] = useState(false);
             value={formData.consignerpincode}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           >
             <option value="">Select Pincode</option>
             {consignerPincodes.length > 0 ? (
@@ -405,7 +409,7 @@ const [visible, setVisible] = useState(false);
             onChange={handleInputChange}
             placeholder="Consignee Name"
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           />
           <input
             type="tel"
@@ -414,7 +418,7 @@ const [visible, setVisible] = useState(false);
             onChange={handleInputChange}
             placeholder="Mobile Number"
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           />
           <input
             type="tel"
@@ -423,7 +427,7 @@ const [visible, setVisible] = useState(false);
             onChange={handleInputChange}
             placeholder="Alternate Mobile No"
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           />
           <input
             type="text"
@@ -432,7 +436,7 @@ const [visible, setVisible] = useState(false);
             onChange={handleInputChange}
             placeholder="Address"
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           />
 
           {/* State Dropdown */}
@@ -441,7 +445,7 @@ const [visible, setVisible] = useState(false);
             value={formData.consigneestate}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           >
             <option value="">Select State</option>
             {states.length > 0 ? (
@@ -461,7 +465,7 @@ const [visible, setVisible] = useState(false);
             value={formData.consigneedistrict}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           >
             <option value="">Select District</option>
             {consigneeDistricts.length > 0 ? (
@@ -481,7 +485,7 @@ const [visible, setVisible] = useState(false);
             value={formData.consigneepin}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           >
             <option value="">Select Pincode</option>
             {consigneePincodes.length > 0 ? (
@@ -509,7 +513,7 @@ const [visible, setVisible] = useState(false);
             onChange={handleInputChange}
             placeholder="Product Name"
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           />
           {/* <div className="grid grid-cols-3 lg:grid-cols-3 gap-2 mb-2">
             <input
@@ -695,8 +699,8 @@ const [visible, setVisible] = useState(false);
           />
             <input
             type="text"
-            name="noofpackages"
-            value={totalPackages > 0 ? `${totalPackages}` : formData.noofpackages || ""}
+            name="noofpackage"
+            value={totalPackages > 0 ? `${totalPackages}` : formData.noofpackage || ""}
             onChange={handleInputChange}
             placeholder="No of Packages"
             className="w-full p-4 border rounded mb-2"
@@ -717,7 +721,7 @@ const [visible, setVisible] = useState(false);
             value={formData.packagetype}
             onChange={handleInputChange}
             className="w-full p-4 border rounded mb-2"
-            required
+            // required
           >
             <option>Select package type</option>
             <option>Perishable goods</option>
@@ -766,7 +770,7 @@ const [visible, setVisible] = useState(false);
              {/* Close Button */}
              <button
                   onClick={() => setVisible(false)}
-                  className="absolute top-1 right-2 text-gray-700 hover:text-gray-500 text-3xl"
+                  className="absolute top-1 right-3 text-gray-700 hover:text-gray-800 text-3xl  hover:bg-gray-200 hover:rounded-full"
                   aria-label="Close"
              >
                &times;
@@ -781,7 +785,7 @@ const [visible, setVisible] = useState(false);
               <th className="border border-gray-300 p-2">Width</th>
               <th className="border border-gray-300 p-2">Height</th>
               <th className="border border-gray-300 p-2">Gross Weight</th>
-              <th className="border border-gray-300 p-2">No. of Packages</th>
+              <th className="border border-gray-300 p-2">No of Packages</th>
               <th className="border border-gray-300 p-2">Total Gross Weight</th>
               <th className="border border-gray-300 p-2">Volumetric Weight</th>
               <th className="border border-gray-300 p-2">Total Volumetric Weight</th>
