@@ -10,7 +10,7 @@ function Dashboard() {
   
   const getAllorder = async () => {
     try {
-      const response =await axios.get("http://192.168.29.11:5000/api/order/getorder");
+      const response =await axios.get("http://192.168.29.71:5000/api/order/getorder");
       console.log(response.data)
       settotalorder( response.data || []);
       
@@ -29,7 +29,7 @@ function Dashboard() {
     useEffect(() => {
       const fetchOrders = async () => {
         try {
-          const response = await axios.get("http://192.168.29.11:5000/api/order/orders/today"); // Update with your API endpoint
+          const response = await axios.get("http://192.168.29.71:5000/api/order/orders/today"); // Update with your API endpoint
           //  const data = await response.json();
           settodayorder(response.data || []);
         } catch (error) {

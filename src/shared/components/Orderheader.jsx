@@ -54,9 +54,7 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
     try {
       const response = await axios.get(
         `http://192.168.29.71:5000/api/order?search=${encodeURIComponent(searchQuery)}`
-        `http://192.168.29.11:5000/api/order?search=${encodeURIComponent(
-          searchQuery
-        )}`
+       
       );
       if (response.data.length === 0) {
         // Show toast message if no results are found
