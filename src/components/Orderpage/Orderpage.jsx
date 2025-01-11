@@ -8,7 +8,7 @@ function Orderpage() {
   
   const getAllorder = async () => {
     try {
-      const response =await axios.get("http://192.168.29.71:5000/api/order/getorder");
+      const response =await axios.get("http://192.168.29.11:5000/api/order/getorder");
       console.log(response.data)
       setOrder( response.data || []);
       console.log(order);
@@ -39,12 +39,12 @@ function Orderpage() {
           data,
           { responseType: 'blob' }
         );
-        console.log(response.data);
-         
+        console.log(response.data)
+    
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', `invoice_${_id}.pdf`);
+        link.setAttribute('download', `invoice_${_id}.pdf`);  
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -56,7 +56,7 @@ function Orderpage() {
     const deleteOrder = async ({ _id }) => {
       if (window.confirm("Are you sure you want to delete this order?")) {
         try {
-          await axios.delete(`http://192.168.29.71:5000/api/order/${_id}`);
+          await axios.delete(`http://192.168.29.11:5000/api/order/${_id}`);
           getAllorder();
           console.log("Order deleted successfully");
         } catch (error) {
@@ -67,7 +67,7 @@ function Orderpage() {
     
   return (
     <div>
-      <Orderheader order={order}  deleteOrder={deleteOrder} setOrder={setOrder} downloadinvoice={downloadinvoice}/>
+      <Orderheader order={order}  deleteOrder={deleteOrder} setOrder={setOrder}  downloadinvoice={downloadinvoice}/>
     </div>
   );
 }
