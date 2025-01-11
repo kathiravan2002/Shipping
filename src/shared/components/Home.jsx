@@ -1,8 +1,10 @@
 import React from "react";
 import first from "/images/first.jpeg";
 import img2 from "/images/img2.jpeg";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
+    const navigate = useNavigate();
     return (
         <> 
             <div className='space-y-3'> <h1 className="font-bold text-2xl ml-2">Getting started</h1>
@@ -15,7 +17,7 @@ function Home() {
                             <div className="sm:mr-4 lg:ml-20 space-y-2">
                                 <h2 className="text-gray-900 font-bold">Add your 1st Order</h2>
                                 <p className=" text-gray-600">Add your 1st Order to start your shipping jouney</p>
-                                <p className="text-sm"><button className="bg-violet-500 rounded text-white p-2">Add order</button></p>
+                                <p className="text-sm"><button className="bg-violet-500 rounded text-white p-2"  onClick={() => navigate("/Addorder")}>Add order</button></p>
 
                             </div>
                         </div>

@@ -22,6 +22,7 @@ const Addorder = () => {
     consigneestate: "",
     consigneepin: "",
     productname: "",
+    package:"",
     packageWeight: "",
     packagetype: "",
     price: ""
@@ -158,18 +159,18 @@ const Addorder = () => {
     e.preventDefault();
     try {
       if (id) {
-        // Update order
+      
         await axios.put(
           `http://192.168.29.71:5000/api/order/${id}`,
           formData
         );
         toast.success("Order updated successfully!");
       } else {
-        // Add new order
+        
         await axios.post(`http://192.168.29.71:5000/api/order/createorder`, formData);
         toast.success("Form submitted successfully!");
       }
-      navigate("/orders"); // Redirect to orders page
+      navigate("/orders"); 
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("Failed to submit order.");
@@ -303,7 +304,8 @@ const [visible, setVisible] = useState(false);
             required
           />
           <input
-            type="tel"
+            type="number"
+            maxLength={10}
             name="consignermobileNumber"
             value={formData.consignermobileNumber}
             onChange={handleInputChange}
@@ -408,7 +410,7 @@ const [visible, setVisible] = useState(false);
             required
           />
           <input
-            type="tel"
+            type="number"
             name="consigneemobileno"
             value={formData.consigneemobileno}
             onChange={handleInputChange}
@@ -417,7 +419,7 @@ const [visible, setVisible] = useState(false);
             required
           />
           <input
-            type="tel"
+            type="number"
             name="consigneealterno"
             value={formData.consigneealterno}
             onChange={handleInputChange}
@@ -685,7 +687,7 @@ const [visible, setVisible] = useState(false);
             )}
           </div>
           <input
-            type="text"
+            type="number"
             name="packageWeight"
             value={chargeableWeight  > 0 ? `${ chargeableWeight}` : formData.packageWeight || ""}
             onChange={handleInputChange}
@@ -694,7 +696,7 @@ const [visible, setVisible] = useState(false);
             required
           />
             <input
-            type="text"
+            type="number"
             name="noofpackages"
             value={totalPackages > 0 ? `${totalPackages}` : formData.noofpackages || ""}
             onChange={handleInputChange}
@@ -703,7 +705,7 @@ const [visible, setVisible] = useState(false);
             required
           />
        <input
-            type="text"
+            type="number"
             name="price"
             value={totalChargeableAmount > 0 ? `₹${totalChargeableAmount }` : formData.price || ""}
             placeholder="Price (₹)"
@@ -885,7 +887,7 @@ const [visible, setVisible] = useState(false);
             className="text-white border p-2 rounded bg-purple-500 flex items-center"
             onClick={addRow}
           >
-            Add Line <CornerDownLeft className="ml-2" />
+            Add Product <CornerDownLeft className="ml-2" />
           </button>
         </div>
      

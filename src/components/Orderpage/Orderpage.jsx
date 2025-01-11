@@ -27,8 +27,31 @@ function Orderpage() {
     //   console.log(response.data)
 
     // }
-
- 
+    const downloadinvoice = async (_id, data) => {
+      if (!_id || typeof _id !== 'string' || _id.length !== 24) {
+        console.error('Invalid ID passed to downloadInvoice');
+        return;
+      }
+    
+      try {
+        const response = await axios.post(
+          `http://192.168.29.71:5000/api/payment/generate-invoice/${_id}`,
+          data,
+          { responseType: 'blob' }
+        );
+        console.log(response.data);
+         
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `invoice_${_id}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error('Error downloading the invoice:', error);
+      }
+    };
     
     const deleteOrder = async ({ _id }) => {
       if (window.confirm("Are you sure you want to delete this order?")) {
@@ -44,7 +67,7 @@ function Orderpage() {
     
   return (
     <div>
-      <Orderheader order={order}  deleteOrder={deleteOrder} setOrder={setOrder} />
+      <Orderheader order={order}  deleteOrder={deleteOrder} setOrder={setOrder} downloadinvoice={downloadinvoice}/>
     </div>
   );
 }

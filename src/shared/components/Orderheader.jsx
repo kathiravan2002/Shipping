@@ -6,7 +6,11 @@ import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { Trash2,Pencil  } from 'lucide-react';
-const Orderheader = ({ order, deleteOrder, setOrder }) => {
+import Exportdata from "./Exportdata";
+
+
+
+const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState(""); // State to track the search query
   const editOrder = ({ _id }) => {
@@ -17,9 +21,7 @@ const Orderheader = ({ order, deleteOrder, setOrder }) => {
   const handleSearch = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.71:5000/api/order?search=${encodeURIComponent(
-          searchQuery
-        )}`
+        `http://192.168.29.71:5000/api/order?search=${encodeURIComponent(searchQuery)}`
       );
       if (response.data.length === 0) {
         // Show toast message if no results are found
@@ -63,6 +65,7 @@ const Orderheader = ({ order, deleteOrder, setOrder }) => {
 
         {/* Right Section */}
         <div className="flex gap-4">
+        <Exportdata data={order} fileName="orders.csv" />
           <button
             onClick={() => navigate("/Addorder")}
             className="flex items-center gap-2 px-3 py-2 text-purple-600 bg-purple-50 rounded-md text-sm"
@@ -90,6 +93,9 @@ const Orderheader = ({ order, deleteOrder, setOrder }) => {
             <tr>
               <th>Action</th>
               <th className="px-6 py-3 text-left font-semibold text-gray-600 sticky  top-0 bg-gray-200 ">
+                Invoices
+              </th>
+              <th className="px-6 py-3 text-left font-semibold text-gray-600 sticky  top-0 bg-gray-200 ">
                 Orderid
               </th>
               {[
@@ -108,6 +114,7 @@ const Orderheader = ({ order, deleteOrder, setOrder }) => {
                 "consigneestate",
                 "consigneepin",
                 "productname",
+                "No of Package",
                 "packageWeight",
                 "packagetype",
                 "price",
@@ -142,7 +149,12 @@ const Orderheader = ({ order, deleteOrder, setOrder }) => {
                       <Trash2 />
                     </button>
                   </td>
-
+                  <td className="px-6 py-4"><button
+                      onClick={() => downloadinvoice(user._id )}
+                      className="text-purple-500 hover:underline ml-4"
+                    >
+                      Download
+                    </button></td>
                   <td className="px-6 py-4 font-medium text-gray-900  bg-white z-10">
                     {user.orderId}
                   </td>
@@ -162,6 +174,7 @@ const Orderheader = ({ order, deleteOrder, setOrder }) => {
                   <td className="px-6 py-4">{user.consigneestate}</td>
                   <td className="px-6 py-4">{user.consigneepin}</td>
                   <td className="px-6 py-4">{user.productname}</td>
+                  <td className="px-6 py-4">{user.noofpackage}</td>
                   <td className="px-6 py-4">{user.packageWeight}</td>
                   <td className="px-6 py-4">{user.packagetype}</td>
                   <td className="px-6 py-4">{user.price}</td>
