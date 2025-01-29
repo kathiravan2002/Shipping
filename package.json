@@ -17,6 +17,7 @@
     "@mui/base": "^5.0.0-beta.68",
     "axios": "^1.7.9",
     "flowbite": "^2.5.2",
+    "jwt-decode": "^4.0.0",
     "lucide-react": "^0.462.0",
     "primereact": "^10.8.5",
     "react": "^18.3.1",

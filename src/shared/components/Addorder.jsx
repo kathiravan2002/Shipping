@@ -167,7 +167,11 @@ const Addorder = () => {
         toast.success("Order updated successfully!");
       } else {
         // Add new order
-        await axios.post(`http://192.168.29.11:5000/api/order/createorder`, formData);
+        await axios.post(`http://192.168.29.11:5000/api/order/createorder`, formData,{
+          headers : {
+             "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+          }
+    });
         toast.success("Form submitted successfully!");
       }
       navigate("/orders"); // Redirect to orders page
@@ -291,7 +295,7 @@ const [visible, setVisible] = useState(false);
       </h1>
       <form
         onSubmit={handleSubmit}
-        className="grid grid-cols-3 lg:grid-cols-3 md:grid-cols-3 gap-4 text-sm"
+        className="grid grid-cols-3 lg:grid-cols-3   md:grid-cols-3 gap-4 text-sm"
       >
         {/* Consigner Details */}
         <div className="col-span-3 lg:col-span-1 md:col-span-1">
@@ -302,7 +306,7 @@ const [visible, setVisible] = useState(false);
             value={formData.ConsignerName}
             onChange={handleInputChange}
             placeholder="Consigner Name"
-            className="w-full p-4 border rounded mb-2"
+            className="w-full p-4 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
             // required
           />
           <input
@@ -312,7 +316,7 @@ const [visible, setVisible] = useState(false);
             value={formData.consignermobileNumber}
             onChange={handleInputChange}
             placeholder="Mobile Number"
-            className="w-full p-4 border rounded mb-2"
+            className="w-full p-4 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
             // required
           />
           <input

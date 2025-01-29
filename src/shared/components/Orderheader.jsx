@@ -196,7 +196,7 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
                     {user.orderId}
                   </td>
                   {/* <td className="border border-gray-300 px-4 py-2">{indexOfFirstRow + index + 1}</td> */}
-                  <td className="px-6 py-4">{user.ConsignerName}</td>
+                  <td className="px-6 py-4 hover:bg-gray-100 rounded-lg ">{user.ConsignerName}</td>
                   <td className="px-6 py-4">{user.consignermobileNumber}</td>
                   <td className="px-6 py-4">{user.consignerAddress}</td>
                   <td className="px-6 py-4">{user.consignermail}</td>

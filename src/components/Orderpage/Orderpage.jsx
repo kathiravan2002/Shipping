@@ -8,7 +8,11 @@ function Orderpage() {
   
   const getAllorder = async () => {
     try {
-      const response =await axios.get("http://192.168.29.11:5000/api/order/getorder");
+      const response =await axios.get("http://192.168.29.11:5000/api/order/getorder",{
+        headers : {
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+       }
+      });
       console.log(response.data)
       setOrder( response.data || []);
       console.log(order);
