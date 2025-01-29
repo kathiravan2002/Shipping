@@ -1,12 +1,10 @@
 import React from "react";
 import Home from "../../shared/components/Home";
 
-function Homepage() {
-
-  
+function Homepage({isLoggedIn, onLogout}) {
   return (
     <div>
-      <Home />
+      <Home isLoggedIn={isLoggedIn} onLogout={onLogout} />
     </div>
   );
 }

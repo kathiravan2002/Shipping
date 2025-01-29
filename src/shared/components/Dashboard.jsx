@@ -7,10 +7,14 @@ function Dashboard() {
   const [totalorder,settotalorder] = useState([]);
   const [todayorder, settodayorder] = useState([])
   const [loading, setLoading] = useState(true);
-  
+
   const getAllorder = async () => {
     try {
-      const response =await axios.get("http://192.168.29.71:5000/api/order/getorder");
+      const response =await axios.get("http://192.168.29.71:5000/api/order/getorder",{
+        headers : {
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+       }
+      });
       console.log(response.data)
       settotalorder( response.data || []);
       
@@ -37,7 +41,7 @@ function Dashboard() {
         } 
         const timer = setTimeout(() => {
           setLoading(false);
-        }, 300);
+        }, 400);
     
         return () => clearTimeout(timer);
       };

@@ -241,9 +241,13 @@ const Addorder = () => {
         });
         toast.success("Order updated successfully!");
       } else {
-        await axios.post(`http://192.168.29.71:5000/api/order/createorder`, formData
-        );
-        toast.success("Order created successfully!");
+        // Add new order
+        await axios.post(`http://192.168.29.71:5000/api/order/createorder`, formData,{
+          headers : {
+             "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+          }
+    });
+        toast.success("Form submitted successfully!");
       }
 
       navigate("/orders");

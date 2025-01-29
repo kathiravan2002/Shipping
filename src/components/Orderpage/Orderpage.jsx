@@ -8,7 +8,11 @@ function Orderpage() {
    
   const getAllorder = async () => {
     try {
-      const response =await axios.get("http://192.168.29.71:5000/api/order/getorder");
+      const response =await axios.get("http://192.168.29.71:5000/api/order/getorder",{
+        headers : {
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+       }
+      });
       console.log(response.data)
       setOrder( response.data || []);
       console.log(order);
@@ -22,11 +26,8 @@ function Orderpage() {
     useEffect(() => {
     getAllorder();
     },[]);
-    // const editOrder = async ({_id ,data }) => {
-    //   const response =await axios.put(`http://192.168.29.11:5000/api/order/${_id}` , data);
-    //   console.log(response.data)
-
-    // }
+  
+    
     const downloadinvoice = async (_id, data) => {
       if (!_id || typeof _id !== 'string' || _id.length !== 24) {
         console.error('Invalid ID passed to downloadInvoice');

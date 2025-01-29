@@ -227,7 +227,6 @@ const Orderheader = ({ order, deleteOrder, setOrder, downloadinvoice }) => {
                   <td className="px-6 py-4">{user.consigneepin}</td>
                   <td className="px-6 py-4">{user.productname}</td>
                   <td className="px-6 py-4">{user.noofpackage}</td>
-                 
                   <td className="px-6 py-4">{user.packageWeight}</td>
                   <td className="px-6 py-4">{user.packagetype}</td>
                   <td className="px-6 py-4">{user.price}</td>
