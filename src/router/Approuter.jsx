@@ -3,7 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Dashboardpage from '../components/Dashboardpage/Dashboardpage'
 import Main from '../core/Main'
 import Homepage from '../components/Home/Homepage'
-import Orderpage from '../components/Orderpage/Orderpage'
+import Orderpage from '../components/ogit rderpage/Orderpage'
 import Addorder from '../shared/components/Addorder'
 import Weightmanagementpage from '../components/Weightmanagementpage/Weightmanagementpage'
 import { toast } from "react-toastify";
