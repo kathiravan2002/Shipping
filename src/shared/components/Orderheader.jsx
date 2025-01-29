@@ -5,11 +5,11 @@ import image3 from "/images/image3.jpeg";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import { Trash2, Pencil,ChevronsLeft ,ChevronsRight,FileText } from "lucide-react";
+import { Trash2, Pencil, ChevronsLeft, ChevronsRight, FileText } from "lucide-react";
 import Exportdata from "./Exportdata";
 
 
-const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
+const Orderheader = ({ order, deleteOrder, setOrder, downloadinvoice }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState(""); // State to track the search query
   const editOrder = ({ _id }) => {
@@ -24,9 +24,9 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
   const totalRows = order.length; // Total number of rows in the dataset
   const totalPages = Math.ceil(totalRows / rowsPerPage);
 
-   // Helper function to generate the page numbers dynamically
-   const getPageNumbers = () => {
-    const maxPageNumbers = 3 ; // Maximum number of page numbers to display at once
+  // Helper function to generate the page numbers dynamically
+  const getPageNumbers = () => {
+    const maxPageNumbers = 3; // Maximum number of page numbers to display at once
     const pages = [];
 
     const startPage = Math.max(currentPage - Math.floor(maxPageNumbers / 2), 1); // Start page for the displayed range
@@ -53,9 +53,8 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
   const handleSearch = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.29.11:5000/api/order?search=${encodeURIComponent(
-          searchQuery
-        )}`
+        `http://192.168.29.71:5000/api/order?search=${encodeURIComponent(searchQuery)}`
+
       );
       if (response.data.length === 0) {
         // Show toast message if no results are found
@@ -128,13 +127,22 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
               <th>Action</th>
               <th>Invoice</th>
               <th className="px-6 py-3 text-left font-semibold text-gray-600 sticky  top-0 bg-gray-200 ">
+                InvoiceNo
+              </th>
+
+              <th className="px-6 py-3 text-left font-semibold text-gray-600 sticky  top-0 bg-gray-200 ">
+              Orderstatus
+              </th>
+              <th className="px-6 py-3 text-left font-semibold text-gray-600 sticky  top-0 bg-gray-200 ">
                 Orderid
               </th>
-              
+             
+
               {[
                 "ConsignerName",
                 "consignermobileNumber",
                 "consignerAddress",
+                "consignercity",
                 "consignermail",
                 "consignerdistrict",
                 "consignerstate",
@@ -144,13 +152,16 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
                 "consigneealterno",
                 "consigneedistrict",
                 "consigneeaddress",
+                "consigneecity",
                 "consigneestate",
                 "consigneepin",
-                "productname",
-                "No of Package",
+                "packagename",
+                "No.of.Package",
                 "packageWeight",
                 "packagetype",
                 "price",
+                "Dispatchregion"
+                
               ].map((header) => (
                 <th
                   key={header}
@@ -164,7 +175,7 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
           <tbody>
             {order?.length > 0 ? (
               currentRows.map((user, index) => (
-                <tr key={index} className="border-t text-sm">
+                <tr key={index} className="border-t text-sm  hover:bg-gray-100 rounded-lg">
                   <td className="px-6 py-4">
                     <button
                       onClick={() => editOrder({ _id: user._id })}
@@ -181,24 +192,27 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
                       {console.log(user._id)}
                       <Trash2 />
                     </button></td>
-                    <td>  <button
-                      onClick={() => downloadinvoice(user._id )}
-                      className="text-red-500 hover:underline ml-4"
-                    >
-                      {" "}
-                      {console.log(user._id)}
-                      <FileText />
-                    </button>
+                  <td>  <button
+                    onClick={() => downloadinvoice(user._id)}
+                    className="text-red-500 hover:underline ml-4"
+                  >
+                    {" "}
+                    {console.log(user._id)}
+                    <FileText />
+                  </button>
                   </td>
-                  
+                  <td className="px-6 py-4  font-medium">{user.invoiceNo}</td>
 
-                  <td className="px-6 py-4 font-medium text-gray-900  bg-white z-10">
+                  <td className="px-6 py-4">{user.Orderstatus}</td>
+                  <td className="px-6 py-4 font-medium">
                     {user.orderId}
                   </td>
-                  {/* <td className="border border-gray-300 px-4 py-2">{indexOfFirstRow + index + 1}</td> */}
-                  <td className="px-6 py-4 hover:bg-gray-100 rounded-lg ">{user.ConsignerName}</td>
+
+                   
+                  <td className="px-6 py-4">{user.ConsignerName}</td>
                   <td className="px-6 py-4">{user.consignermobileNumber}</td>
                   <td className="px-6 py-4">{user.consignerAddress}</td>
+                  <td className="px-6 py-4">{user.consignercity}</td>
                   <td className="px-6 py-4">{user.consignermail}</td>
                   <td className="px-6 py-4">{user.consignerdistrict}</td>
                   <td className="px-6 py-4">{user.consignerstate}</td>
@@ -208,6 +222,7 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
                   <td className="px-6 py-4">{user.consigneealterno}</td>
                   <td className="px-6 py-4">{user.consigneedistrict}</td>
                   <td className="px-6 py-4">{user.consigneeaddress}</td>
+                  <td className="px-6 py-4">{user.consigneecity}</td>
                   <td className="px-6 py-4">{user.consigneestate}</td>
                   <td className="px-6 py-4">{user.consigneepin}</td>
                   <td className="px-6 py-4">{user.productname}</td>
@@ -215,6 +230,8 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
                   <td className="px-6 py-4">{user.packageWeight}</td>
                   <td className="px-6 py-4">{user.packagetype}</td>
                   <td className="px-6 py-4">{user.price}</td>
+                  <td className="px-6 py-4">{user.dispatchpincode}</td>
+
                 </tr>
               ))
             ) : (
@@ -245,25 +262,24 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
               </tr>
             )}
           </tbody>
-        </table>      
+        </table>
       </div>
-    <div className="flex justify-between items-center mt-4"> 
-       {/* Left Side: Showing rows info */}
-       <div className="text-sm text-gray-600">
+      <div className="flex justify-between items-center mt-4">
+        {/* Left Side: Showing rows info */}
+        <div className="text-sm text-gray-600">
           Showing {indexOfFirstRow + 1}-{Math.min(indexOfLastRow, totalRows)} of {totalRows}
         </div>
 
-       <div className="flex-1 flex justify-center gap-2">
+        <div className="flex-1 flex justify-center gap-2">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1} // Disable if on the first page
-            className={`px-3 py-1 rounded-ss-3xl border  ${
-              currentPage === 1
+            className={`px-3 py-1 rounded-ss-3xl border  ${currentPage === 1
                 ? "bg-gray-200 text-gray-400 cursor-not-allowed" // Styling for disabled button
                 : "bg-white text-gray-700 hover:bg-purple-700 hover:text-white" // Styling for enabled button
-            }`}
+              }`}
           >
-               <ChevronsLeft />
+            <ChevronsLeft />
           </button>
           {/* Ellipses and Start Page */}
           {currentPage > 3 && totalPages > 5 && (
@@ -283,11 +299,10 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
             <button
               key={page}
               onClick={() => handlePageChange(page)} // Navigate to the selected page
-              className={`px-3 py-1 rounded-full border ${
-                currentPage === page
+              className={`px-3 py-1 rounded-full border ${currentPage === page
                   ? "bg-purple-600 text-white" // Styling for active page
                   : "bg-white text-gray-700 hover:bg-gray-100" // Styling for inactive pages
-              }`}
+                }`}
             >
               {page}
             </button>
@@ -309,13 +324,12 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
           <button
             onClick={() => handlePageChange(currentPage + 1)} // Move to the next page
             disabled={currentPage === totalPages} // Disable if on the last page
-            className={`px-3 py-1 rounded-se-3xl border ${
-              currentPage === totalPages
+            className={`px-3 py-1 rounded-se-3xl border ${currentPage === totalPages
                 ? "bg-gray-200 text-gray-400 cursor-not-allowed" // Styling for disabled button
                 : "bg-white text-gray-700 hover:bg-purple-700 hover:text-white " // Styling for enabled button
-            }`}
+              }`}
           >
-             <ChevronsRight />
+            <ChevronsRight />
           </button>
         </div>
         <div className="flex items-center gap-2 mr-4"><span className="text-sm text-gray-600">Total Records:{totalRows} </span></div>
@@ -326,16 +340,16 @@ const Orderheader = ({ order, deleteOrder, setOrder,downloadinvoice }) => {
             onChange={handleRowsPerPageChange} // Update rows per page and reset to page 1
             className="px-2 py-1 border border-gray-300 rounded-full bg-white text-gray-700 "
           >
-            {[10, 20, 50,100].map((count) => (
+            {[10, 20, 50, 100].map((count) => (
               <option key={count} value={count}>
                 {count}
               </option>
             ))}
           </select>
         </div>
-         
+
       </div>
-       
+
     </div>
   );
 };

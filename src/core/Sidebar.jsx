@@ -10,6 +10,7 @@ function Sidebar() {
     { name: "Dashboard", icon: "📊", path: "/dashboard" },
     ...(allowedRoles.includes(roles) ? [{ name: "Order", icon: "🛒", path: "/Order" }] : []),
     ...(allowedRoles.includes(roles)  ? [{ name: "User", icon: "🤵🏻", path: "/User" }] : []),
+    { name: "Delivered order", icon: "🤵🏻", path: "/delivered" },
     { name: "Weight Management", icon: "🗂️", path: "/Weightmanagementpage" },
     { name: "Buyer Experience", icon: "💬", path: "/Buyer Experience" },
     { name: "Setting", icon: "⚙️", path: "/Settting" },
@@ -66,6 +67,7 @@ function Sidebar() {
               )}
             </div>
           ))}
+          
         </nav>
       </div>
     </div>

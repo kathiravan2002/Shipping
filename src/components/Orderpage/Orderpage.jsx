@@ -5,10 +5,10 @@ import axios from 'axios';
 
 function Orderpage() {
   const [order,setOrder] = useState([]);
-  
+   
   const getAllorder = async () => {
     try {
-      const response =await axios.get("http://192.168.29.11:5000/api/order/getorder",{
+      const response =await axios.get("http://192.168.29.71:5000/api/order/getorder",{
         headers : {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`
        }
@@ -26,12 +26,8 @@ function Orderpage() {
     useEffect(() => {
     getAllorder();
     },[]);
-    // const editOrder = async ({_id ,data }) => {
-    //   const response =await axios.put(`http://192.168.29.11:5000/api/order/${_id}` , data);
-    //   console.log(response.data)
-
-    // }
-
+  
+    
     const downloadinvoice = async (_id, data) => {
       if (!_id || typeof _id !== 'string' || _id.length !== 24) {
         console.error('Invalid ID passed to downloadInvoice');
@@ -40,7 +36,7 @@ function Orderpage() {
     
       try {
         const response = await axios.post(
-          `http://192.168.29.11:5000/api/invoices/generate-invoice/${_id}`,
+          `http://192.168.29.71:5000/api/invoice/generate-invoice/${_id}`,
           data,
           { responseType: 'blob' }
         );
@@ -61,7 +57,7 @@ function Orderpage() {
     const deleteOrder = async ({ _id }) => {
       if (window.confirm("Are you sure you want to delete this order?")) {
         try {
-          await axios.delete(`http://192.168.29.11:5000/api/order/${_id}`);
+          await axios.delete(`http://192.168.29.71:5000/api/order/${_id}`);
           getAllorder();
           console.log("Order deleted successfully");
         } catch (error) {
@@ -78,3 +74,4 @@ function Orderpage() {
 }
   
 export default Orderpage;
+
