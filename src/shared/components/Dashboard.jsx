@@ -37,7 +37,7 @@ function Dashboard() {
         } 
         const timer = setTimeout(() => {
           setLoading(false);
-        }, 800);
+        }, 300);
     
         return () => clearTimeout(timer);
       };
@@ -155,7 +155,7 @@ function Dashboard() {
               <h3 className="text-gray-600 font-semibold">
                 Average shipping cost
               </h3>
-              <p className="text-2xl font-bold text-gray-900">0</p>
+              <p className="text-2xl font-bold text-gray-900">250</p>
             </div>
           </div>
         </div>
@@ -185,28 +185,30 @@ function Dashboard() {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-1 gap-8 p-2 max-w-full lg:grid-cols-3">
-        {/* <!-- Today revenue Section --> */}
+      {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-8  w-full lg:grid-cols-4">
+     
         <div className="bg-purple-100 rounded-lg p-4 shadow-md">
-          <div className="flex items-center">
-            <div className="bg-purple-300 p-3 rounded-full"></div>
-            <div className="sm:mr-4 mt-44 lg:ml-52">
+          
+            
+           
               <h3 className="text-gray-600 font-semibold"> </h3>
               <p className="text-2xl font-bold text-gray-900"></p>
-            </div>
+            
+         
+        </div>
+        <div className="bg-purple-100 rounded-lg p-4 shadow-md">
+          <h3 className="text-gray-600 font-semibold mb-4 mr-96"></h3>
+        </div>
+        <div className="bg-purple-100 rounded-lg p-4 shadow-md">
+          <h3 className="text-gray-600 font-semibold mb-4 mr-96"></h3>
+        </div>
+        <div className="bg-purple-100 rounded-lg p-4 shadow-md">
+          <h3 className="text-gray-600 font-semibold mb-4 mr-96"></h3>
           </div>
-        </div>
-
-        {/* <!-- NDR Details Section --> */}
-        <div className="bg-purple-100 rounded-lg p-4 shadow-md">
-          <h3 className="text-gray-600 font-semibold mb-4 mr-96"></h3>
-        </div>
-        <div className="bg-purple-100 rounded-lg p-4 shadow-md">
-          <h3 className="text-gray-600 font-semibold mb-4 mr-96"></h3>
-        </div>
-      </div>
+      </div> */}
     </div>
   );
 }
+
 
 export default Dashboard;

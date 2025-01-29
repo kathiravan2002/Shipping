@@ -5,7 +5,7 @@ import axios from 'axios';
 
 function Orderpage() {
   const [order,setOrder] = useState([]);
-  
+   
   const getAllorder = async () => {
     try {
       const response =await axios.get("http://192.168.29.71:5000/api/order/getorder");
@@ -35,7 +35,7 @@ function Orderpage() {
     
       try {
         const response = await axios.post(
-          `http://192.168.29.71:5000/api/payment/generate-invoice/${_id}`,
+          `http://192.168.29.71:5000/api/invoice/generate-invoice/${_id}`,
           data,
           { responseType: 'blob' }
         );
@@ -73,3 +73,4 @@ function Orderpage() {
 }
   
 export default Orderpage;
+

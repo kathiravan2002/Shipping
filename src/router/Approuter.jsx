@@ -6,6 +6,8 @@ import Homepage from '../components/Home/Homepage'
 import Orderpage from '../components/orderpage/Orderpage'
 import Addorder from '../shared/components/Addorder'
 import Weightmanagementpage from '../components/Weightmanagementpage/Weightmanagementpage'
+import Deliveredmanpage from '../components/deliveredpage/deliverpage'
+
 
 function Approuter() {
   return (
@@ -18,6 +20,9 @@ function Approuter() {
             <Route path="/Order" element={<Orderpage />}></Route>
             <Route path="/Addorder/:id?" element={<Addorder />} />
             <Route path="/Weightmanagementpage" element={<Weightmanagementpage />}></Route>
+           <Route path="/delivered" element={<Deliveredmanpage/>}></Route>
+
+            
           </Route>
         </Routes>
       </BrowserRouter>

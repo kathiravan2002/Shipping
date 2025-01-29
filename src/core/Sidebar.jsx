@@ -7,9 +7,8 @@ function Sidebar() {
     { name: "Home", icon: "🏠", path: "/" },
     { name: "Dashboard", icon: "📊", path: "/dashboard" },
     { name: "Order", icon: "🛒", path: "/Order" },
-    { name: "Returns", icon: "↪️", path: "/Returns" },
     { name: "Weight Management", icon: "🗂️", path: "/Weightmanagementpage" },
-    { name: "Buyer Experience", icon: "🤵🏻", path: "/Buyer Experience" },
+    { name: "Delivered order", icon: "🤵🏻", path: "/delivered" },
     { name: "Setting", icon: "⚙️", path: "/Settting" },
     { name: "Help & Support", icon: "⁉", path: "/Help & Supportt" },
   ];
@@ -26,38 +25,48 @@ function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`fixed z-20 top-0 left-0 h-full bg-purple-800 text-white shadow-lg transition-all duration-500 ${isOpen ? "w-64" : "w-16"
+        className={`fixed z-20 top-0 left-0 h-full bg-purple-800 hover: text-white shadow-lg transition-all duration-500 ${isOpen ? "w-64 overflow-hidden" : "w-16"
           }`}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-center h-16">
+        <div className="mt-5 ml-20 h-16">
           <span
             className={`text-xl font-bold transition-opacity duration-300 text-white ${isOpen ? "opacity-100" : "opacity-0"
               }`}
           >
-            Shiprocket
+            TCZ courier
           </span>
         </div>
 
         {/* Navigation Menu */}
         <nav className="mt-4 space-y-4">
           {menuItems.map((item, index) => (
+            <div key={index} className="relative group">
             <a
-              key={index}
+    
               href={item.path}
               className="flex items-center gap-4 px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-purple-600 rounded-lg text-white hover:text-black"
             >
               {/* Icon */}
               <span className="text-xl">{item.icon}</span>
               {/* Label */}
+              {isOpen && ( 
               <span
-                className={`whitespace-nowrap transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"
+                className={`whitespace-nowrap transition-opacity duration-300 "
                   }`}
               >
                 {item.name}
               </span>
+            )}
             </a>
+            {!isOpen && (
+              <span className="absolute left-full top-0 ml-2 bg-purple-500 text white px-2 py-1 text-sm font-medium rounded-md hidden group-hover:block">
+                {item.name}
+              </span>
+            )}
+            </div>
           ))}
+          
         </nav>
       </div>
     </div>
