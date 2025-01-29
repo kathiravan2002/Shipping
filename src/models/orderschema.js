@@ -40,9 +40,7 @@ const orderschema = mongoose.Schema({
     productname: String,
 
     noofpackage: String,
-
-    width: String,
-
+    
     packageWeight: String,
 
     packagetype: String,
