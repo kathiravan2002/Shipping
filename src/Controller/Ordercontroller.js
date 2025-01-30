@@ -1,28 +1,83 @@
+import express from 'express';
+import moment from 'moment-timezone';
+import Order from '../models/orderschema.js';
+import multer from "multer";
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-import Order from "../models/orderschema.js"
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-export const createorder = async (req ,res ) => {
-    console.log(req.body)
-    try{ 
-        const savedorder = await new Order(req.body).save();
-        console.log(savedorder);
-        res.send(savedorder);
-    }catch (err) {
-        console.error(err);
+const generateOrderId = () => {
+    // Get the current timestamp in a specific timezone
+    const timestamp = moment().tz('Asia/Kolkata').format('YYYYMMDDHHmmss'); // Example: 20250121123045
+    // const randomString = Math.random().toString(36).substring(2, 8); // Generate random base-36 string
+    return `ORD-${timestamp}`; // Prefix with "ORD-"
+};
+
+const generateInvoiceId = () => {
+    // Get the current timestamp in a specific timezone
+    const timestamp = moment().tz('Asia/Kolkata').format('YYYYMMDDHHmmss'); // Example: 20250121123045
+    // const randomString = Math.random().toString(36).substring(2, 8); // Generate random base-36 string
+    return `INV-${timestamp}`; // Prefix with "ORD-"
+};
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "uploads/"); // Save files in "uploads" directory
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`);
+    },
+  });
+
+
+  const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+   
+  });
+
+
+
+export const createorder = async (req, res) => {
+    try {
+      console.log("REQ BODY:", req.body);
+  
+      const orderId = generateOrderId();
+      const invoiceNo = generateInvoiceId();
+  
+      console.log(`Order ID: ${orderId}, Invoice No: ${invoiceNo}`);
+  
+  
+      const newOrder = new Order({
+        ...req.body,
+        orderId,
+        invoiceNo,
+       
+      });
+  
+      const savedOrder = await newOrder.save();
+      console.log(savedOrder);
+      res.status(201).json(savedOrder);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
     }
-}
-
-export const getorder = async (req ,res)  => {
-    try{
-        const orders = await Order.find();
-        res.send(orders);
-    }catch (err) {
-        console.error(err);
-        // res.status(500).json({ error: err.message });
+  };
+  
+  // Fetch all orders
+  export const getorder = async (req, res) => {
+    try {
+      const orders = await Order.find();
+      res.status(200).json(orders);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
     }
-}
-
-export const searchorder =  async (req, res) => {
+  };
+  
+export const searchorder = async (req, res) => {
     try {
         const { search } = req.query;
 
@@ -39,8 +94,7 @@ export const searchorder =  async (req, res) => {
                 { ConsignerName: { $regex: search, $options: "i" } }, // Example of field to search for
                 { consignermobileNumber: { $regex: search, $options: "i" } }, // Another example field
                 { email: { $regex: search, $options: "i" } }, // Example field
-                { SKU: { $regex: search, $options: "i" } }, // Example SKU field
-                { pickupId: { $regex: search, $options: "i" } }, // Example Pickup ID field
+               
             ]
         };
 
@@ -55,18 +109,34 @@ export const searchorder =  async (req, res) => {
 }
 
 
-export const getid =  async (req ,res) => {
+export const getid = async (req ,res) => {
     try{
-        const order = await Order.findById(req.params.id);
-        if (!order) {
-            return res.status(404).json({ message: "Order not found" });
-        }
-        res.json(order);
+        const ordered = await Order.findById(req.params.id);
+        res.json(ordered);
     }catch (err) {
         console.error(err);
         // res.status(500).json({ error: err.message })
     }
 }
+
+export const getdelivered = async (req, res) => {
+    try {
+      // Fetch all orders with "Delivered" status
+      const deliveredOrders = await Order.find({ Orderstatus: 'Delivered' });
+  
+      if (deliveredOrders.length === 0) {
+         res.json({ message: 'No delivered orders found' });
+      }
+  
+       res.json(deliveredOrders);
+    } catch (err) {
+      console.error('Error fetching delivered orders:', err);
+        res.status(500).json({ error: 'An error occurred while fetching delivered orders' });
+    }
+  };
+  
+  
+
 
 export const gettodayorder = async (req, res) => {
     try {
@@ -86,23 +156,44 @@ export const gettodayorder = async (req, res) => {
     }
   }
 
+export const updateorder = async (req, res) => {
+    try {
 
-  export const updateorder = async (req, res) => { 
-    const updateOrder = await Order.findByIdAndUpdate( req.params.id,  req.body, { new: true }  ); 
-    if (!updateOrder) {
-        return res.status(404).json({ message: "Order not found" });
-    } 
-    res.json(updateOrder); 
-}
-
-export const deleteorder = async (req, res) => {
-    try { 
-        const deleteOrder = await Order.findByIdAndDelete(req.params.id); 
-         
-        res.status(200).json({ message: "Deleted successfully" });
+        const uploadDir = path.join(__dirname, '../../uploads'); // Adjust path if needed
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        const imagePath = req.file 
+        ? `/uploads/${req.file.filename}` 
+        : req.body.deliveryimage;  
+  
+      const updatedOrder = await Order.findByIdAndUpdate(
+        req.params.id,
+        { ...req.body, deliveryimage: imagePath }, // Include image update
+        { new: true }
+      );
+  
+      if (!updatedOrder) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+  
+      res.json(updatedOrder);
     } catch (err) {
-        console.error(err); 
-        res.status(500).json({ error: err.message });
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
+  };
+
+export const deleteorder= async (req ,res) => {
+    try{
+        const deleteOrder = await Order.findByIdAndDelete(req.params.id);
+        // res.json(deleteOrder);
+       res.status(200).json({deleteOrder : " Deleted successfully"});
+    }catch(err){
+        console.error(err)
+       res.status(500).json({ error: err.message})
     }
 }
- 
+
+
+export const uploadMiddleware = upload.single("deliveryimage");

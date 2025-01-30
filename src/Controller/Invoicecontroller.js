@@ -3,8 +3,10 @@ import fs from "fs";
 import mongoose from "mongoose";
 import path from "path";
 import order from "../models/orderschema.js"
+import { fileURLToPath } from "url";
 
-
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 export const generateinvoice = async (req, res) => {
     try {
       const { id } = req.params;
