@@ -174,7 +174,7 @@ const Addorder = () => {
       const fetchOrderDetails = async () => {
         try {
           const response = await axios.get(
-            `http://192.168.29.71:5000/api/order/${id}`
+            `http://192.168.29.11:5000/api/order/${id}`
           );
           setFormData(response.data); // Pre-fill the form
         } catch (error) {
@@ -236,13 +236,13 @@ const Addorder = () => {
 
     try {
       if (id) {
-        await axios.put(`http://192.168.29.71:5000/api/order/${id}`,formDataWithImage,{
+        await axios.put(`http://192.168.29.11:5000/api/order/${id}`,formDataWithImage,{
           headers: { "Content-Type": "multipart/form-data" },
         });
         toast.success("Order updated successfully!");
       } else {
         // Add new order
-        await axios.post(`http://192.168.29.71:5000/api/order/createorder`, formData,{
+        await axios.post(`http://192.168.29.11:5000/api/order/createorder`, formData,{
           headers : {
              "Authorization": `Bearer ${localStorage.getItem("authToken")}`
           }

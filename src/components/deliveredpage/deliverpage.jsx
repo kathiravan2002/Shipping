@@ -1,11 +1,10 @@
 import React from 'react'
-import Delivered from "../../shared/components/Delivered";
+import Delivered from "../../shared/components/Delivered"
 
-
-function deliverpage() {
+function Deliverpage() {
   return (
     <div><Delivered/></div>
   )
 }
 
-export default deliverpage;
+export default Deliverpage;

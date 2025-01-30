@@ -3,17 +3,18 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Dashboardpage from '../components/Dashboardpage/Dashboardpage'
 import Main from '../core/Main'
 import Homepage from '../components/Home/Homepage'
-import Orderpage from '../components/orderpage/Orderpage'
+import Orderpage from '../components/Orderpage/Orderpage'
 import Addorder from '../shared/components/Addorder'
 import Weightmanagementpage from '../components/Weightmanagementpage/Weightmanagementpage'
-import Deliveredmanpage from '../components/deliveredpage/deliverpage'
-
 import { toast } from "react-toastify";
 import LoginPage from '../core/LoginPage';
 import ProtectedRoute from './ProtectedRoute';
 import User from '../components/User/User';
 import Adduser from '../shared/components/Adduser'
 import Header from '../core/Header'
+import Deliverpage from "../components/Deliveredpage/Deliverpage"
+
+
 
 function Approuter() {
 
@@ -47,7 +48,7 @@ function Approuter() {
               <Route path="/Weightmanagementpage" element={<Weightmanagementpage />}></Route>
               <Route path="/User" element={<User />}></Route>
               <Route path='/Adduser/:id?' element={<Adduser />} /> 
-              <Route path="/delivered" element={<Deliveredmanpage/>}></Route>
+              <Route path="/delivered" element={<Deliverpage/>} />
 
         </Route>
       </Routes>

@@ -12,7 +12,7 @@ const Delivered = () => {
   // Fetch Delivered Orders
   const fetchDeliveredOrders = async () => {
     try {
-      const response = await axios.get('http://192.168.29.71:5000/api/order/orders/delivered');
+      const response = await axios.get('http://192.168.29.11:5000/api/order/orders/delivered');
       setOrders(response.data);
     } catch (err) {
       console.error('Error fetching delivered orders:', err);
@@ -39,7 +39,7 @@ const Delivered = () => {
             <p>Consignee Address: {order.consigneeaddress}</p>
             <p>Consignee Pincode: {order.consigneepin}</p>
             <p>Status: <span className="text-green-500">{order.Orderstatus}</span></p>
-            <img src={`http://192.168.29.71:5000${order.deliveryimage}`} className='w-auto h-32  ' />
+            <img src={`http://192.168.29.11:5000${order.deliveryimage}`} className='w-auto h-32  ' />
 
 
           </div>
