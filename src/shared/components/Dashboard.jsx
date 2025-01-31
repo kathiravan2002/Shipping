@@ -17,7 +17,6 @@ function Dashboard() {
       });
       console.log(response.data)
       settotalorder( response.data || []);
-      console.log(order);
     } catch (error) {
       console.error("Error fetching orders:", error);
       setorder([]); 

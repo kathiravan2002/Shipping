@@ -1,11 +1,29 @@
-import React, { useState  } from "react";
+import React, { useState ,useEffect  } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-function LoginPage({ setIsLoggedIn }) {
+function LoginPage({ setIsLoggedIn ,onLogout }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    const checkTokenExpiry = () => {
+        const expiresAt = localStorage.getItem('tokenExpiresAt');
+        if (expiresAt && Date.now() >= parseInt(expiresAt)) {
+          onLogout();
+        }
+    };
+
+     
+    const interval = setInterval(checkTokenExpiry, 60000);
+    checkTokenExpiry();
+
+    return () => clearInterval(interval);
+}, []);
+
+
+
 
   const handleLogin = async (e) => {
 
@@ -29,6 +47,8 @@ function LoginPage({ setIsLoggedIn }) {
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("role", data.role);
         localStorage.setItem("authToken", data.token);
+        localStorage.setItem("Region", data.region);
+        localStorage.setItem("tokenExpiresAt", data.expiresAt);
 
   
         setIsLoggedIn(true); 

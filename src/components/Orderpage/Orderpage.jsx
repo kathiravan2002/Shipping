@@ -13,9 +13,9 @@ function Orderpage() {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`
        }
       });
-      console.log(response.data)
+       
       setOrder( response.data || []);
-      console.log(order);
+        
     } catch (error) {
       console.error("Error fetching orders:", error);
       setOrder([]); 

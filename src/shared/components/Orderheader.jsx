@@ -189,7 +189,7 @@ const Orderheader = ({ order, deleteOrder, setOrder, downloadinvoice }) => {
                       className="text-red-500 hover:underline ml-4"
                     >
                       {" "}
-                      {console.log(user._id)}
+                      
                       <Trash2 />
                     </button></td>
                   <td>  <button
@@ -197,7 +197,7 @@ const Orderheader = ({ order, deleteOrder, setOrder, downloadinvoice }) => {
                     className="text-red-500 hover:underline ml-4"
                   >
                     {" "}
-                    {console.log(user._id)}
+                   
                     <FileText />
                   </button>
                   </td>

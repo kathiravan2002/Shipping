@@ -8,11 +8,17 @@ const Delivered = () => {
   const [orders, setOrders] = useState([]);
   
   const [err, setError] = useState('');
+  
+  const deliverregion = localStorage.getItem("Region");
+    if (!deliverregion) {
+        console.error("No deliver region found ");
+        return;
+    }
+    console.log(deliverregion);
 
-  // Fetch Delivered Orders
   const fetchDeliveredOrders = async () => {
     try {
-      const response = await axios.get('http://192.168.29.11:5000/api/order/orders/delivered');
+      const response = await axios.get(`http://192.168.29.11:5000/api/order/orders/delivered/${deliverregion}`);
       setOrders(response.data);
     } catch (err) {
       console.error('Error fetching delivered orders:', err);
