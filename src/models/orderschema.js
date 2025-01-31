@@ -60,6 +60,8 @@ const orderschema = mongoose.Schema({
 
     dispatchpincode: String,
 
+    dispatched:String,
+
     deliveryimage:String,
 })
 

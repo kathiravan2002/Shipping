@@ -103,7 +103,7 @@ export const searchorder = async (req, res) => {
 }
 
 
-export const getone = async (req ,res) => {
+export const getid = async (req ,res) => {
     try{
         const ordered = await Order.findById(req.params.id);
         res.json(ordered);
@@ -112,6 +112,31 @@ export const getone = async (req ,res) => {
         // res.status(500).json({ error: err.message })
     }
 }
+
+
+export const getdispatched=async (req,res) =>{
+  try{
+
+   const dispatched = await Order.find({consigneedistrict :'Kallakurichi',Orderstatus:'Ordered Dispatched' });
+
+   if(dispatched.length === 0){
+     res.join({message: 'No dispatched orders found'})
+   }
+   res.json(dispatched)
+  }catch(error){
+   res.status(500).json({ error: 'An error occurred while fetching dispatched orders' });
+  }
+
+
+}
+
+export const getoutfordelivery=async(req,res) => {
+
+  const out = await Order.find({consigneedistrict :['Kallakurichi','Salem'],Orderstatus:'Out for Delivery'});
+  res.json(out)
+
+}
+
 
 export const getdelivered = async (req, res) => {
     try {
@@ -128,11 +153,11 @@ export const getdelivered = async (req, res) => {
         res.status(500).json({ error: 'An error occurred while fetching delivered orders' });
     }
   };
-  
+   
   
 
 
-export const getOrdersToday = async (req, res) => {
+export const gettodayorder = async (req, res) => {
     try {
       // Get the start and end of today
       const today = new Date();
@@ -150,7 +175,8 @@ export const getOrdersToday = async (req, res) => {
     }
   }
 
-export const updateorder = async (req, res) => {
+
+  export const  updateorder = async (req, res) => {
     try {
       const imagePath = req.file ? `/uploads/${req.file.filename}` : req.body.deliveryimage; // Keep old image if not updated
   
@@ -170,7 +196,7 @@ export const updateorder = async (req, res) => {
       res.status(500).json({ error: err.message });
     }
   };
-
+  
 export const deleteorder= async (req ,res) => {
     try{
         const deleteOrder = await Order.findByIdAndDelete(req.params.id);
