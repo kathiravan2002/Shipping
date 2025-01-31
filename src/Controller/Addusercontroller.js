@@ -2,7 +2,7 @@
 import Adduser from "../models/adduserschema.js";
 
 export const adduser = async (req ,res ) => {
-    console.log(req.body)
+
     try{ 
         const saveduser = await new Adduser(req.body).save();
         console.log(saveduser);
@@ -25,6 +25,7 @@ export const getuser = async (req ,res)  => {
 
 export const getid = async (req ,res) => {
     try{
+        
         const users = await Adduser.findById(req.params.id);
         if (!users) {
             return res.status(404).json({ message: "user not found" });
@@ -43,9 +44,4 @@ export const updateid = async (req, res) => {
     } 
     res.json(updateuser); 
 }
-
-
-
-
-
 

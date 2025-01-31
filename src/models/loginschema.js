@@ -16,6 +16,10 @@ const loginSchema = new mongoose.Schema({
    
         
    },
+   region :
+   {
+       type: String,
+   },
 });
 
   const Login = mongoose.model("Login", loginSchema);

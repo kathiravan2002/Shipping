@@ -91,7 +91,7 @@ export const generateinvoice = async (req, res) => {
             <div class="invoice">
                 <header>
                     <img src="https://img.freepik.com/premium-vector/courier-logo-design_139869-1383.jpg" alt="Logo" width="50px" height="50px"> 
-                    <div class="invoice-no">Invoice No: ${invoiceorder.orderId}</div>
+                    <div class="invoice-no">Invoice No: ${invoiceorder.invoiceNo}</div>
                 </header>
                 <h1>Courier Invoice</h1>
                 <p><strong>Date:</strong> ${invoiceorder.orderDate}</p>

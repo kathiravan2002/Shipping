@@ -2,11 +2,7 @@
 import mongoose from "mongoose";
 
 const orderschema = mongoose.Schema({
-    orderId: {
-        type: String,
-    
-    },
-
+    orderId:  String,
     ConsignerName: String,
 
     consignermobileNumber: String,
@@ -58,8 +54,12 @@ const orderschema = mongoose.Schema({
         type :String
     },
     dispatchpincode : String,
+    
+    dispatched: String,
 
     deliveryimage : String,
+        
+   
 
 })
 

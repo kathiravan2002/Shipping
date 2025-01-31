@@ -13,11 +13,10 @@ const adduserschema = mongoose.Schema({
        type: String, 
        required: true 
    },
-   role: 
-   { type: String, 
+     role: String, 
    
    
-   },
+  
    Name:
    {
        type: String,

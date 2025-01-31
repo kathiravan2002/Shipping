@@ -36,11 +36,16 @@ const seedAdmin = async () => {
       const tokenPayload = {
         email: user.email,
         role: user.role,
+        region : user.region
          
       };
-      const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: "5h" });
-      
-      res.status(200).json({ message: "Login successful", role: user.role, token });
+
+
+      const expiresIn = "5h";
+      const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn});
+      const expiresAt = new Date(Date.now() + 5 * 60 * 60 * 1000)
+      // const expiresAt = new Date(Date.now() + 5 * 60 * 60 * 1000)
+      res.status(200).json({ message: "Login successful", role: user.role, token , region : user.region , expiresAt: expiresAt.getTime()});
 
   
     } catch (error) {
