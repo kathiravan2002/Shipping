@@ -1,36 +1,82 @@
 import mongoose from "mongoose";
 
-
-const invoiceschema = new mongoose.Schema({
-  invoiceNumber: { 
+const invoiceSchema = new mongoose.Schema({
+  invoiceNumber: {
     type: String,
-    required: true 
+    required: true,
+   
   },
-
   date: {
-     type: Date,
-     default: Date.now
+    type: Date,
+    default: Date.now,
   },
-  senderDetails: {
-    name: String,
+  billFrom: {
+    companyName: String,
+      
+    
     address: String,
-    phone: String,
+      
+    
+    phoneNumber: String,
+      
+    
   },
-  recipientDetails: {
-    name: String,
-    address: String,
-    phone: String,
+  billTo: {
+    customerName: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    phoneNumber: {
+      type: String,
+      required: true,
+    },
   },
   items: [
     {
-      description: String,
-      quantity: Number,
-      price: Number,
-      total: Number,
+      itemName: {
+        type: String,
+        required: true,
+      },
+      quantity: {
+        type: Number,
+        required: true,
+      },
+      rate: {
+        type: Number,
+        required: true,
+      },
+      amount: {
+        type: Number,
+        required: true,
+      },
     },
   ],
-  totalAmount: { type: Number, required: true },
+  termsAndConditions: {
+    type: String,
+    default: 'Payment is due upon receipt of the invoice.',
+  },
+  subtotal: {
+    type: Number,
+    required: true,
+  },
+  discount: {
+    type: Number,
+    default: 0,
+  },
+  tax: {
+    type: Number,
+    default: 0,
+  },
+  total: {
+    type: Number,
+    required: true,
+  },
 });
 
- const Invoice= mongoose.model('Invoice', invoiceschema);
- export default Invoice;
+const Invoice = mongoose.model('Invoice', invoiceSchema);
+
+export default Invoice;
