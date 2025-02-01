@@ -5,7 +5,7 @@ import { authorizeRoles,verifyToken } from '../middleware/authmiddleware.js';
 const Orderrouter = express.Router();
 
 Orderrouter.post("/createorder",verifyToken,authorizeRoles(["admin" , "manager"]),createorder)
-Orderrouter.get("/getorder",verifyToken,authorizeRoles(["admin" , "manager"]) ,getorder)
+Orderrouter.get("/getorder",getorder)
 Orderrouter.get("/",searchorder)
 Orderrouter.get("/:id" ,getid)
 Orderrouter.get("/orders/dispatche",getdispatched)

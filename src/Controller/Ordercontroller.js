@@ -2,6 +2,7 @@ import express from 'express';
 import moment from 'moment-timezone';
 import Order from '../models/orderschema.js';
 import multer from "multer";
+import bwipjs from "bwip-js"
 import path from "path";
 
 const generateOrderId = () => {
@@ -63,8 +64,47 @@ export const createorder = async (req, res) => {
   // Fetch all orders
   export const getorder = async (req, res) => {
     try {
-      const orders = await Order.find();
-      res.status(200).json(orders);
+      const orders = await Order.find(); // Get orders from the database
+  
+      // Add barcode to each order
+      const ordersWithBarcodes = await Promise.all(orders.map(async (order) => {
+        try {
+          // Generate barcode for each order
+          const barcodeBuffer = await new Promise((resolve, reject) => {
+            bwipjs.toBuffer({
+              bcid: 'code128',         // Barcode type (Code 128)
+              text: order.orderId,     // Order ID for barcode
+              scale: 3,                // Barcode size
+              height: 10,              // Barcode height
+              // includetext: ,       // Whether to include the order ID as text
+            }, (err, png) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(png); // Return the PNG buffer
+              }
+            });
+          });
+  
+          // Convert the barcode buffer to a base64 string
+          const barcodeBase64 = barcodeBuffer.toString('base64');
+  
+          // Add the barcode base64 string to the order object
+          return {
+            ...order.toObject(),   // Convert mongoose document to plain object
+            barcode: `data:image/png;base64,${barcodeBase64}`,  // Include barcode image as base64
+          };
+        } catch (err) {
+          console.error('Error generating barcode for order ID:', order.orderId, err);
+          return {
+            ...order.toObject(),
+            barcode: null,  // Return null for barcode if there was an error
+          };
+        }
+      }));
+  
+      // Send back the orders with barcodes
+      res.status(200).json(ordersWithBarcodes);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err.message });
