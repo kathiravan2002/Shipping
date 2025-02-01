@@ -33,7 +33,7 @@ const orderschema = mongoose.Schema({
 
     consigneestate: String,
 
-    consigneedistrict: String,
+    consigneedistrict: { type: [String] },
 
     consigneepin: String,
 

@@ -229,7 +229,7 @@ export const gettodayorder = async (req, res) => {
       if (!updatedOrder) {
         return res.status(404).json({ error: "Order not found" });
       }
-  
+       
       res.json(updatedOrder);
     } catch (err) {
       console.error(err);
