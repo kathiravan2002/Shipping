@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
-import { Dialog } from 'primereact/dialog';
 import { CornerDownLeft, Trash } from 'lucide-react';
 const Addorder = () => {
   const { id } = useParams(); // Get the order ID from the URL
@@ -46,7 +45,7 @@ const Addorder = () => {
   const [isDataSubmitted, setIsDataSubmitted] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
   const navigate = useNavigate();
-  const [pinapidata, setpinapidata] = ([])
+
 
 
   // Function to convert strings to sentence case
@@ -216,6 +215,7 @@ const Addorder = () => {
     formDataWithImage.append("Consigneename", formData.Consigneename);
     formDataWithImage.append("consigneemobileno", formData.consigneemobileno);
     formDataWithImage.append("consigneealterno", formData.consigneealterno);
+    formDataWithImage.append("consigneedistrict", formData.consigneecity);
     formDataWithImage.append("consigneedistrict", formData.consigneedistrict);
     formDataWithImage.append("consigneeaddress", formData.consigneeaddress);
     formDataWithImage.append("consigneestate", formData.consigneestate);
@@ -229,28 +229,28 @@ const Addorder = () => {
     formDataWithImage.append("dispatchstate", formData.dispatchstate);
     formDataWithImage.append("dispatchdistrict", formData.dispatchdistrict);
     formDataWithImage.append("dispatchpincode", formData.dispatchpincode);
-    
+
     if (formData.deliveryimage) {
       formDataWithImage.append("deliveryimage", formData.deliveryimage); // Must match backend field
     }
 
     try {
       if (id) {
-        await axios.put(`http://192.168.29.71:5000/api/order/${id}`,formDataWithImage,{
+        await axios.put(`http://192.168.29.71:5000/api/order/${id}`, formDataWithImage, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         toast.success("Order updated successfully!");
       } else {
         // Add new order
-        await axios.post(`http://192.168.29.71:5000/api/order/createorder`, formData,{
-          headers : {
-             "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+        await axios.post(`http://192.168.29.71:5000/api/order/createorder`, formData, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("authToken")}`
           }
-    });
+        });
         toast.success("Form submitted successfully!");
       }
 
-      navigate("/orders");
+      navigate("/order");
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("Failed to submit order.");
@@ -305,19 +305,17 @@ const Addorder = () => {
     }
   };
   const handleClick = () => {
-    if (isDataSubmitted) {
-      setIsNavigating(true);
+    // if (isDataSubmitted) {
+    //   setIsNavigating(true);
       setTimeout(() => {
-        navigate("/Order");
-        // setIsNavigating(false);
-      }, 1000); // Delay navigation
+        navigate(-1);
+      }, 1000); 
     }
 
-  };
+  
   console.log(formData);
-  //Dialogbox for weight calculation
-  const [visible, setVisible] = useState(false);
-  // weight calculation
+  
+ 
 
 
   const [rows, setRows] = useState([
@@ -590,7 +588,7 @@ const Addorder = () => {
 
               {/* Pincode Dropdown */}
               <select
-                name="consigneepin "
+                name="consigneepin"
                 value={formData.consigneepin}
                 onChange={handleInputChange}
                 className="w-full  p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
@@ -853,7 +851,7 @@ const Addorder = () => {
             onChange={handleInputChange}
             placeholder="Package Weight (kg)"
             className=" p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-            
+
           />
           <input
             type="text"
@@ -862,7 +860,7 @@ const Addorder = () => {
             onChange={handleInputChange}
             placeholder="No of Packages"
             className=" p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-            
+
           />
           {/* <input
            type="number"
@@ -879,7 +877,7 @@ const Addorder = () => {
             placeholder="Price (₹)"
             onChange={handleInputChange}
             className=" p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-            
+
           />
 
           <select
@@ -989,12 +987,16 @@ const Addorder = () => {
             </>
           )}
 
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setFormData({ ...formData, deliveryimage: e.target.files[0] })}
-          />
+          {formData.Orderstatus === "Delivered" && (
 
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFormData({ ...formData, deliveryimage: e.target.files[0] })}
+              className=" p-4 border-2 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2 bg-violet-50"
+            />
+          )}
         </div>
 
         {/* Submit Button */}
@@ -1013,192 +1015,6 @@ const Addorder = () => {
       >
         Back
       </button>
-
-      {/* Dialog box for Calculation */}
-      <div className="relative  top-2 right-2">
-        {visible && (
-          <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
-        )}
-        <div className="card flex justify-content-center z-50">
-          <Dialog className="bg-white rounded-lg m-8 relative" visible={visible} style={{ width: '80vw', height: '60vh' }} closable={false} >
-            {/* Close Button */}
-            <button
-              onClick={() => setVisible(false)}
-              className="absolute top-1 right-3 text-gray-700 hover:text-gray-800 text-3xl  hover:bg-gray-200 hover:rounded-full"
-              aria-label="Close"
-            >
-              &times;
-            </button>
-            <div className="p-6 space-y-6 bg-white rounded-lg mt-5">
-              {/* Table Section */}
-              <table className="w-full border-collapse border border-gray-300 text-sm">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="border border-gray-300 p-2">S.NO</th>
-                    <th className="border border-gray-300 p-2">Length</th>
-                    <th className="border border-gray-300 p-2">Width</th>
-                    <th className="border border-gray-300 p-2">Height</th>
-                    <th className="border border-gray-300 p-2">Weight</th>
-                    <th className="border border-gray-300 p-2">No of Packages</th>
-                    <th className="border border-gray-300 p-2">Total Weight</th>
-                    <th className="border border-gray-300 p-2">Volumetric Weight</th>
-                    <th className="border border-gray-300 p-2">Total Volumetric Weight</th>
-                    <th className="border border-gray-300 p-2">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((row, index) => (
-                    <tr key={index}>
-                      <td className="border border-gray-300 p-2">
-                        {index + 1}
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        <input
-                          type="number"
-                          value={row.length}
-                          placeholder="Length"
-                          onChange={(e) => updateRow(index, "length", e.target.value)}
-                          className="w-full border p-1 rounded"
-                        />
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        <input
-                          type="number"
-                          value={row.width}
-                          placeholder="Width"
-                          onChange={(e) => updateRow(index, "width", e.target.value)}
-                          className="w-full border p-1 rounded"
-                        />
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        <input
-                          type="number"
-                          value={row.height}
-                          placeholder="Height"
-                          onChange={(e) => updateRow(index, "height", e.target.value)}
-                          className="w-full border p-1 rounded"
-                        />
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        <input
-                          type="number"
-                          value={row.weight}
-                          placeholder="Weight"
-                          onChange={(e) => updateRow(index, "weight", e.target.value)}
-                          className="w-full border p-1 rounded"
-                        />
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        <input
-                          type="number"
-                          value={row.packages}
-                          placeholder="Packages"
-                          onChange={(e) => updateRow(index, "packages", e.target.value)}
-                          className="w-full border p-1 rounded"
-                        />
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        {(parseFloat(row.weight) || 0) * (parseFloat(row.packages) || 0)} Kg
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        {(((row.length || 0) * (row.width || 0) * (row.height || 0)) / 5000).toFixed(2)} Kg
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        {(
-                          (((row.length || 0) * (row.width || 0) * (row.height || 0)) / 5000) *
-                          (row.packages || 0)
-                        ).toFixed(2)}{" "}
-                        Kg
-                      </td>
-                      <td className="border border-gray-300 p-2 text-center">
-                        <button
-                          className="text-red-500 hover:underline"
-                          onClick={() => deleteRow(index)}
-                        >
-                          <Trash />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  <tr className="bg-gray-100">
-                    <td className="border border-gray-300 p-2" colSpan="5">
-                      Totals
-                    </td>
-                    <td className="border border-gray-300 p-2">{totalPackages}</td>
-                    <td className="border border-gray-300 p-2">{totalWeight.toFixed(2)} Kg</td>
-                    <td className="border border-gray-300 p-2">
-                      {totalVolumetricWeight.toFixed(2)} Kg
-                    </td>
-                    <td className="border border-gray-300 p-2">
-                      {totalVolumetricWeight.toFixed(2)} Kg
-                    </td>
-                    <td className="border border-gray-300 p-2"></td>
-                  </tr>
-                </tbody>
-              </table>
-              <div className="flex justify-end">
-                <button
-                  className="text-white border p-2 rounded bg-purple-500 flex items-center"
-                  onClick={addRow}
-                >
-                  Add Product <CornerDownLeft className="ml-2" />
-                </button>
-              </div>
-
-
-              {/* Freight Rate Section */}
-
-              <h3 className="font-semibold text-lg text-center">Enter Price</h3>
-              <div className="grid justify-self-center">
-                {/* Freight Rate Input */}
-                <div className="flex items-center">
-                  <label className="text-gray-700 mr-2">Price Per (Kg):</label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">₹</span>
-                    <input
-                      type="number"
-                      value={freightRate}
-                      onChange={(e) => setFreightRate(parseFloat(e.target.value))}
-                      className="pl-8 pr-2 py-1 border border-gray-300 rounded-md bg-purple-100 w-32"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center mt-4">
-                  <label className="text-gray-700 mr-2">Tax Rate (%):</label>
-                  <input
-                    type="number"
-                    value={taxRate}
-                    onChange={(e) => setTaxRate(parseFloat(e.target.value) / 100)}
-                    className="pl-2 pr-2 py-1 border border-gray-300 rounded-md bg-purple-100 w-32"
-                    placeholder=""
-                  />
-                </div>
-
-                {/* Chargeable Rate */}
-                <div className="flex justify-between items-center">
-                  <label className="text-gray-700">Chargeable Rate (Kg):</label>
-                  <p className="text-gray-700 font-medium"> {chargeableWeight > 0 ? `${chargeableWeight.toFixed(2)} Kg` : ""}</p>
-                </div>
-                <div className="flex justify-between items-center">
-                  <label className="text-gray-700">Total Tax:</label>
-                  <p className="text-gray-700 font-medium">₹{totalTax.toFixed(2)}</p>
-                </div>
-                <div className="flex justify-between items-center mt-4">
-                  <label className="text-gray-700">Total Amount:</label>
-                  <p className="text-gray-700 font-medium">₹{totalChargeableAmount.toFixed(2)}</p>
-                </div>
-
-                {/* Total  Amount */}
-                <div className="flex justify-between items-center pt-4">
-                  <label className="font-semibold text-gray-700">Total Amount (with Tax):</label>
-                  <p className="font-bold text-gray-800">₹{totalWithTax.toFixed(2)}</p>
-                </div>
-              </div>
-            </div>
-          </Dialog>
-        </div>
-      </div>
 
     </div>
   );

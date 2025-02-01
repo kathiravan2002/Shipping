@@ -7,6 +7,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { Trash2, Pencil, ChevronsLeft, ChevronsRight, FileText } from "lucide-react";
 import Exportdata from "./Exportdata";
+import Barcodes from "./Barcodes";
+
 
 
 const Orderheader = ({ order, deleteOrder, setOrder, downloadinvoice }) => {
@@ -126,17 +128,18 @@ const Orderheader = ({ order, deleteOrder, setOrder, downloadinvoice }) => {
             <tr>
               <th>Action</th>
               <th>Invoice</th>
+              <th className="px-6 py-3 text-left font-semibold text-gray-600 sticky  top-0 bg-gray-200 ">Barcode</th>
               <th className="px-6 py-3 text-left font-semibold text-gray-600 sticky  top-0 bg-gray-200 ">
                 InvoiceNo
               </th>
 
               <th className="px-6 py-3 text-left font-semibold text-gray-600 sticky  top-0 bg-gray-200 ">
-              Orderstatus
+                Orderstatus
               </th>
               <th className="px-6 py-3 text-left font-semibold text-gray-600 sticky  top-0 bg-gray-200 ">
                 Orderid
               </th>
-             
+
 
               {[
                 "ConsignerName",
@@ -161,7 +164,7 @@ const Orderheader = ({ order, deleteOrder, setOrder, downloadinvoice }) => {
                 "packagetype",
                 "price",
                 "Dispatchregion"
-                
+
               ].map((header) => (
                 <th
                   key={header}
@@ -201,6 +204,11 @@ const Orderheader = ({ order, deleteOrder, setOrder, downloadinvoice }) => {
                     <FileText />
                   </button>
                   </td>
+                  
+                  <td className="">
+                  <Barcodes barcode={user.barcode} orderId={user.orderId} />
+
+                  </td>
                   <td className="px-6 py-4  font-medium">{user.invoiceNo}</td>
 
                   <td className="px-6 py-4">{user.Orderstatus}</td>
@@ -208,7 +216,10 @@ const Orderheader = ({ order, deleteOrder, setOrder, downloadinvoice }) => {
                     {user.orderId}
                   </td>
 
-                   
+
+
+
+
                   <td className="px-6 py-4">{user.ConsignerName}</td>
                   <td className="px-6 py-4">{user.consignermobileNumber}</td>
                   <td className="px-6 py-4">{user.consignerAddress}</td>
@@ -275,8 +286,8 @@ const Orderheader = ({ order, deleteOrder, setOrder, downloadinvoice }) => {
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1} // Disable if on the first page
             className={`px-3 py-1 rounded-ss-3xl border  ${currentPage === 1
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed" // Styling for disabled button
-                : "bg-white text-gray-700 hover:bg-purple-700 hover:text-white" // Styling for enabled button
+              ? "bg-gray-200 text-gray-400 cursor-not-allowed" // Styling for disabled button
+              : "bg-white text-gray-700 hover:bg-purple-700 hover:text-white" // Styling for enabled button
               }`}
           >
             <ChevronsLeft />
@@ -300,8 +311,8 @@ const Orderheader = ({ order, deleteOrder, setOrder, downloadinvoice }) => {
               key={page}
               onClick={() => handlePageChange(page)} // Navigate to the selected page
               className={`px-3 py-1 rounded-full border ${currentPage === page
-                  ? "bg-purple-600 text-white" // Styling for active page
-                  : "bg-white text-gray-700 hover:bg-gray-100" // Styling for inactive pages
+                ? "bg-purple-600 text-white" // Styling for active page
+                : "bg-white text-gray-700 hover:bg-gray-100" // Styling for inactive pages
                 }`}
             >
               {page}
@@ -325,8 +336,8 @@ const Orderheader = ({ order, deleteOrder, setOrder, downloadinvoice }) => {
             onClick={() => handlePageChange(currentPage + 1)} // Move to the next page
             disabled={currentPage === totalPages} // Disable if on the last page
             className={`px-3 py-1 rounded-se-3xl border ${currentPage === totalPages
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed" // Styling for disabled button
-                : "bg-white text-gray-700 hover:bg-purple-700 hover:text-white " // Styling for enabled button
+              ? "bg-gray-200 text-gray-400 cursor-not-allowed" // Styling for disabled button
+              : "bg-white text-gray-700 hover:bg-purple-700 hover:text-white " // Styling for enabled button
               }`}
           >
             <ChevronsRight />

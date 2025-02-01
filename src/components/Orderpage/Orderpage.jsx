@@ -13,9 +13,9 @@ function Orderpage() {
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`
        }
       });
-      console.log(response.data)
+      
       setOrder( response.data || []);
-      console.log(order);
+     
     } catch (error) {
       console.error("Error fetching orders:", error);
       setOrder([]); 
@@ -27,7 +27,6 @@ function Orderpage() {
     getAllorder();
     },[]);
   
-    
     const downloadinvoice = async (_id, data) => {
       if (!_id || typeof _id !== 'string' || _id.length !== 24) {
         console.error('Invalid ID passed to downloadInvoice');

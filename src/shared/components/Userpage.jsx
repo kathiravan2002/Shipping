@@ -12,7 +12,7 @@ const Userpage = () => {
    
   const getuser =async() =>{
     try{
-        const userdata = await axios.get("http://192.168.29.11:5000/api/add/getuser",{
+        const userdata = await axios.get("http://192.168.29.71:5000/api/add/getuser",{
           headers : {
              "Authorization": `Bearer ${localStorage.getItem("authToken")}`
           }

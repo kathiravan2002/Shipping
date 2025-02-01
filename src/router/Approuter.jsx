@@ -6,7 +6,9 @@ import Homepage from '../components/Home/Homepage'
 import Orderpage from '../components/orderpage/Orderpage'
 import Addorder from '../shared/components/Addorder'
 import Weightmanagementpage from '../components/Weightmanagementpage/Weightmanagementpage'
-import Deliveredmanpage from '../components/deliveredpage/deliverpage'
+
+
+ 
 
 import { toast } from "react-toastify";
 import LoginPage from '../core/LoginPage';
@@ -14,6 +16,10 @@ import ProtectedRoute from './ProtectedRoute';
 import User from '../components/User/User';
 import Adduser from '../shared/components/Adduser'
 import Header from '../core/Header'
+import { Deliverpage } from '../components/Deliveredpage/Deliverpage'
+import Dispatchpage from '../components/Dispatchedpage/Dispatchpage'
+import Outdeliverypage from '../components/Outdeliverypage/Outdeliverypage'
+
 
 function Approuter() {
 
@@ -47,7 +53,9 @@ function Approuter() {
               <Route path="/Weightmanagementpage" element={<Weightmanagementpage />}></Route>
               <Route path="/User" element={<User />}></Route>
               <Route path='/Adduser/:id?' element={<Adduser />} /> 
-              <Route path="/delivered" element={<Deliveredmanpage/>}></Route>
+              <Route path="/delivered" element={<Deliverpage/>}></Route>
+              <Route path="/dispatched" element={<Dispatchpage/>}/>
+              <Route path="/outfordelivery" element={<Outdeliverypage/>}/>
 
         </Route>
       </Routes>

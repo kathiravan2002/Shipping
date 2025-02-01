@@ -13,7 +13,7 @@ function LoginPage({ setIsLoggedIn }) {
     try {
 
       
-      const response = await fetch("http://192.168.29.11:5000/api/login/user", {
+      const response = await fetch("http://192.168.29.71:5000/api/login/user", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json" ,
