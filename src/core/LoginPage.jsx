@@ -1,6 +1,7 @@
 import React, { useState  } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import loginbgg from "/assets/images/loginbgg.jpeg"
 
 function LoginPage({ setIsLoggedIn }) {
   const [email, setEmail] = useState("");
@@ -29,7 +30,10 @@ function LoginPage({ setIsLoggedIn }) {
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("role", data.role);
         localStorage.setItem("authToken", data.token);
+        localStorage.setItem("Region",data.region);
 
+
+        
   
         setIsLoggedIn(true); 
         navigate("/dashboard");
@@ -43,17 +47,25 @@ function LoginPage({ setIsLoggedIn }) {
     } catch (error) {
       toast.error("An error occurred. Please try again.");
     }
+
+
+    // if (data.user.status === "inactive") {
+    //       alert("Your account is inactive. Please contact support.");
+    //       return;
+    //     }
+
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+ 
+    <div className="min-h-screen flex items-center justify-center bg-cover" style={{backgroundImage:`url(${loginbgg})`}}>
       <form
         onSubmit={handleLogin}
-        className="bg-white p-8 shadow-lg rounded-lg w-96"
+        className=" p-8 shadow-lg rounded-lg w-96"
       >
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Login</h2>
+        <h2 className="text-2xl font-bold mb-4 text-gray-100">Login</h2>
         <div className="mb-4">
-          <label className="block text-gray-600 mb-1">Email</label>
+          <label className="block text-gray-100 mb-1">Email</label>
           <input
             type="email"
             value={email}
@@ -63,7 +75,7 @@ function LoginPage({ setIsLoggedIn }) {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-600 mb-1">Password</label>
+          <label className="block text-gray-100 mb-1">Password</label>
           <input
             type="password"
             value={password}
@@ -80,6 +92,7 @@ function LoginPage({ setIsLoggedIn }) {
         </button>
       </form>
     </div>
+    
   );
 }
 

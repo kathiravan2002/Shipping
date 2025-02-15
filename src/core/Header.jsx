@@ -1,3 +1,4 @@
+import { Plus } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +15,7 @@ function Header({ isLoggedIn, onLogout }) {
  
   return (
     <header>
-      <nav className="bg-white border-gray-200 dark:bg-gray-800 shadow sm:block fixed top-0 w-full pl-20 py-4 px-5">
+      <nav className="bg-white border-gray-200 dark:bg-gray-800 shadow sm:block fixed top-0 w-full pl-20 py-4 px-5 z-20">
         <div className="flex justify-between items-center">
    
           <h2 className="text-2xl font-medium">TCZ Courier</h2>
@@ -34,6 +35,14 @@ function Header({ isLoggedIn, onLogout }) {
             >
               Dashboard
             </button>} */}
+
+            <button 
+              onClick={() => navigate("/Addorder")}
+              className="flex justify-between bg-purple-700  text-white px-4 py-2  rounded-md"
+              type="button"
+            >
+              <Plus/> Add Order
+            </button>
 
             <button
               onClick={() => navigate("/Dashboard")}

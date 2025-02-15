@@ -5,52 +5,24 @@ import { useParams, useNavigate } from "react-router-dom";
 import { CornerDownLeft, Trash } from 'lucide-react';
 const Addorder = () => {
   const { id } = useParams(); // Get the order ID from the URL
-  const [formData, setFormData] = useState({
-    ConsignerName: "",
-    consignermobileNumber: "",
-    consignerAddress: "",
-    consignercity: "",
-    consignermail: "",
-    consignerdistrict: "",
-    consignerstate: "",
-    consignerpincode: "",
-    Consigneename: "",
-    consigneemobileno: "",
-    consigneealterno: "",
-    consigneedistrict: "",
-    consigneeaddress: "",
-    consigneecity: "",
-    consigneestate: "",
-    consigneepin: "",
-    productname: "",
-    noofpackage: "",
-    packageWeight: "",
-    packagetype: "",
-    price: "",
-    Orderstatus: "",
-    dispatchstate: "",
-    dispatchdistrict: "",
-    dispatchpincode: "",
-    deliveryimage: ""
-  });
+  const [formData, setFormData] = useState({ ConsignerName: "", consignermobileNumber: "", consignerAddress: "", consignercity: "", consignermail: "", consignerdistrict: "", consignerstate: "", consignerpincode: "", Consigneename: "", consigneemobileno: "", consigneealterno: "", consigneeedistrict: "", consigneeaddress: "", consigneecity: "", consigneestate: "", consigneepin: "", productname: "", noofpackage: "", packageWeight: "", packagetype: "", price: "", Orderstatus: "", dispatchstate: "", dispatchdistrict: "", dispatchpincode: "", deliveryimage: "", currentRegion: "" });
 
   const [apiData, setApiData] = useState([]);
   const [consignerDistricts, setConsignerDistricts] = useState([]);
   const [consignerPincodes, setConsignerPincodes] = useState([]);
   const [consigneeDistricts, setConsigneeDistricts] = useState([]);
   const [consigneePincodes, setConsigneePincodes] = useState([]);
-  const [dispatchDistricts, setdispatchDistricts] = useState([]);
-  const [dispatchPincodes, setdispatchPincodes] = useState([]);
-  const [showPriceDialog, setShowPriceDialog] = useState(false);
+  // const [dispatchDistricts, setdispatchDistricts] = useState([]);
+  // const [dispatchPincodes, setdispatchPincodes] = useState([]);
+  // const [showPriceDialog, setShowPriceDialog] = useState(false);
   const [isDataSubmitted, setIsDataSubmitted] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
   const navigate = useNavigate();
 
-
-
   // Function to convert strings to sentence case
   const toSentenceCase = (str) =>
     str.toLowerCase().replace(/(^\w|\s\w)/g, (match) => match.toUpperCase());
+
 
   // Fetch data from the API on component mount  
   useEffect(() => {
@@ -118,13 +90,13 @@ const Addorder = () => {
 
 
   useEffect(() => {
-    if (formData.consigneedistrict) {
+    if (formData.consigneeedistrict) {
       const originalDistrict = apiData
         .map((item) => ({
           original: item.district,
           formatted: toSentenceCase(item.district),
         }))
-        .find((d) => d.formatted === formData.consigneedistrict)?.original;
+        .find((d) => d.formatted === formData.consigneeedistrict)?.original;
 
       const filteredPincodes = apiData
         .filter((item) => item.district === originalDistrict)
@@ -134,39 +106,39 @@ const Addorder = () => {
         }));
       setConsigneePincodes(filteredPincodes);
     }
-  }, [formData.consigneedistrict, apiData]);
+  }, [formData.consigneeedistrict, apiData]);
 
-  useEffect(() => {
-    if (formData.dispatchstate) {
-      const filteredDistricts = apiData
-        .filter((item) => item.statename === formData.dispatchstate)
-        .map((item) => item.district);
+  // useEffect(() => {
+  //   if (formData.dispatchstate) {
+  //     const filteredDistricts = apiData
+  //       .filter((item) => item.statename === formData.dispatchstate)
+  //       .map((item) => item.district);
 
-      const formattedDistricts = [...new Set(filteredDistricts)].map(
-        toSentenceCase
-      );
-      setdispatchDistricts(formattedDistricts.sort());
-    }
-  }, [formData.dispatchstate, apiData]);
+  //     const formattedDistricts = [...new Set(filteredDistricts)].map(
+  //       toSentenceCase
+  //     );
+  //     setdispatchDistricts(formattedDistricts.sort());
+  //   }
+  // }, [formData.dispatchstate, apiData]);
 
-  useEffect(() => {
-    if (formData.dispatchdistrict) {
-      const originalDistrict = apiData
-        .map((item) => ({
-          original: item.district,
-          formatted: toSentenceCase(item.district),
-        }))
-        .find((d) => d.formatted === formData.dispatchdistrict)?.original;
+  // useEffect(() => {
+  //   if (formData.dispatchdistrict) {
+  //     const originalDistrict = apiData
+  //       .map((item) => ({
+  //         original: item.district,
+  //         formatted: toSentenceCase(item.district),
+  //       }))
+  //       .find((d) => d.formatted === formData.dispatchdistrict)?.original;
 
-      const filteredPincodes = apiData
-        .filter((item) => item.district === originalDistrict)
-        .map((item) => ({
-          pincode: item.pincode,
-          officename: item.officename,
-        }));
-      setdispatchPincodes(filteredPincodes);
-    }
-  }, [formData.dispatchdistrict, apiData]);
+  //     const filteredPincodes = apiData
+  //       .filter((item) => item.district === originalDistrict)
+  //       .map((item) => ({
+  //         pincode: item.pincode,
+  //         officename: item.officename,
+  //       }));
+  //     setdispatchPincodes(filteredPincodes);
+  //   }
+  // }, [formData.dispatchdistrict, apiData]);
   useEffect(() => {
     if (id) {
       // Fetch order details for editing
@@ -179,7 +151,7 @@ const Addorder = () => {
         } catch (error) {
           console.error("Error fetching order details:", error);
         }
-      };
+      };           
 
       fetchOrderDetails();
     }
@@ -215,8 +187,8 @@ const Addorder = () => {
     formDataWithImage.append("Consigneename", formData.Consigneename);
     formDataWithImage.append("consigneemobileno", formData.consigneemobileno);
     formDataWithImage.append("consigneealterno", formData.consigneealterno);
-    formDataWithImage.append("consigneedistrict", formData.consigneecity);
-    formDataWithImage.append("consigneedistrict", formData.consigneedistrict);
+    formDataWithImage.append("consigneecity", formData.consigneecity);
+    formDataWithImage.append("consigneeedistrict", formData.consigneeedistrict);
     formDataWithImage.append("consigneeaddress", formData.consigneeaddress);
     formDataWithImage.append("consigneestate", formData.consigneestate);
     formDataWithImage.append("consigneepin", formData.consigneepin);
@@ -229,6 +201,7 @@ const Addorder = () => {
     formDataWithImage.append("dispatchstate", formData.dispatchstate);
     formDataWithImage.append("dispatchdistrict", formData.dispatchdistrict);
     formDataWithImage.append("dispatchpincode", formData.dispatchpincode);
+    formDataWithImage.append("currentRegion", formData.currentRegion);
 
     if (formData.deliveryimage) {
       formDataWithImage.append("deliveryimage", formData.deliveryimage); // Must match backend field
@@ -257,7 +230,6 @@ const Addorder = () => {
     }
     setIsDataSubmitted(true);
 
-    // Add a delay before navigating
     setIsNavigating(true);
     setTimeout(() => {
       navigate("/Order");
@@ -305,17 +277,17 @@ const Addorder = () => {
     }
   };
   const handleClick = () => {
-    // if (isDataSubmitted) {
-    //   setIsNavigating(true);
+    if (isDataSubmitted) {
+      setIsNavigating(true);
       setTimeout(() => {
-        navigate(-1);
-      }, 1000); 
+        navigate("/Order");
+      }, 1000);
     }
 
-  
+  }
   console.log(formData);
-  
- 
+
+
 
 
   const [rows, setRows] = useState([
@@ -354,23 +326,52 @@ const Addorder = () => {
 
   const chargeableWeight = Math.max(totalWeight, totalVolumetricWeight);
   const totalChargeableAmount = chargeableWeight * (parseFloat(freightRate) || 0);
-  const totalTax = chargeableWeight * (parseFloat(taxRate) || 0);                        //mrng work change the totaltax 
+  const totalTax = totalChargeableAmount * (parseFloat(taxRate) / 100 || 0);                        //mrng work change the totaltax 
   const totalWithTax = totalChargeableAmount + totalTax;
   // Update formData's packageWeight whenever chargeableWeight changes
   useEffect(() => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       packageWeight: chargeableWeight, // Update packageWeight
-      price: totalChargeableAmount,
+      price: totalWithTax,
       noofpackage: totalPackages,
 
 
     }));
-  }, [chargeableWeight, totalChargeableAmount, totalPackages]); {/* The dependency array [chargeableWeight] ensures that the effect runs only when chargeableWeight is recalculated. */ }
+  }, [chargeableWeight,totalWithTax,totalPackages]); {/* The dependency array [chargeableWeight] ensures that the effect runs only when chargeableWeight is recalculated. */ }
 
+
+
+  const ORDER_STATUS = {
+    INITIAL: "",
+    PLACED: "Order Placed",
+    DISPATCHED: "Order Dispatched",
+    OUT_FOR_DELIVERY: "Out for Delivery",
+    DELIVERED: "Delivered"
+  };
+
+
+  const getNextAllowedStatuses = (currentStatus) => {
+    switch (currentStatus) {
+      case ORDER_STATUS.INITIAL:
+        return [ORDER_STATUS.PLACED];
+      case ORDER_STATUS.PLACED:
+        return [ORDER_STATUS.PLACED, ORDER_STATUS.DISPATCHED];
+      case ORDER_STATUS.DISPATCHED:
+        return [ORDER_STATUS.DISPATCHED, ORDER_STATUS.OUT_FOR_DELIVERY];
+      case ORDER_STATUS.OUT_FOR_DELIVERY:
+        return [ORDER_STATUS.OUT_FOR_DELIVERY, ORDER_STATUS.DELIVERED];
+      case ORDER_STATUS.DELIVERED:
+        return [ORDER_STATUS.DELIVERED];
+      default:
+        return [ORDER_STATUS.PLACED];
+    }
+  };
+
+  
   return (
     <div className="max-w-full mx-auto p-4 bg-gray-50 shadow-lg shadow-purple-300 rounded-lg">
-      <h1 className="text-center text-2xl font-semibold mb-10">
+      <h1 className="text-center text-2xl font-semibold mb-2">
         Order Details
       </h1>
       <form
@@ -389,17 +390,20 @@ const Addorder = () => {
                 onChange={handleInputChange}
                 placeholder="Consigner Name "
                 className="w-full  p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+               required
               />
               <input
-                type="number"
-
+                type="tel"
                 name="consignermobileNumber"
                 value={formData.consignermobileNumber}
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+                  if (value.length <= 10) {
+                    handleInputChange({ target: { name: e.target.name, value } });
+                  }
+                }}
                 placeholder="Mobile Number"
-                className="w-full  p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+                className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
               />
               <input
                 type="text"
@@ -408,7 +412,7 @@ const Addorder = () => {
                 onChange={handleInputChange}
                 placeholder="Address"
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+                required
               />
               <input
                 type="text"
@@ -417,7 +421,7 @@ const Addorder = () => {
                 onChange={handleInputChange}
                 placeholder="city"
                 className="w-full  p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+                required
               />
               <input
                 type="email"
@@ -436,7 +440,7 @@ const Addorder = () => {
                 value={formData.consignerstate}
                 onChange={handleInputChange}
                 className=" w-full  p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+                required
               >
                 <option value="">Select State</option>
                 {states.length > 0 ? (
@@ -456,7 +460,7 @@ const Addorder = () => {
                 value={formData.consignerdistrict}
                 onChange={handleInputChange}
                 className=" w-full  p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+                required
               >
                 <option value="">Select District</option>
                 {consignerDistricts.length > 0 ? (
@@ -476,7 +480,7 @@ const Addorder = () => {
                 value={formData.consignerpincode}
                 onChange={handleInputChange}
                 className="w-full  p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+                required
               >
                 <option value="">Select Pincode</option>
                 {consignerPincodes.length > 0 ? (
@@ -506,26 +510,36 @@ const Addorder = () => {
                 onChange={handleInputChange}
                 placeholder="Consignee Name"
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+                required
               />
               <input
-                type="number"
+                type="tel"
                 maxlength="10" pattern="\d{10}"
                 name="consigneemobileno"
                 value={formData.consigneemobileno}
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+                  if (value.length <= 10) {
+                    handleInputChange({ target: { name: e.target.name, value } });
+                  }
+                }}
                 placeholder="Mobile Number"
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+               required
               />
               <input
-                type="number"
+                type="tel"
                 name="consigneealterno"
                 value={formData.consigneealterno}
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+                  if (value.length <= 10) {
+                    handleInputChange({ target: { name: e.target.name, value } });
+                  }
+                }}
                 placeholder="Alternate Mobile No"
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+                required
               />
               <input
                 type="text"
@@ -534,7 +548,7 @@ const Addorder = () => {
                 onChange={handleInputChange}
                 placeholder="Address"
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+               required
               />
               <input
                 type="text"
@@ -543,7 +557,7 @@ const Addorder = () => {
                 onChange={handleInputChange}
                 placeholder="city"
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+                required
               />
 
               {/* State Dropdown */}
@@ -552,7 +566,7 @@ const Addorder = () => {
                 value={formData.consigneestate}
                 onChange={handleInputChange}
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+               required
               >
                 <option value="">Select State</option>
                 {states.length > 0 ? (
@@ -568,11 +582,11 @@ const Addorder = () => {
 
               {/* District Dropdown */}
               <select
-                name="consigneedistrict"
-                value={formData.consigneedistrict}
+                name="consigneeedistrict"
+                value={formData.consigneeedistrict}
                 onChange={handleInputChange}
                 className="w-full  p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+               required
               >
                 <option value="">Select District</option>
                 {consigneeDistricts.length > 0 ? (
@@ -592,7 +606,7 @@ const Addorder = () => {
                 value={formData.consigneepin}
                 onChange={handleInputChange}
                 className="w-full  p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+                required
               >
                 <option value="">Select Pincode</option>
                 {consigneePincodes.length > 0 ? (
@@ -671,7 +685,7 @@ const Addorder = () => {
                     </td> */}
                       <td className="border border-gray-300 p-2">
                         <input
-                          type="number"
+                          type="tel"
                           value={row.weight}
                           placeholder="Weight"
                           onChange={(e) => updateRow(index, "weight", e.target.value)}
@@ -680,7 +694,7 @@ const Addorder = () => {
                       </td>
                       <td className="border border-gray-300 p-2">
                         <input
-                          type="number"
+                          type="tel"
                           value={row.packages}
                           placeholder="Packages"
                           onChange={(e) => updateRow(index, "packages", e.target.value)}
@@ -747,12 +761,13 @@ const Addorder = () => {
               <div className="grid 2xl:grid-cols-2" >
                 <label className="text-gray-700 text-[15px] ">Price Per (Kg):</label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">₹</span>
+                  <span className="absolute inset-x-0 left-0 flex items-center pl-3 text-gray-500">₹</span>
                   <input
-                    type="number"
+                    type="tel"
                     value={freightRate}
                     onChange={(e) => setFreightRate(parseFloat(e.target.value))}
                     className="pl-8 pr-2 py-1 border border-gray-300 rounded-md bg-purple-50 w-32 ml-2"
+
                   />
                 </div>
               </div>
@@ -760,9 +775,9 @@ const Addorder = () => {
                 <div className="grid 2xl:grid-cols-2" >
                   <label className="text-gray-700 ml-10 text-[15px]">Tax Rate (%):</label>
                   <input
-                    type="number"
+                    type="tel"
                     value={taxRate}
-                    onChange={(e) => setTaxRate(parseFloat(e.target.value) / 100)}
+                    onChange={(e) => setTaxRate(parseFloat(e.target.value))}
                     className="pl-2 pr-2 py-1 border border-gray-300 rounded-md bg-purple-50 w-32 ml-2"
                     placeholder=""
                   />
@@ -830,10 +845,10 @@ const Addorder = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-9 md:grid-cols-5 gap-2">
+        <div className="grid grid-cols-1 lg:grid-cols-8 md:grid-cols-5 gap-2">
 
 
-          <input
+          {/* <input
             type="text"
             name="productname"
             value={formData.productname}
@@ -841,11 +856,11 @@ const Addorder = () => {
             placeholder="Package Name"
             className=" p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
           // required
-          />
+          /> */}
 
 
           <input
-            type="text"
+            type="tel"
             name="packageWeight"
             value={chargeableWeight > 0 ? `${chargeableWeight}` : formData.packageWeight || ""}
             onChange={handleInputChange}
@@ -854,7 +869,7 @@ const Addorder = () => {
 
           />
           <input
-            type="text"
+            type="tel"
             name="noofpackage"
             value={totalPackages > 0 ? `${totalPackages}` : formData.noofpackage || ""}
             onChange={handleInputChange}
@@ -871,12 +886,14 @@ const Addorder = () => {
            className="w-1/4 p-4 border rounded mb-2"
           />  */}
           <input
-            type="text"
+            type="tel"
             name="price"
-            value={totalChargeableAmount > 0 ? `₹${totalChargeableAmount}` : formData.price || ""}
-            placeholder="Price (₹)"
+            value={totalChargeableAmount > 0 ?`${totalWithTax}` : formData.price || ""}
+            // value={`${totalWithTax}`}
+            placeholder="Price (₹)"  
             onChange={handleInputChange}
             className=" p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
+            required
 
           />
 
@@ -885,7 +902,7 @@ const Addorder = () => {
             value={formData.packagetype}
             onChange={handleInputChange}
             className=" p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-          // required
+            required
           >
             <option>Select package type</option>
             <option>Perishable goods</option>
@@ -911,20 +928,22 @@ const Addorder = () => {
             name="Orderstatus"
             value={formData.Orderstatus}
             onChange={handleInputChange}
-            className="   p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
+            className="p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
             required
           >
             <option value="">Select Order Status</option>
-            <option value="Ordered Placed">Ordered Placed</option>
-            <option value="Ordered Picked">Ordered Picked</option>
-            <option value="Ordered Dispatched">Ordered Dispatched</option>
-            <option value="Out for Delivery">Out for Delivery</option>
-            <option value="Delivered">Delivered</option>
+            {getNextAllowedStatuses(formData.Orderstatus).map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
           </select>
 
-          {formData.Orderstatus === "Ordered Dispatched" && (
+
+
+          {/* {formData.Orderstatus === "Ordered Dispatched" && (
             <>
-              {/* State Dropdown */}
+             
               <select
                 name="dispatchstate"
                 value={formData.dispatchstate}
@@ -944,7 +963,7 @@ const Addorder = () => {
                 )}
               </select>
 
-              {/* District Dropdown */}
+            
               <select
                 name="dispatchdistrict"
                 value={formData.dispatchdistrict}
@@ -963,7 +982,6 @@ const Addorder = () => {
                 )}
               </select>
 
-              {/* Pincode Dropdown */}
               <select
                 name="dispatchpincode"
                 value={formData.dispatchpincode}
@@ -985,7 +1003,7 @@ const Addorder = () => {
                 )}
               </select>
             </>
-          )}
+          )} */}
 
           {formData.Orderstatus === "Delivered" && (
 
@@ -995,9 +1013,61 @@ const Addorder = () => {
               accept="image/*"
               onChange={(e) => setFormData({ ...formData, deliveryimage: e.target.files[0] })}
               className=" p-4 border-2 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2 bg-violet-50"
+              Capture = 'environment'
             />
           )}
+
+
+          {formData.Orderstatus === "Order Placed" && (
+            <select
+              name="currentRegion"
+              value={formData.currentRegion}
+              onChange={handleInputChange}
+              className=" p-4 border-2 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2 bg-violet-50">
+              <option value="">Select Office Region</option>
+              <option value="Ariyalur">Ariyalur</option>
+              <option value="Chengalpattu">Chengalpattu</option>
+              <option value="Chennai">Chennai</option>
+              <option value="Coimbatore">Coimbatore</option>
+              <option value="Cuddalore">Cuddalore</option>
+              <option value="Dharmapuri">Dharmapuri</option>
+              <option value="Dindigul">Dindigul</option>
+              <option value="Erode">Erode</option>
+              <option value="Kallakurichi">Kallakurichi</option>
+              <option value="Kanchipuram">Kanchipuram</option>
+              <option value="Kanniyakumari">Kanniyakumari</option>
+              <option value="Karur">Karur</option>
+              <option value="Krishnagiri">Krishnagiri</option>
+              <option value="Madurai">Madurai</option>
+              <option value="Mayiladuthurai">Mayiladuthurai</option>
+              <option value="Nagapattinam">Nagapattinam</option>
+              <option value="Namakkal">Namakkal</option>
+              <option value="Perambalur">Perambalur</option>
+              <option value="Pudukkottai">Pudukkottai</option>
+              <option value="Ramanathapuram">Ramanathapuram</option>
+              <option value="Ranipet">Ranipet</option>
+              <option value="Salem">Salem</option>
+              <option value="Sivaganga">Sivaganga</option>
+              <option value="Tenkasi">Tenkasi</option>
+              <option value="Thanjavur">Thanjavur</option>
+              <option value="The Nilgiris">The Nilgiris</option>
+              <option value="Theni">Theni</option>
+              <option value="Thiruvallur">Thiruvallur</option>
+              <option value="Thiruvarur">Thiruvarur</option>
+              <option value="Tiruchirappalli">Tiruchirappalli</option>
+              <option value="Tirunelveli">Tirunelveli</option>
+              <option value="Tirupathur">Tirupathur</option>
+              <option value="Tiruppur">Tiruppur</option>
+              <option value="Tiruvannamalai">Tiruvannamalai</option>
+              <option value="Tuticorin">Tuticorin</option>
+              <option value="Vellore">Vellore</option>
+              <option value="Villupuram">Villupuram</option>
+              <option value="Virudhunagar">Virudhunagar</option>
+            </select>
+          )}
         </div>
+
+
 
         {/* Submit Button */}
         <div className="col-span-3 text-center mt-4 p-4 relative">

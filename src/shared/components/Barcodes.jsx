@@ -27,6 +27,7 @@ const Barcodes = ({ barcode, orderId }) => {
     link.click();
     document.body.removeChild(link); // Clean up
   };
+  
 
   return (
     <div className="flex flex-col items-center">
@@ -44,7 +45,7 @@ const Barcodes = ({ barcode, orderId }) => {
             onClick={() => downloadBarcode(barcode, orderId)}
             className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
           >
-            <Barcode />
+            <Barcode size = {15} />
           </button>
         </>
       ) : (

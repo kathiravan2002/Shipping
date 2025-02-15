@@ -1,32 +1,8 @@
-import axios from "axios";
-import React, { useState,useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 
-
-const Userpage = () => {
-    const [user,setUser]= useState([]);
-    const navigate = useNavigate();
-    const edituser = ({ _id }) => {
-        navigate(`/Adduser/${_id}`); // Redirect to Add user page with the user ID
-      };
+const Userpage = (props) => {
    
-  const getuser =async() =>{
-    try{
-        const userdata = await axios.get("http://192.168.29.71:5000/api/add/getuser",{
-          headers : {
-             "Authorization": `Bearer ${localStorage.getItem("authToken")}`
-          }
-    });
-        console.log(userdata.data);
-        setUser(userdata.data || []);
-    }
-    catch(error){
-        console.log("Error fetching user data",error);
-    }
-  };
-   useEffect(()=>{
-    getuser();
-   },[]);
+ const {user,edituser,navigate} = props;
 
   return (
     <>

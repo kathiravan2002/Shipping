@@ -1,49 +1,9 @@
 import React, { useState } from "react";
 import { CornerDownLeft, Trash2 } from "lucide-react";
 
-const Weightmanagement = () => {
-  const [rows, setRows] = useState([
-    { length: "", width: "", height: "", weight: "", packages: "1" },
-  ]);
-  const [freightRate, setFreightRate] = useState("");
-  const [taxRate, setTaxRate] = useState("");
-
-  // Add a new line
-  const addRow = () => {
-    setRows([...rows, { length: "", width: "", height: "", weight: "", packages: "1" }]);
-  };
-
-  // Delete a row
-  const deleteRow = (index) => {
-    setRows(rows.filter((_, i) => i !== index));
-  };
-
-  // Update a row's data
-  const updateRow = (index, field, value) => {
-    const newRows = [...rows];
-    newRows[index][field] = parseFloat(value) || "";
-    setRows(newRows);
-  };
-
-  // Calculate totals
-  const totalPackages = rows.reduce((sum, row) => sum + (parseFloat(row.packages) || 0), 0);
-  const totalWeight = rows.reduce(
-    (sum, row) => sum + (parseFloat(row.weight) || 0) * (parseFloat(row.packages) || 0),
-    0
-  );
-  const totalVolumetricWeight = rows.reduce(
-    (sum, row) =>
-      sum +
-      ((parseFloat(row.length) || 0) * (parseFloat(row.width) || 0) * (parseFloat(row.height) || 0)) /
-      5000 *
-      (parseFloat(row.packages) || 0),
-    0
-  );
-
-  const chargeableWeight = Math.max(totalWeight, totalVolumetricWeight);
-  const totalChargeableAmount = chargeableWeight * (parseFloat(freightRate) || 0);
-  const totalTax = chargeableWeight * (parseFloat(taxRate) || 0);                        //mrng work change the totaltax 
-  const totalWithTax = totalChargeableAmount + totalTax;
+const Weightmanagement = (props) => {
+ 
+  const {totalWithTax,totalTax,totalChargeableAmount,chargeableWeight,rows,totalPackages,totalWeight,totalVolumetricWeight,updateRow,deleteRow,addRow,freightRate,taxRate} = props
 
   return (
     <>
@@ -137,7 +97,7 @@ const Weightmanagement = () => {
               </tr>
             ))}
             <tr className="bg-gray-100">
-              <td className="border border-gray-300 p-2" colSpan="6">
+              <td className="border border-gray-300 p-2" colSpan="5">
                 Totals
               </td>
               <td className="border border-gray-300 p-2">{totalPackages}</td>
@@ -186,7 +146,7 @@ const Weightmanagement = () => {
             <input
               type="number"
               value={taxRate}
-              onChange={(e) => setTaxRate(parseFloat(e.target.value) / 100)}
+              onChange={(e) => setTaxRate(parseFloat(e.target.value))}
               className="pl-2 pr-2 py-1 border border-gray-300 rounded-md bg-purple-100 w-32"
               placeholder=""
             />
