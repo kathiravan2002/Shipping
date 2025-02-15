@@ -1,10 +1,19 @@
 import React from "react";
 import Home from "../../shared/components/Home";
+import { useNavigate } from "react-router-dom";
 
-function Homepage({isLoggedIn, onLogout}) {
+function Homepage( ) {
+  
+  const navigate = useNavigate();
+  const scrolltotop = () => {
+
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+
+  }
+
   return (
     <div>
-      <Home isLoggedIn={isLoggedIn} onLogout={onLogout} />
+      <Home navigate={navigate} scrolltotop={scrolltotop} />
     </div>
   );
 }

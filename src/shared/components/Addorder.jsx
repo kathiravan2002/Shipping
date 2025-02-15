@@ -2,37 +2,10 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
-import { Dialog } from 'primereact/dialog';
 import { CornerDownLeft, Trash } from 'lucide-react';
 const Addorder = () => {
-  const { id } = useParams(); // Get the order ID from the URL
-  const [formData, setFormData] = useState({
-    ConsignerName: "",
-    consignermobileNumber: "",
-    consignerAddress: "",
-    consignercity: "",
-    consignermail: "",
-    consignerdistrict: "",
-    consignerstate: "",
-    consignerpincode: "",
-    Consigneename: "",
-    consigneemobileno: "",
-    consigneealterno: "",
-    consigneedistrict: "",
-    consigneeaddress: "",
-    consigneecity: "",
-    consigneestate: "",
-    consigneepin: "",
-    productname: "",
-    noofpackage: "",
-    packageWeight: "",
-    packagetype: "",
-    price: "",
-    Orderstatus: "",
-    dispatchstate: "",
-    dispatchdistrict: "",
-    dispatchpincode: "",
-    deliveryimage: ""
+  const { id } = useParams(); 
+  const [formData, setFormData] = useState({  ConsignerName: "",  consignermobileNumber: "",  consignerAddress: "",  consignercity: "",  consignermail: "",  consignerdistrict: "",  consignerstate: "",  consignerpincode: "",  Consigneename: "",  consigneemobileno: "",  consigneealterno: "",  consigneedistrict: "",  consigneeaddress: "",  consigneecity: "",  consigneestate: "",  consigneepin: "",  productname: "",  noofpackage: "",  packageWeight: "",  packagetype: "",  price: "",  Orderstatus: "",  dispatchstate: "",  dispatchdistrict: "",  dispatchpincode: "",  deliveryimage: "" , currentRegion: ""
   });
 
   const [apiData, setApiData] = useState([]);
@@ -46,8 +19,6 @@ const Addorder = () => {
   const [isDataSubmitted, setIsDataSubmitted] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
   const navigate = useNavigate();
-  const [pinapidata, setpinapidata] = ([])
-
 
   // Function to convert strings to sentence case
   const toSentenceCase = (str) =>
@@ -174,7 +145,7 @@ const Addorder = () => {
       const fetchOrderDetails = async () => {
         try {
           const response = await axios.get(
-            `http://192.168.29.11:5000/api/order/${id}`
+            `http://192.168.29.12:5000/api/order/${id}`
           );
           setFormData(response.data); // Pre-fill the form
         } catch (error) {
@@ -219,6 +190,7 @@ const Addorder = () => {
     formDataWithImage.append("consigneealterno", formData.consigneealterno);
     formDataWithImage.append("consigneedistrict", formData.consigneedistrict);
     formDataWithImage.append("consigneeaddress", formData.consigneeaddress);
+    formDataWithImage.append("consigneecity", formData.consigneecity);
     formDataWithImage.append("consigneestate", formData.consigneestate);
     formDataWithImage.append("consigneepin", formData.consigneepin);
     formDataWithImage.append("productname", formData.productname);
@@ -238,13 +210,13 @@ const Addorder = () => {
     try {
       if (id) {
         console.log("UpdatedOrder",formData)
-        await axios.put(`http://192.168.29.11:5000/api/order/${id}`,formDataWithImage,{
+        await axios.put(`http://192.168.29.12:5000/api/order/${id}`,formDataWithImage,{
           headers: { "Content-Type": "multipart/form-data" },
         });
         toast.success("Order updated successfully!");
       } else {
         // Add new order
-        await axios.post(`http://192.168.29.11:5000/api/order/createorder`, formData,{
+        await axios.post(`http://192.168.29.12:5000/api/order/createorder`, formData,{
           headers : {
              "Authorization": `Bearer ${localStorage.getItem("authToken")}`
           }
@@ -252,7 +224,7 @@ const Addorder = () => {
         toast.success("Form submitted successfully!");
       }
 
-      navigate("/orders");
+      // navigate("/Order");
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("Failed to submit order.");
@@ -264,7 +236,7 @@ const Addorder = () => {
     setTimeout(() => {
       navigate("/Order");
       setIsNavigating(false);
-    }, 500); // Ad
+    }, 500);  
 
   };
 
@@ -312,16 +284,12 @@ const Addorder = () => {
       setTimeout(() => {
         navigate("/Order");
         // setIsNavigating(false);
-      }, 1000); // Delay navigation
+      }, 1000); 
     }
 
   };
   console.log(formData);
-  //Dialogbox for weight calculation
-  const [visible, setVisible] = useState(false);
   // weight calculation
-
-
   const [rows, setRows] = useState([
     { length: "", width: "", height: "", weight: "", packages: "" },
   ]);
@@ -331,7 +299,7 @@ const Addorder = () => {
 
   // Add a new line
   const addRow = () => {
-    setRows([...rows, { length: "", width: "", height: "", weight: "", packages: "1" }]);
+    setRows([...rows, { length: "", width: "", height: "", weight: "", packages: "" }]);
   };
 
   // Delete a row
@@ -358,19 +326,46 @@ const Addorder = () => {
 
   const chargeableWeight = Math.max(totalWeight, totalVolumetricWeight);
   const totalChargeableAmount = chargeableWeight * (parseFloat(freightRate) || 0);
-  const totalTax = chargeableWeight * (parseFloat(taxRate) || 0);                        //mrng work change the totaltax 
+  const totalTax = totalChargeableAmount * (parseFloat(taxRate) / 100 || 0);                        
   const totalWithTax = totalChargeableAmount + totalTax;
   // Update formData's packageWeight whenever chargeableWeight changes
   useEffect(() => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       packageWeight: chargeableWeight, // Update packageWeight
-      price: totalChargeableAmount,
+      price: totalWithTax,
       noofpackage: totalPackages,
 
 
     }));
-  }, [chargeableWeight, totalChargeableAmount, totalPackages]); {/* The dependency array [chargeableWeight] ensures that the effect runs only when chargeableWeight is recalculated. */ }
+  }, [chargeableWeight, totalWithTax, totalPackages]); {/* The dependency array [chargeableWeight] ensures that the effect runs only when chargeableWeight is recalculated. */ }
+
+  const ORDER_STATUS = {
+    INITIAL: "",
+    PLACED: "Order Placed",
+    DISPATCHED: "Order Dispatched",
+    OUT_FOR_DELIVERY: "Out for Delivery",
+    DELIVERED: "Delivered"
+  };
+
+
+  const getNextAllowedStatuses = (currentStatus) => {
+    switch (currentStatus) {
+      case ORDER_STATUS.INITIAL:
+        return [ORDER_STATUS.PLACED];
+      case ORDER_STATUS.PLACED:
+        return [ORDER_STATUS.PLACED, ORDER_STATUS.DISPATCHED];
+      case ORDER_STATUS.DISPATCHED:
+        return [ORDER_STATUS.DISPATCHED, ORDER_STATUS.OUT_FOR_DELIVERY];
+      case ORDER_STATUS.OUT_FOR_DELIVERY:
+        return [ORDER_STATUS.OUT_FOR_DELIVERY, ORDER_STATUS.DELIVERED];
+      case ORDER_STATUS.DELIVERED:
+        return [ORDER_STATUS.DELIVERED];
+      default:
+        return [ORDER_STATUS.PLACED];
+    }
+  };
+
 
   return (
     <div className="max-w-full mx-auto p-4 bg-gray-50 shadow-lg shadow-purple-300 rounded-lg">
@@ -393,17 +388,20 @@ const Addorder = () => {
                 onChange={handleInputChange}
                 placeholder="Consigner Name "
                 className="w-full  p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               />
               <input
-                type="number"
-
+                type="tel"
                 name="consignermobileNumber"
                 value={formData.consignermobileNumber}
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  const value =e.target.value.replace(/\D/g,"");
+                  if (value.length <=10){
+                    handleInputChange({ target : {name: e.target.name ,value}})};
+                  }}
                 placeholder="Mobile Number"
                 className="w-full  p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               />
               <input
                 type="text"
@@ -412,7 +410,7 @@ const Addorder = () => {
                 onChange={handleInputChange}
                 placeholder="Address"
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               />
               <input
                 type="text"
@@ -421,7 +419,7 @@ const Addorder = () => {
                 onChange={handleInputChange}
                 placeholder="city"
                 className="w-full  p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               />
               <input
                 type="email"
@@ -440,7 +438,7 @@ const Addorder = () => {
                 value={formData.consignerstate}
                 onChange={handleInputChange}
                 className=" w-full  p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               >
                 <option value="">Select State</option>
                 {states.length > 0 ? (
@@ -460,7 +458,7 @@ const Addorder = () => {
                 value={formData.consignerdistrict}
                 onChange={handleInputChange}
                 className=" w-full  p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               >
                 <option value="">Select District</option>
                 {consignerDistricts.length > 0 ? (
@@ -480,7 +478,7 @@ const Addorder = () => {
                 value={formData.consignerpincode}
                 onChange={handleInputChange}
                 className="w-full  p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               >
                 <option value="">Select Pincode</option>
                 {consignerPincodes.length > 0 ? (
@@ -510,26 +508,33 @@ const Addorder = () => {
                 onChange={handleInputChange}
                 placeholder="Consignee Name"
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               />
               <input
-                type="number"
-                maxlength="10" pattern="\d{10}"
+                type="tel"
                 name="consigneemobileno"
                 value={formData.consigneemobileno}
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  const value =e.target.value.replace(/\D/g,"");
+                  if (value.length <=10){
+                    handleInputChange({ target : {name: e.target.name ,value}})};
+                  }}
                 placeholder="Mobile Number"
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               />
               <input
-                type="number"
+                type="tel"
                 name="consigneealterno"
                 value={formData.consigneealterno}
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  const value =e.target.value.replace(/\D/g,"");
+                  if (value.length <=10){
+                    handleInputChange({ target : {name: e.target.name ,value}})};
+                  }}
                 placeholder="Alternate Mobile No"
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               />
               <input
                 type="text"
@@ -538,7 +543,7 @@ const Addorder = () => {
                 onChange={handleInputChange}
                 placeholder="Address"
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               />
               <input
                 type="text"
@@ -547,7 +552,7 @@ const Addorder = () => {
                 onChange={handleInputChange}
                 placeholder="city"
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               />
 
               {/* State Dropdown */}
@@ -556,7 +561,7 @@ const Addorder = () => {
                 value={formData.consigneestate}
                 onChange={handleInputChange}
                 className="w-full p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               >
                 <option value="">Select State</option>
                 {states.length > 0 ? (
@@ -576,7 +581,7 @@ const Addorder = () => {
                 value={formData.consigneedistrict}
                 onChange={handleInputChange}
                 className="w-full  p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               >
                 <option value="">Select District</option>
                 {consigneeDistricts.length > 0 ? (
@@ -596,7 +601,7 @@ const Addorder = () => {
                 value={formData.consigneepin}
                 onChange={handleInputChange}
                 className="w-full  p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-              // required
+              required
               >
                 <option value="">Select Pincode</option>
                 {consigneePincodes.length > 0 ? (
@@ -675,20 +680,20 @@ const Addorder = () => {
                     </td> */}
                       <td className="border border-gray-300 p-2">
                         <input
-                          type="number"
+                          type="tel"
                           value={row.weight}
                           placeholder="Weight"
                           onChange={(e) => updateRow(index, "weight", e.target.value)}
-                          className="w-full border p-1 rounded bg-violet-50"
+                          className="w-full border p-1 rounded bg-violet-50"                          
                         />
                       </td>
                       <td className="border border-gray-300 p-2">
                         <input
-                          type="number"
+                          type="tel"
                           value={row.packages}
                           placeholder="Packages"
                           onChange={(e) => updateRow(index, "packages", e.target.value)}
-                          className="w-full  border p-1 rounded bg-violet-50"
+                          className="w-full  border p-1 rounded bg-violet-50"                         
                         />
                       </td>
 
@@ -749,14 +754,15 @@ const Addorder = () => {
             <div className="grid  grid-cols-1 lg:grid-cols-6 md:grid-cols-3 sticky">
               {/* Freight Rate Input */}
               <div className="grid 2xl:grid-cols-2" >
-                <label className="text-gray-700 text-[15px] ">Price Per (Kg):</label>
+                <label className="text-gray-700 text-[15px] ml-10 ">Price Per (Kg):</label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">₹</span>
+                  {/* <span className="absolute inset-x-0 left-0 flex items-center pl-3 text-gray-500">₹</span> */}
                   <input
-                    type="number"
-                    value={freightRate}
+                    type="text"
+                    // value={freightRate}
                     onChange={(e) => setFreightRate(parseFloat(e.target.value))}
-                    className="pl-8 pr-2 py-1 border border-gray-300 rounded-md bg-purple-50 w-32 ml-2"
+                    placeholder="₹"
+                    className="pl-2 pr-2 py-1 border border-gray-300 rounded-md bg-purple-50 w-32 ml-2"
                   />
                 </div>
               </div>
@@ -764,9 +770,9 @@ const Addorder = () => {
                 <div className="grid 2xl:grid-cols-2" >
                   <label className="text-gray-700 ml-10 text-[15px]">Tax Rate (%):</label>
                   <input
-                    type="number"
-                    value={taxRate}
-                    onChange={(e) => setTaxRate(parseFloat(e.target.value) / 100)}
+                    type="tel"
+                    // value={taxRate}
+                    onChange={(e) => setTaxRate(parseFloat(e.target.value))}
                     className="pl-2 pr-2 py-1 border border-gray-300 rounded-md bg-purple-50 w-32 ml-2"
                     placeholder=""
                   />
@@ -775,7 +781,7 @@ const Addorder = () => {
 
               <div>
                 <div className="grid 2xl:grid-cols-2" >
-                  <label className="text-gray-700 ml-10 text-[15px]" >Chargeable Rate (Kg):</label>
+                  <label className="text-gray-700 ml-10 text-[15px]" >Total Weight :</label>
                   <input
                     type="text"
                     value={`${chargeableWeight > 0 ? `${chargeableWeight.toFixed(2)} Kg` : ""}`}
@@ -837,7 +843,7 @@ const Addorder = () => {
         <div className="grid grid-cols-1 lg:grid-cols-9 md:grid-cols-5 gap-2">
 
 
-          <input
+          {/* <input
             type="text"
             name="productname"
             value={formData.productname}
@@ -845,7 +851,7 @@ const Addorder = () => {
             placeholder="Package Name"
             className=" p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
           // required
-          />
+          /> */}
 
 
           <input
@@ -864,7 +870,6 @@ const Addorder = () => {
             onChange={handleInputChange}
             placeholder="No of Packages"
             className=" p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-            
           />
           {/* <input
            type="number"
@@ -877,10 +882,12 @@ const Addorder = () => {
           <input
             type="text"
             name="price"
-            value={totalChargeableAmount > 0 ? `₹${totalChargeableAmount}` : formData.price || ""}
+            value={totalChargeableAmount > 0 ? `₹${totalWithTax}` : formData.price || ""}
+            // value ={`${totalWithTax}`}
             placeholder="Price (₹)"
             onChange={handleInputChange}
             className=" p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
+            required
             
           />
 
@@ -888,8 +895,8 @@ const Addorder = () => {
             name="packagetype"
             value={formData.packagetype}
             onChange={handleInputChange}
-            className=" p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
-          // required
+            className="  py-2 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2 whitespace-normal"
+            required
           >
             <option>Select package type</option>
             <option>Perishable goods</option>
@@ -902,7 +909,7 @@ const Addorder = () => {
             name="instruction"
             value={formData.instruction}
             onChange={handleInputChange}
-            className=" p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
+            className="border-2 py-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2 whitespace-normal"
             required
           >
             <option>Select Handling Instruction</option>
@@ -915,20 +922,17 @@ const Addorder = () => {
             name="Orderstatus"
             value={formData.Orderstatus}
             onChange={handleInputChange}
-            className="   p-4 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2"
+            className="py-2 border-2  bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2 whitespace-normal"
             required
           >
-            <option value="">Select Order Status</option>
-            <option value="Ordered Placed">Ordered Placed</option>
-            <option value="Ordered Picked">Ordered Picked</option>
-            <option value="Ordered Dispatched">Ordered Dispatched</option>
-            <option value="Out for Delivery">Out for Delivery</option>
-            <option value="Delivered">Delivered</option>
+            <option value="">Select Order Status </option>
+            {getNextAllowedStatuses(formData.Orderstatus).map((status) =>(
+              <option key={status} value={status}>{status}</option>
+            ))}
           </select>
-
+{/* 
           {formData.Orderstatus === "Ordered Dispatched" && (
-            <>
-              {/* State Dropdown */}
+            <> 
               <select
                 name="dispatchstate"
                 value={formData.dispatchstate}
@@ -948,7 +952,7 @@ const Addorder = () => {
                 )}
               </select>
 
-              {/* District Dropdown */}
+             
               <select
                 name="dispatchdistrict"
                 value={formData.dispatchdistrict}
@@ -967,7 +971,7 @@ const Addorder = () => {
                 )}
               </select>
 
-              {/* Pincode Dropdown */}
+              
               <select
                 name="dispatchpincode"
                 value={formData.dispatchpincode}
@@ -989,13 +993,63 @@ const Addorder = () => {
                 )}
               </select>
             </>
-          )}
+          )} */}
           {formData.Orderstatus === "Delivered" && (
              <input
             type="file"
             accept="image/*"
             onChange={(e) => setFormData({ ...formData, deliveryimage: e.target.files[0] })}
+            className="px-2 py-2 border-2 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2 bg-violet-50 whitespace-normal"
+            capture = 'environment'
           />
+          )}
+
+          {formData.Orderstatus === "Order Placed" && (
+            <select
+              name="currentRegion"
+              value={formData.currentRegion}
+              onChange={handleInputChange}
+              className=" py-2 border-2 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2 bg-violet-50 whitespace-normal">
+              <option value="">Select Office Region</option>
+              <option value="Ariyalur">Ariyalur</option>
+              <option value="Chengalpattu">Chengalpattu</option>
+              <option value="Chennai">Chennai</option>
+              <option value="Coimbatore">Coimbatore</option>
+              <option value="Cuddalore">Cuddalore</option>
+              <option value="Dharmapuri">Dharmapuri</option>
+              <option value="Dindigul">Dindigul</option>
+              <option value="Erode">Erode</option>
+              <option value="Kallakurichi">Kallakurichi</option>
+              <option value="Kanchipuram">Kanchipuram</option>
+              <option value="Kanniyakumari">Kanniyakumari</option>
+              <option value="Karur">Karur</option>
+              <option value="Krishnagiri">Krishnagiri</option>
+              <option value="Madurai">Madurai</option>
+              <option value="Mayiladuthurai">Mayiladuthurai</option>
+              <option value="Nagapattinam">Nagapattinam</option>
+              <option value="Namakkal">Namakkal</option>
+              <option value="Perambalur">Perambalur</option>
+              <option value="Pudukkottai">Pudukkottai</option>
+              <option value="Ramanathapuram">Ramanathapuram</option>
+              <option value="Ranipet">Ranipet</option>
+              <option value="Salem">Salem</option>
+              <option value="Sivaganga">Sivaganga</option>
+              <option value="Tenkasi">Tenkasi</option>
+              <option value="Thanjavur">Thanjavur</option>
+              <option value="The Nilgiris">The Nilgiris</option>
+              <option value="Theni">Theni</option>
+              <option value="Thiruvallur">Thiruvallur</option>
+              <option value="Thiruvarur">Thiruvarur</option>
+              <option value="Tiruchirappalli">Tiruchirappalli</option>
+              <option value="Tirunelveli">Tirunelveli</option>
+              <option value="Tirupathur">Tirupathur</option>
+              <option value="Tiruppur">Tiruppur</option>
+              <option value="Tiruvannamalai">Tiruvannamalai</option>
+              <option value="Tuticorin">Tuticorin</option>
+              <option value="Vellore">Vellore</option>
+              <option value="Villupuram">Villupuram</option>
+              <option value="Virudhunagar">Virudhunagar</option>
+            </select>
           )}
         </div>
 

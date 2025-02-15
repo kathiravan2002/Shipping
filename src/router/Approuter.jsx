@@ -12,13 +12,13 @@ import ProtectedRoute from './ProtectedRoute';
 import User from '../components/User/User';
 import Adduser from '../shared/components/Adduser'
 import Header from '../core/Header'
-import Deliverpage from "../components/Deliveredpage/Deliverpage"
 import Dispatchpage from '../components/Dispatchedpage/Dispatchpage'
 import Outdeliverypage from '../components/Outdeliverypage/Outdeliverypage'
+import Deliverpage from '../components/deliveredpage/deliverpage'
+import Trackorder from '../shared/components/Trackorder'
+import { Myorder } from '../shared/components/Myorder'
+
  
-
-
-
 function Approuter() {
    
    
@@ -34,10 +34,9 @@ function Approuter() {
     localStorage.removeItem("Region");
     localStorage.removeItem('tokenExpiresAt');
     setIsLoggedIn(false);
-    // navigate('/login');
-    // toast.info('Your session has expired. Please login again.');
-
-    toast.success("Logout successfully!");
+      // window.location.href = "/login";
+    toast.success("Logout successfully!"); 
+  
   };
 
 
@@ -50,6 +49,7 @@ function Approuter() {
            
           <Route path="/" element={<Homepage isLoggedIn={isLoggedIn} onLogout={handleLogout} />}/>
           <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn}  onLogout={handleLogout}/>} />
+          <Route path='/Trackorder' element={<Trackorder/>} />
           {/* <Route path='/header' element={ <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} />} /> */}
           <Route element={ <ProtectedRoute  isLoggedIn={isLoggedIn} onLogout={handleLogout}  ><Main />  </ProtectedRoute> }>
               <Route path="/dashboard" element={<Dashboardpage /> } />
@@ -61,8 +61,7 @@ function Approuter() {
               <Route path="/delivered" element={<Deliverpage/>} />
               <Route path="/dispatched" element={<Dispatchpage/>} />
               <Route path="/outfordelivery" element={<Outdeliverypage/>} />
-
-
+              <Route path="/Myorder" element={ <Myorder />  } />
         </Route>
       </Routes> 
     </BrowserRouter>

@@ -4,19 +4,20 @@
     const [isOpen, setIsOpen] = useState(false);
     const roles = localStorage.getItem("role");
     console.log(roles); 
-    const allowedRoles = ["admin", "manager","deliveryman"];
+    const allowedRoles = ["admin", "manager" ];
+    const allowedsubdist = ["admin", "manager","subdistributor"]
     const menuItems = [
       { name: "Home", icon: "🏠", path: "/" },
       { name: "Dashboard", icon: "📊", path: "/dashboard" },
       ...(allowedRoles.includes(roles)  ? [{ name: "User", icon: "🤵🏻", path: "/User" }] : []),
       ...(allowedRoles.includes(roles) ? [{ name: "Order", icon: "🛒", path: "/Order" }] : []),    
-      { name: "Dispatched order", icon:"📦" , path:"/dispatched"},
+      ...(allowedsubdist.includes(roles) ? [{ name: "Sub Distributor", icon:"📦" , path:"/dispatched"}] : []),
       {name: "Out for Delivery", icon:"📭" ,path:"/outfordelivery"},
       { name: "Delivered order", icon: "🚚", path: "/delivered" },
       { name: "Weight Management", icon: "🗂️", path: "/Weightmanagementpage" },
-      { name: "Buyer Experience", icon: "💬", path: "/Buyer Experience" },
-      { name: "Setting", icon: "⚙️", path: "/Settting" },
-      { name: "Help & Support", icon: "⁉", path: "/Help & Supportt" },
+      // { name: "Buyer Experience", icon: "💬", path: "/Buyer Experience" },
+      // { name: "Setting", icon: "⚙️", path: "/Settting" },
+      // { name: "Help & Support", icon: "⁉", path: "/Help & Supportt" },
     ];
 
     return (

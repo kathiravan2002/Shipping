@@ -1,68 +1,106 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import { Pencil } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { Pencil } from "lucide-react";
+import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
 
-function Dispatched() {
+function Dispatched(props) {
 
-    const [dispatch, setDispatch] = useState([]);
-
-    const navigate = useNavigate();
-
-    const editOrder = ({ _id }) => {
-        navigate(`/Addorder/${_id}`); // Redirect to Add Order page with the order ID
-    };
-    
-    const dispatchregion = localStorage.getItem("Region");
-    if (!dispatchregion) {
-        console.error("No dispatch region found ");
-        return;
-    }
-    console.log(dispatchregion);
-    const fetchdispatched = async () => {
-        const response = await axios.get(`http://192.168.29.11:5000/api/order/orders/dispatche/${dispatchregion}`)
-        setDispatch(response.data);
-
-    }
-
-    useEffect(() => {
-        fetchdispatched();
-    }, []);
+ const { handleInputChange,handleImageUpload,getNextAllowedStatuses,ORDER_STATUS,updateOrder, formData, setFormData, dispatch, visible, setVisible } =props;
 
     return (
-        <div>
-            <h1 className='text-2xl font-bold mb-4'> Dispatched Orders</h1>
-            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
-                {dispatch.map((order, index) => (
-                    <div Key={index} className="border border-violet-500 shadow-violet-700 rounded-lg shadow p-4 bg-white" >
-                        <div>
-                            <div className="flex justify-between">
+        <div className="w-full mx-auto p-4 sm:p-6 bg-white shadow-lg rounded-sm border border-gray-200">
+            <h1 className="text-2xl font-bold mb-4">Dispatched Orders</h1>
 
-                                <h2 className="text-lg font-semibold">Order ID: {order.orderId}</h2>
+            <div className="mt-4 overflow-x-auto">
+                <div className="min-w-full bg-white shadow-lg rounded-lg border border-gray-200">
+                    <Dialog
+                        header="Edit Status"
+                        visible={visible}
+                        onHide={() => setVisible(false)}
+                        style={{ width: "50vw" }}
+                        breakpoints={{ "960px": "75vw", "641px": "100vw" }}
+                    >
+                        <h2 className="text-lg font-semibold mb-2">Update Order Status</h2>
 
-                                <button
-                                    onClick={() => editOrder({ _id: order._id })}
-                                    className=" text-purple-500 "
-                                >
-                                    <Pencil />
-                                </button>
-                            </div>
+                        {/* Dropdown displays selected status + allowed statuses */}
+                        <select
+                            name="Orderstatus"
+                            value={formData.Orderstatus || ""}
+                            onChange={handleInputChange}
+                            className="p-4 border-2 bg-purple-50 rounded mb-4 focus:outline-none focus:ring-purple-400 focus:ring-2 w-full"
+                            required
+                        >
+                            {getNextAllowedStatuses(formData.Orderstatus || ORDER_STATUS.INITIAL).map((status) => (
+                                <option key={status} value={status}>
+                                    {status}
+                                </option>
+                            ))}
+                        </select>
+
+                        {/* Show file input only if status is "Delivered" */}
+                        {formData.Orderstatus === ORDER_STATUS.DELIVERED && (
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                                className="p-4 border-2 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2 bg-violet-50"
+                                capture="environment"
+                            />
+                        )}
+
+                        <div className="flex justify-end">
+                            <Button label="Update Order" onClick={updateOrder} className="p-button-primary" />
                         </div>
-                        <hr />
-                        <p>Consignee Name: {order.Consigneename}</p>
-                        <p>Consignee Mobile no: {order.consigneemobileno}</p>
-                        <p>Consignee Alternate Mobile no: {order.consigneealterno}</p>
-                        <p>Consignee Address: {order.consigneeaddress}</p>
-                        <p>Consignee Address: {order.consigneedistrict}</p>
-                        <p>Consignee Pincode: {order.consigneepin}</p>
-                        <p>Status: <span className="text-green-500">{order.Orderstatus}</span></p>
-                    </div>
-                ))}
-           </div>
+                    </Dialog>
 
+                    <table className="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                {["No", "Order Id", "Consignee Name", "Consignee Mobile no", "Consignee Alternate Mobile no", "Consignee Address", "Consignee District", "Consignee Pincode", "Status", "Action"].map((header) => (
+                                    <th key={header} className="px-4 py-2 text-left font-medium text-gray-500 uppercase whitespace-nowrap">
+                                        {header}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {dispatch.length > 0 ? (
+                                dispatch.map((order, index) => (
+                                    <tr key={order._id}>
+                                        <td className="px-4 py-3 whitespace-nowrap">{index + 1}</td>
+                                        <td className="px-4 py-3 whitespace-nowrap text-sky-700">{order.orderId}</td>
+                                        <td className="px-4 py-3 whitespace-nowrap text-indigo-600">{order.Consigneename}</td>
+                                        <td className="px-4 py-3 whitespace-nowrap">{order.consigneemobileno}</td>
+                                        <td className="px-4 py-3 whitespace-nowrap">{order.consigneealterno}</td>
+                                        <td className="px-4 py-3">{order.consigneeaddress}</td>
+                                        <td className="px-4 py-3 whitespace-nowrap">{order.consigneedistrict}</td>
+                                        <td className="px-4 py-3 whitespace-nowrap">{order.consigneepin}</td>
+                                        <td className="px-4 py-3 whitespace-nowrap text-green-600">{order.Orderstatus}</td>
+                                        <td className="px-4 py-3 whitespace-nowrap">
+                                            <Button
+                                                icon={<Pencil />}
+                                                onClick={() => {
+                                                    setFormData({ ...order });
+                                                    setVisible(true);
+                                                }}
+                                                className="p-button-text"
+                                            />
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="10" className="text-center py-10 text-gray-600">
+                                        No dispatched orders
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    )
+    );
 }
-
 
 export default Dispatched;

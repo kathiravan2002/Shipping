@@ -1,49 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { CornerDownLeft, Trash2 } from "lucide-react";
 
-const Weightmanagement = () => {
-  const [rows, setRows] = useState([
-    { length: "", width: "", height: "", weight: "", packages: "1" },
-  ]);
-  const [freightRate, setFreightRate] = useState("");
-  const [taxRate, setTaxRate] = useState("");
-
-  // Add a new line
-  const addRow = () => {
-    setRows([...rows, { length: "", width: "", height: "", weight: "", packages: "1" }]);
-  };
-
-  // Delete a row
-  const deleteRow = (index) => {
-    setRows(rows.filter((_, i) => i !== index));
-  };
-
-  // Update a row's data
-  const updateRow = (index, field, value) => {
-    const newRows = [...rows];
-    newRows[index][field] = parseFloat(value) || "";
-    setRows(newRows);
-  };
-
-  // Calculate totals
-  const totalPackages = rows.reduce((sum, row) => sum + (parseFloat(row.packages) || 0), 0);
-  const totalWeight = rows.reduce(
-    (sum, row) => sum + (parseFloat(row.weight) || 0) * (parseFloat(row.packages) || 0),
-    0
-  );
-  const totalVolumetricWeight = rows.reduce(
-    (sum, row) =>
-      sum +
-      ((parseFloat(row.length) || 0) * (parseFloat(row.width) || 0) * (parseFloat(row.height) || 0)) /
-      5000 *
-      (parseFloat(row.packages) || 0),
-    0
-  );
-
-  const chargeableWeight = Math.max(totalWeight, totalVolumetricWeight);
-  const totalChargeableAmount = chargeableWeight * (parseFloat(freightRate) || 0);
-  const totalTax = chargeableWeight * (parseFloat(taxRate) || 0);                        //mrng work change the totaltax 
-  const totalWithTax = totalChargeableAmount + totalTax;
+const Weightmanagement = ({rows,freightRate,setFreightRate,taxRate,setTaxRate,addRow,deleteRow,updateRow,totalPackages,totalWeight,totalVolumetricWeight,chargeableWeight,totalChargeableAmount,totalTax,totalWithTax}) => {
+  
 
   return (
     <>

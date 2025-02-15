@@ -22,7 +22,7 @@ const Adduser = () => {
   // Fetch user details if `id` is present
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`http://192.168.29.11:5000/api/add/${id}`);
+      const response = await axios.get(`http://192.168.29.12:5000/api/add/${id}`);
       setUser(response.data); // Assuming `response.data` contains the user object
     } catch (error) {
       toast.error("Failed to fetch user details. Please try again.");
@@ -48,8 +48,7 @@ const Adduser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validateInputs = () => {
-      if (!user.Name) return "Name is required.";
-      if (!user.email.match(/^\S+@\S+\.\S+$/)) return "Invalid email format.";
+      
       if (user.password.length < 6) return "Password must be at least 6 characters.";
       if (!user.ContactNo.match(/^\d{10}$/)) return "Contact number must be 10 digits.";
       return null;
@@ -66,7 +65,7 @@ const Adduser = () => {
       if (id) {
         // Update user
         await axios.put(
-          `http://192.168.29.11:5000/api/add/${id}`,user,{
+          `http://192.168.29.12:5000/api/add/${id}`,user,{
             headers : {
                "Authorization": `Bearer ${localStorage.getItem("authToken")}`
             }
@@ -75,7 +74,7 @@ const Adduser = () => {
         navigate("/User");
       }
       else{
-        await axios.post(`http://192.168.29.11:5000/api/add/adduser`, user,{
+        await axios.post(`http://192.168.29.12:5000/api/add/adduser`, user,{
           headers : {
              "Authorization": `Bearer ${localStorage.getItem("authToken")}`
           }
@@ -148,11 +147,14 @@ const Adduser = () => {
             <label className="block text-sm font-medium text-gray-700">
               Contact No <span className="text-red-500">*</span>
             </label>
-            <input
-              type="number"
+            <input type="number" maxlength="12"  
               name="ContactNo"
               value={user.ContactNo}
-              onChange={handleChange}
+              onChange= {(e) => {
+                if(e.target.value.length <= 10){
+                  handleChange(e);
+                }
+              }}
               placeholder="Contact Number"
               className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-purple-700 focus:ring-2"
               required
@@ -196,6 +198,7 @@ const Adduser = () => {
               <option value="admin">Admin</option>
               <option value="user">User</option>
               <option value="manager">Manager</option>
+              <option value="subdistributor">Sub Distributor</option>
               <option value="deliveryman">Delivery man</option>
             </select>
           </div>
@@ -203,13 +206,51 @@ const Adduser = () => {
             <label className="block text-sm font-medium text-gray-700">
              Region
             </label>
-            <input
-              type="text"
+            <select               
               name="region"
               value={user.region}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-purple-700 focus:ring-2"
-            />
+              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-purple-700 focus:ring-2">
+                 <option value="">Select Region</option>
+                 <option value="Ariyalur">Ariyalur</option>
+                 <option value="Chengalpattu">Chengalpattu</option>
+                 <option value="Chennai">Chennai</option>
+                 <option value="Coimbatore">Coimbatore</option>
+                 <option value="Cuddalore">Cuddalore</option>
+                 <option value="Dharmapuri">Dharmapuri</option>
+                 <option value="Dindigul">Dindigul</option>
+                 <option value="Erode">Erode</option>
+                 <option value="Kallakurichi">Kallakurichi</option>
+                 <option value="Kanchipuram">Kanchipuram</option>
+                 <option value="Kanniyakumari">Kanniyakumari</option>
+                 <option value="Karur">Karur</option>
+                 <option value="Krishnagiri">Krishnagiri</option>
+                 <option value="Madurai">Madurai</option>
+                 <option value="Mayiladuthurai">Mayiladuthurai</option>
+                 <option value="Nagapattinam">Nagapattinam</option>
+                 <option value="Namakkal">Namakkal</option>
+                 <option value="Perambalur">Perambalur</option>
+                 <option value="Pudukkottai">Pudukkottai</option>
+                 <option value="Ramanathapuram">Ramanathapuram</option>
+                 <option value="Ranipet">Ranipet</option>
+                 <option value="Salem">Salem</option>
+                 <option value="Sivaganga">Sivaganga</option>
+                 <option value="Tenkasi">Tenkasi</option>
+                 <option value="Thanjavur">Thanjavur</option>
+                 <option value="The Nilgiris">The Nilgiris</option>
+                 <option value="Theni">Theni</option>
+                 <option value="Thiruvallur">Thiruvallur</option>
+                 <option value="Thiruvarur">Thiruvarur</option>
+                 <option value="Tiruchirappalli">Tiruchirappalli</option>
+                 <option value="Tirunelveli">Tirunelveli</option>
+                 <option value="Tirupathur">Tirupathur</option>
+                 <option value="Tiruppur">Tiruppur</option>
+                 <option value="Tiruvannamalai">Tiruvannamalai</option>
+                 <option value="Tuticorin">Tuticorin</option>
+                 <option value="Vellore">Vellore</option>
+                 <option value="Villupuram">Villupuram</option>
+                 <option value="Virudhunagar">Virudhunagar</option>
+              </select>
           </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium text-gray-700">
