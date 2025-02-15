@@ -4,9 +4,11 @@ import mongoose from "mongoose";
 import path from "path";
 import order from "../models/orderschema.js"
 import { fileURLToPath } from "url";
+import bwipjs from "bwip-js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+
 export const generateinvoice = async (req, res) => {
     try {
       const { id } = req.params;
@@ -22,6 +24,30 @@ export const generateinvoice = async (req, res) => {
       }
   
       console.log('Invoice order data:', invoiceorder);
+
+      const barcodeData = `ID:${invoiceorder.orderId}`;
+      const barcodeBuffer = await new Promise((resolve, reject) => {
+        bwipjs.toBuffer(
+          {
+            bcid: 'code128',
+            text: barcodeData,
+            scale: 5,               // Increased scale further
+            height: 50,             // Increased height significantly
+            width: 200,             // Adjusted width
+            // includetext: true,
+            textalign: "center",    
+            textsize: 15         // Increased text size
+          },
+          (err, png) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(png);
+            }
+          }
+        );
+      });
+      const barcodeBase64 = `data:image/png;base64,${barcodeBuffer.toString('base64')}`
   
       const browser = await puppeteer.launch({ headless: true });
       const page = await browser.newPage();
@@ -46,26 +72,47 @@ export const generateinvoice = async (req, res) => {
                     padding: 20px;
                     border-radius: 5px;
                 }
-                header {
+                .top-section {
                     display: flex;
                     justify-content: space-between;
-                    align-items: center;
+                    align-items: flex-start;
+                    margin-bottom: 20px;
                 }
-                header img {
-                    max-width: 60px;
+                .logo {
+                    width: 60px;
+                    height: 60px;
+                }
+                .invoice-details {
+                    text-align: right;
                 }
                 .invoice-no {
                     font-size: 14px;
-                    font-weight: bold;
+                    margin-bottom: 10px;
                 }
+                .barcode-container {
+                    margin-top: 5px;
+                }
+                .barcode-container img {
+                    width: 200px;    /* Adjusted width */
+                    height: 50px;   /* Increased height */
+                }
+                  .barcode-container p{
+                  margin-right: 30px;
+               
+                  }
                 h1 {
                     text-align: center;
                     font-size: 24px;
+                    margin: 20px 0;
                 }
                 .billing-info {
                     display: flex;
                     justify-content: space-between;
                     margin-bottom: 20px;
+                }
+                .billing-info > div {
+                    flex: 1;
+                    padding: 10px;
                 }
                 table {
                     width: 100%;
@@ -83,16 +130,22 @@ export const generateinvoice = async (req, res) => {
                     font-weight: bold;
                 }
                 tbody td {
-                        text-align: center;
-                    }
+                    text-align: center;
+                }
             </style>
         </head>
         <body>
             <div class="invoice">
-                <header>
-                    <img src="https://img.freepik.com/premium-vector/courier-logo-design_139869-1383.jpg" alt="Logo" width="50px" height="50px"> 
-                    <div class="invoice-no">Invoice No: ${invoiceorder.invoiceNo}</div>
-                </header>
+                <div class="top-section">
+                    <img class="logo" src="https://img.freepik.com/premium-vector/courier-logo-design_139869-1383.jpg" alt="Logo">
+                    <div class="invoice-details">
+                        <div class="invoice-no">Invoice No: ${invoiceorder.invoiceNo}</div>
+                        <div class="barcode-container">
+                            <img src="${barcodeBase64}" alt="barcode">
+                            <p>  ${invoiceorder.orderId}</p>
+                        </div>
+                    </div>
+                </div>
                 <h1>Courier Invoice</h1>
                 <p><strong>Date:</strong> ${invoiceorder.orderDate}</p>
                 <div class="billing-info">
@@ -114,20 +167,20 @@ export const generateinvoice = async (req, res) => {
                 <table>
                     <thead>
                         <tr>
-                            <th>Product</th>
+                            <th>Package Type</th>
                             <th>Quantity</th>
                             <th>Total weight</th>
                             <th>Price</th>
                         </tr>
                     </thead>
-                      <tbody>  <tr>
-                         <td>${invoiceorder.productname}</td>
-                          <td>${invoiceorder.noofpackage}</td> 
-                          <td>${invoiceorder.packageWeight}</td> 
-                          <td>${invoiceorder.price}</td> 
-                          </tr>
-                           </tbody>  
-  
+                    <tbody>
+                        <tr>
+                            <td>${invoiceorder.packagetype}</td>
+                            <td>${invoiceorder.noofpackage}</td> 
+                            <td>${invoiceorder.packageWeight}</td> 
+                            <td>${invoiceorder.price}</td> 
+                        </tr>
+                    </tbody>  
                     <tfoot>
                         <tr>
                             <td colspan="3">Total Price</td>
@@ -137,21 +190,20 @@ export const generateinvoice = async (req, res) => {
                 </table>
             </div>
         </body>
-        </html> `
-        ;
+        </html>`;
+      
       await page.setContent(htmlContent, { waitUntil: 'load' });
   
       const pdfDir = path.resolve(__dirname, '../invoices');
       const pdfPath = path.join(pdfDir, `invoice_${invoiceorder.orderId}.pdf`);
       
-  
       if (!fs.existsSync(pdfDir)) {
         fs.mkdirSync(pdfDir);
       }
   
       await page.pdf({
         path: pdfPath,
-        format: 'A4',
+        format: 'A5',
         printBackground: true,
       });
   
@@ -167,4 +219,4 @@ export const generateinvoice = async (req, res) => {
       console.error('Error generating invoice:', error);
       res.status(500).json({ error: 'Failed to generate invoice', details: error.message });
     }
-  };
+};

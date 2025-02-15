@@ -1,8 +1,10 @@
-// const mongoose = require("mongoose");
 import mongoose from "mongoose";
+import Adduser from "../models/adduserschema.js";
 
 const orderschema = mongoose.Schema({
+
     orderId:  String,
+
     ConsignerName: String,
 
     consignermobileNumber: String,
@@ -45,23 +47,50 @@ const orderschema = mongoose.Schema({
 
     Orderstatus : String,
 
+    consignercity : String,
+
+    consigneecity : String,
+
 
     orderDate: {
-        type: Date,
-        default: Date.now
+        type: String ,
+        default: () => {
+            const today = new Date();
+            return today.toISOString().split("T")[0];
+        } 
     },
     invoiceNo: {
         type :String
     },
+   
+    todayorderDate : {
+        type: Date,
+        default:Date.now,
+    },
+
     dispatchpincode : String,
     
     dispatched: String,
 
     deliveryimage : String,
+
+    currentRegion : String,
+    
+    statusHistory: [{
+        status: String,
+        timestamp: {
+            type: Date,
+            default: Date.now
+        },
+        location: String,
+        notes: String
+    }]
+
+    
         
    
 
-})
+});
 
 const Order = mongoose.model("order", orderschema);
 export default Order;

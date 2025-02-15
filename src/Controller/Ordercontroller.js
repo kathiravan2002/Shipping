@@ -6,22 +6,24 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import Adduser from "../models/adduserschema.js";
+import bwipjs from "bwip-js"
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const generateOrderId = () => {
   const timestamp = moment().tz("Asia/Kolkata").format("YYYYMMDDHHmmss");
-  return `ORD-${timestamp}`;
+  return `ORD${timestamp}`;
 };
 
 const generateInvoiceId = () => {
   const timestamp = moment().tz("Asia/Kolkata").format("YYYYMMDDHHmmss");
-  return `INV-${timestamp}`;
+  return `INV${timestamp}`;
 };
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Save files in "uploads" directory
+    cb(null, "uploads/");  
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -30,90 +32,202 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 },  
 });
 
 export const createorder = async (req, res) => {
   try {
-    console.log("REQ BODY:", req.body);
+      console.log("REQ BODY:", req.body);
+      const orderId = generateOrderId();
+      const invoiceNo = generateInvoiceId();
+      console.log(`Order ID: ${orderId}, Invoice No: ${invoiceNo}`);
 
-    const orderId = generateOrderId();
-    const invoiceNo = generateInvoiceId();
+      const initialStatus = {
+          status: "Order Placed",
+          timestamp: new Date(),
+          location: req.body.consignercity,
+          notes: "Order has been placed successfully"
+      };
 
-    console.log(`Order ID: ${orderId}, Invoice No: ${invoiceNo}`);
+      const newOrder = new Order({
+          ...req.body,
+          orderId,
+          invoiceNo,
+          Orderstatus: "Order Placed",
+          statusHistory: [initialStatus]
+      });
 
-    const newOrder = new Order({
-      ...req.body,
-      orderId,
-      invoiceNo,
-    });
-
-    const savedOrder = await newOrder.save();
-    console.log(savedOrder);
-    res.status(201).json(savedOrder);
+      const savedOrder = await newOrder.save();
+      console.log(savedOrder);
+      res.status(201).json(savedOrder);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+      console.error(err);
+      res.status(500).json({ error: err.message });
   }
 };
+
 
 export const updateorder = async (req, res) => {
   try {
-    const imagePath = req.file
-      ? `/uploads/${req.file.filename}`
-      : req.body.deliveryimage; // Keep old image if not updated
+      const imagePath = req.file
+          ? `/uploads/${req.file.filename}`
+          : req.body.deliveryimage;
 
-    const updatedOrder = await Order.findByIdAndUpdate(
-      req.params.id,
-      { ...req.body, deliveryimage: imagePath }, // Include image update
-      { new: true }
-    );
+      // Create new status history entry if status is changing
+      const currentOrder = await Order.findById(req.params.id);
+      if (currentOrder && req.body.Orderstatus && currentOrder.Orderstatus !== req.body.Orderstatus) {
+          const newStatus = {
+              status: req.body.Orderstatus,
+              timestamp: new Date(),
+              location: req.body.currentRegion || currentOrder.currentRegion,
+              notes: req.body.statusNotes || `Order status updated to ${req.body.Orderstatus}`
+          };
 
-    if (!updatedOrder) {
-      return res.status(404).json({ error: "Order not found" });
-    }
+          // Update the order with new status history
+          const updatedOrder = await Order.findByIdAndUpdate(
+              req.params.id,
+              {
+                  ...req.body,
+                  deliveryimage: imagePath,
+                  $push: { statusHistory: newStatus }
+              },
+              { new: true }
+          );
 
-    res.json(updatedOrder);
+          if (!updatedOrder) {
+              return res.status(404).json({ error: "Order not found" });
+          }
+          res.json(updatedOrder);
+      } else {
+          // If no status change, update other fields normally
+          const updatedOrder = await Order.findByIdAndUpdate(
+              req.params.id,
+              { ...req.body, deliveryimage: imagePath },
+              { new: true }
+          );
+          if (!updatedOrder) {
+              return res.status(404).json({ error: "Order not found" });
+          }
+          res.json(updatedOrder);
+      }
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+      console.error(err);
+      res.status(500).json({ error: err.message });
   }
-};
+}
 
-// Fetch all orders
 export const getorder = async (req, res) => {
   try {
-    const orders = await Order.find();
-    res.status(200).json(orders);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    let query = {};
+    let total = 0;
+    let orders;
+
+    if (req.params.region === "admin") {
+      query = {};
+      total = await Order.countDocuments(query);
+      orders = await Order.find(query)
+        .skip(skip)
+        .limit(limit)
+        .sort({ orderDate: -1 });
+    } else {
+      const regionn = await Adduser.findOne({ region: req.params.region });
+      
+      if (!regionn) {
+        return res.status(404).json({ message: "Region not found" });
+      }
+
+      query = {
+        $or: [
+          { currentRegion: regionn.region },
+          { consigneedistrict: regionn.region }
+        ]
+      };
+
+      total = await Order.countDocuments(query);
+      orders = await Order.find(query)
+        .skip(skip)
+        .limit(limit)
+        .sort({ orderDate: -1 });
+
+      if (orders.length === 0) {
+        return res.json({
+          order: [],
+          total: 0,
+          page: page,
+          totalPages: 0,
+          limit: limit
+        });
+      }
+    }
+
+    // Update order region if dispatched
+    await Promise.all(
+      orders.map(async (order) => {
+        if (order.Orderstatus === "Order Dispatched" && 
+            order.currentRegion !== order.consigneedistrict) {
+          await Order.updateOne(
+            { orderId: order.orderId },
+            { 
+              $set: { 
+                currentRegion: order.currentRegion,
+                lastUpdated: new Date()
+              }
+            }
+          );
+        }
+      })
+    );
+
+    // Get the updated orders after modifications
+    const updatedOrders = await Order.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ orderDate: -1 });
+
+    return res.status(200).json({
+      order: updatedOrders,
+      total: total,
+      page: page,
+      totalPages: Math.ceil(total / limit),
+      limit: limit
+    });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ 
+      error: err.message,
+      message: 'Error retrieving orders'
+    });
   }
 };
+
 
 export const searchorder = async (req, res) => {
   try {
     const { search } = req.query;
 
-    // If search query is empty, return all orders
+    
     if (!search) {
       const orders = await Order.find();
       return res.json(orders);
     }
-
-    // Build a search condition for multiple fields
+ 
     const searchCondition = {
       $or: [
         { orderId: { $regex: search, $options: "i" } },
-        { ConsignerName: { $regex: search, $options: "i" } }, // Example of field to search for
-        { consignermobileNumber: { $regex: search, $options: "i" } }, // Another example field
-        { email: { $regex: search, $options: "i" } }, // Example field
+        { ConsignerName: { $regex: search, $options: "i" } },  
+        { consignermobileNumber: { $regex: search, $options: "i" } },  
+        { email: { $regex: search, $options: "i" } }, 
       ],
     };
 
-    const orders = await Order.find(searchCondition); // Search the orders collection
+    const orders = await Order.find(searchCondition);  
 
-    // Send the result as a JSON response
+    
     res.json(orders);
   } catch (err) {
     console.error(err);
@@ -121,37 +235,204 @@ export const searchorder = async (req, res) => {
   }
 };
 
+export const getfilter = async (req, res) => {
+  try {
+      const {
+          page = 1,
+          limit = 10,
+          sortField,
+          sortOrder,
+          status,
+          search,
+          filters,
+          region
+      } = req.query;
+
+      // Base query
+      let query = {};
+      
+      // Always apply region filter for non-admin users
+      if (region !== 'admin') {
+          const regionUser = await Adduser.findOne({ region: region });
+          if (!regionUser) {
+              return res.status(404).json({ message: "Region not found" });
+          }
+          query.$and = [{ 
+              $or: [
+                  { currentRegion: regionUser.region },
+                  { consigneedistrict: regionUser.region }
+              ]
+          }];
+      }
+
+      // Add search conditions if search exists
+      if (search && search.trim()) {
+          const searchRegex = { $regex: search, $options: 'i' };
+          const searchQuery = {
+              $or: [
+                  { orderId: searchRegex },
+                  { ConsignerName: searchRegex },
+                  { Consigneename: searchRegex },
+                  { consignermobileNumber: searchRegex },
+                  { consignermail: searchRegex },
+                  { consigneemobileno: searchRegex },
+                  { consignercity: searchRegex },
+                  { consigneecity: searchRegex }
+              ]
+          };
+
+          if (query.$and) {
+              query.$and.push(searchQuery);
+          } else {
+              query = searchQuery;
+          }
+      }
+
+      // Add status filter if exists
+      if (status && status.trim() && status !== ' ') {
+          const statusFilter = { Orderstatus: status };
+          if (query.$and) {
+              query.$and.push(statusFilter);
+          } else {
+              query.$and = [statusFilter];
+          }
+      }
+
+      // Process additional filters
+      if (filters) {
+          try {
+              const parsedFilters = JSON.parse(filters);
+              const filterConditions = Object.entries(parsedFilters)
+                  .filter(([_, filter]) => filter.value && filter.value.trim())
+                  .map(([field, filter]) => ({
+                      [field]: {
+                          $regex: filter.value,
+                          $options: 'i'
+                      }
+                  }));
+
+              if (filterConditions.length > 0) {
+                  if (query.$and) {
+                      query.$and.push(...filterConditions);
+                  } else {
+                      query.$and = filterConditions;
+                  }
+              }
+          } catch (error) {
+              console.error('Error parsing filters:', error);
+          }
+      }
+
+      // Sorting
+      const sort = {};
+      if (sortField) {
+          sort[sortField] = sortOrder === 'desc' ? -1 : 1;
+      }
+
+      // Pagination
+      const pageNumber = parseInt(page);
+      const limitNumber = parseInt(limit);
+      const skip = (pageNumber - 1) * limitNumber;
+
+      // Execute query with Promise.all
+      const [orders, total] = await Promise.all([
+          Order.find(query)
+              .sort(sort)
+              .skip(skip)
+              .limit(limitNumber),
+          Order.countDocuments(query)
+      ]);
+
+      return res.json({
+          order: orders,
+          total,
+          page: pageNumber,
+          totalPages: Math.ceil(total / limitNumber),
+          limit: limitNumber
+      });
+
+  } catch (error) {
+      console.error('Filter Error:', error);
+      return res.status(500).json({
+          message: 'Error processing filter request',
+          error: error.message
+      });
+  }
+};
+
+
 export const getid = async (req, res) => {
   try {
+    
     const ordered = await Order.findById(req.params.id);
+    if(!ordered){
+      return res.status(404).json({message : "Order not found"})
+    }
     res.json(ordered);
   } catch (err) {
     console.error(err);
-    // res.status(500).json({ error: err.message })
+    res.status(500).json({ error: err.message })
+  }
+};
+
+
+export const getTotalOrders = async (req, res) => {
+  try {
+    let totalCount;
+    
+    if (req.params.region === "admin") {
+      totalCount = await Order.countDocuments();
+    } else {
+      const regionn = await Adduser.findOne({ region: req.params.region });
+      
+      if (!regionn) {
+        return res.status(404).json({ message: "Region not found" });
+      }
+
+      totalCount = await Order.countDocuments({
+        $or: [
+          { currentRegion: regionn.region },
+          { consigneedistrict: regionn.region }
+        ]
+      });
+    }
+
+    return res.status(200).json({ total: totalCount });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message });
   }
 };
 
 export const gettodayorder = async (req, res) => {
   try {
-    // Get the start and end of today
+   
     const today = new Date();
-    const startOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    );
-    const endOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() + 1
-    );
-
+    const startOfDay = new Date(  today.getFullYear(),  today.getMonth(),  today.getDate());
+    const endOfDay = new Date(  today.getFullYear(),  today.getMonth(),  today.getDate() + 1)
     // Filter orders for today
-    const todayOrders = await Order.find({
-      orderDate: { $gte: startOfDay, $lt: endOfDay },
-    });
+    let todaycount;
+    if(req.params.region === "admin"){
+      todaycount = await Order.countDocuments({
+        todayorderDate: { $gte: startOfDay, $lt: endOfDay },
+      });
+    }
+    else{
+      const region = await Adduser.findOne({region: req.params.region });
+      if(!region){
+        return res.status(404).json({message: "Region not found"});
+      }
+      todaycount =await Order.countDocuments({
+        currentRegion:region.region, todayorderDate: { $gte: startOfDay, $lt: endOfDay },
 
-    res.json(todayOrders);
+      });
+
+    }
+    // const todayOrders = await Order.find({
+    //   todayorderDate: { $gte: startOfDay, $lt: endOfDay },
+    // });
+
+    return res.status(200).json({today : todaycount});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -170,65 +451,176 @@ export const deleteorder = async (req, res) => {
 
 export const getdispatched = async (req, res) => {
   try {
+    if (req.params.region === "admin") {
+     
+      const allDispatchedOrders = await Order.find({ Orderstatus: "Order Dispatched" });
+      return res.json(allDispatchedOrders);
+    }
+
     const Region = await Adduser.findOne({ region: req.params.region });
+
     if (!Region) {
       return res.status(404).json({ message: "Region not found" });
     }
+
     const dispatched = await Order.find({
       consigneedistrict: Region.region,
-      Orderstatus: "Ordered Dispatched",
+      Orderstatus: "Order Dispatched",
     });
 
     if (dispatched.length === 0) {
-      res.json({ message: "No dispatched orders found" });
+      return res.json([]);
     }
-    res.json(dispatched);
+
+    return res.json(dispatched);  
   } catch (error) {
-    
-    res.status(500)
-    res.json({ error: "An error occurred while fetching dispatched orders" });
+    console.error("Error fetching dispatched orders:", error);
+    return res.status(500).json({ error: "An error occurred while fetching dispatched orders" });  
   }
 };
 
 export const getoutfordelivery = async (req, res) => {
   try{ 
+    if (req.params.region === "admin"){
+      const alloutorders = await Order.find({ Orderstatus: "Out for Delivery"});
+      return res.json(alloutorders);
+
+        }
     const Outregion = await Adduser.findOne({region: req.params.region})
     if(!Outregion){
       return res.status(404).json({ message: "Region not found" });
     }
-    const out = await Order.find({
-    consigneedistrict: Outregion.region,
-    Orderstatus: "Out for Delivery",
-   });
+    const out = await Order.find({consigneedistrict: Outregion.region,Orderstatus: "Out for Delivery"});
    if (out.length === 0) {
-    res.json({ message: "No Out for deliver orders found" });
+    return res.json([]);
   }
 
-   res.json(out);
+   return res.json(out);
 } catch(error){
   
-  res.status(500)
-  res.json({ error: "An error occurred while fetching Out for delivery orders" });
+  res.status(500).json({ error: "An error occurred while fetching Out for delivery orders" });
 
 }
 };
 
 export const getdelivered = async (req, res) => {
   try {
+    if(req.params.region === "admin"){
+      const alldelivered = await Order.find({ Orderstatus: "Delivered" });
+      return res.json(alldelivered);
+    }
     const deliverregion = await Adduser.findOne({region: req.params.region})
     if(!deliverregion){
       return res.status(404).json({ message: "Region not found" });
     }
     const deliveredOrders = await Order.find({ consigneedistrict: deliverregion.region, Orderstatus: "Delivered" });
     if(deliveredOrders === 0){
-      res.json({ message: "No deliver orders found" });
+      return res.json([]);
     }
 
-    res.json(deliveredOrders);
+    return res.json(deliveredOrders);
   } catch (err) {
     
     res.status(500).json({ error: "An error occurred while fetching delivered orders" });
   }
+};
+
+
+export const getpending =  async (req, res) => {
+  try {
+    if (req.params.region === "admin") {
+     
+      const pendingOrders = await Order.find({ Orderstatus: { $ne: "Delivered" } });
+      return res.json(pendingOrders);
+    }
+
+    const Region = await Adduser.findOne({ region: req.params.region });
+
+    if (!Region) {
+      return res.status(404).json({ message: "Region not found" });
+    }
+
+    const pendingOrder = await Order.find({
+      consigneedistrict: Region.region,Orderstatus: { $ne: "Delivered" }  //changes
+     
+    });
+
+    if (pendingOrder.length === 0) {
+      return res.join({ message: 'No dispatched orders found' })
+    }
+   return  res.json(pendingOrder)
+  } catch (error) {
+   return res.status(500).json({ error: 'An error occurred while fetching dispatched orders' });
+  }
+
+
+}
+
+export const getmyorder =  async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    let query = {};
+    let total = 0;
+    let orders;
+    if (req.params.region === "admin") {
+      query = {};
+      total = await Order.countDocuments(query.currentRegion);
+      orders = await Order.find(query.currentRegion)
+        .skip(skip)
+        .limit(limit)
+        .sort({ orderDate: -1 });
+
+     
+      // const currentRegions = await Order.find(req.params.currentRegion);
+      // return res.json(currentRegions);
+    }else{
+      const Region = await Adduser.findOne({ region: req.params.region });
+      
+      if (!Region) {
+      return res.status(404).json({ message: "Region not found" });
+      }
+
+      query = {currentRegion: Region.region}
+
+      total = await Order.countDocuments(query);
+      orders = await Order.find(query)
+        .skip(skip)
+        .limit(limit)
+        .sort({ orderDate: -1 });
+
+      if (orders.length === 0) {
+        return res.json({
+          order: [],
+          total: 0,
+          page: page,
+          totalPages: 0,
+          limit: limit
+        });
+      }
+
+    }
+
+    const updatedOrders = await Order.find(query)
+    .skip(skip)
+    .limit(limit)
+    .sort({ orderDate: -1 });
+
+  return res.status(200).json({
+    order: updatedOrders,
+    total: total,
+    page: page,
+    totalPages: Math.ceil(total / limit),
+    limit: limit
+  });
+
+  } catch (error) {
+   return res.status(500).json({ error: 'An error occurred while fetching dispatched orders' });
+  }
+
+
 };
 
 export const uploadMiddleware = upload.single("deliveryimage");
