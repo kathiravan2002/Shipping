@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(cors({
-    origin: ['http://192.168.29.71:5173','http://192.168.29.71:5174','http://192.168.29.11:5173'],
+    origin: ['http://192.168.29.71:5173'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true 
 })); 

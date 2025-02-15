@@ -33,7 +33,7 @@ const orderschema = mongoose.Schema({
 
     consigneestate: String,
 
-    consigneedistrict: { type: [String] },
+    consigneeedistrict: String,
 
     consigneepin: String,
 
@@ -51,18 +51,38 @@ const orderschema = mongoose.Schema({
 
     Orderstatus: String,
 
-    orderDate: {type: Date,
-        default: Date.now,
-    },
-
+    orderDate: {
+        type: String,
+        default: () => {
+          const today = new Date();
+          return today.toISOString().split("T")[0]; // Extracts only 'YYYY-MM-DD'
+        }
+      },
+      
     invoiceNo: {
         type: String},
+
+    todayorderDate:{type: Date,
+        default: Date.now,
+    },
 
     dispatchpincode: String,
 
     dispatched:String,
 
     deliveryimage:String,
+
+    currentRegion:String,
+
+    statusHistory: [{
+      status: String,
+      timestamp: {
+          type: Date,
+          default: Date.now
+      },
+      location: String,
+      notes: String
+  }]
 })
 
 const Order = mongoose.model("order", orderschema);

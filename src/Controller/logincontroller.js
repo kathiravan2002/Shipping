@@ -15,13 +15,13 @@ const seedAdmin = async () => {
   seedAdmin();
 
   export const login =  async (req, res) => {
-    const { email, password } = req.body;
+    const {email, password } = req.body;
   
     try {
       console.log("Login request received:", req.body);
   
       
-      let user = await Login.findOne({ email});
+      let user = await Login.findOne({email});
    
       if (!user) { 
         user = await Adduser.findOne({ email,password });
@@ -30,17 +30,31 @@ const seedAdmin = async () => {
           return res.status(401).json({ message: "Invalid email or password" });
         }
       }
+
+
+      if (user.status === "inactive") {
+        console.log("Inactive user attempted to log in:", email);
+        return res.status(403).json({ message: "Your account is inactive. Please contact support." });
+      }
+  
+     
+      // const isMatch = await bcrypt.compare(password, user.password);
+      // if (!isMatch) {
+      //   console.log("Incorrect password for email:", email);
+      //   return res.status(401).json({ message: "Invalid email or password" });
+      // }
      
   
        
       const tokenPayload = {
         email: user.email,
         role: user.role,
+        region:user.region
          
       };
-      const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: "5h" });
+      const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: "10h" });
       
-      res.status(200).json({ message: "Login successful", role: user.role, token });
+      res.status(200).json({ message: "Login successful", role: user.role, token ,region:user.region});
 
   
     } catch (error) {

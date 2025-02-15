@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import path from "path";
 import { fileURLToPath } from "url"; // Import to handle __dirname
 import order from "../models/orderschema.js";
+import bwipjs from 'bwip-js';
 
 // Fix for __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -26,119 +27,175 @@ export const generateinvoice = async (req, res) => {
 
     console.log('Invoice order data:', invoiceorder);
 
+    const barcodeData = `ID:${invoiceorder.orderId}`;
+
+    const barcodeBuffer = await new Promise((resolve, reject) => {
+      bwipjs.toBuffer(
+        {
+          bcid: 'code128',
+          text: invoiceorder.orderId,
+          scale: 5,
+          height: 50,
+          width:200,
+          textxalign: 'center',
+          // includetext: true,
+          textsize:15
+
+        },
+        (err, png) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(png);
+          }
+        }
+      );
+    });
+
+    const barcodeBase64 = `data:image/png;base64,${barcodeBuffer.toString('base64')}`
+
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
     const htmlContent = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Courier Invoice</title>
-          <style>
-              body {
-                  font-family: Arial, sans-serif;
-                  margin: 20px;
-                  color: #333;
-              }
-              .invoice {
-                  max-width: 800px;
-                  margin: auto;
-                  border: 1px solid #ddd;
-                  padding: 20px;
-                  border-radius: 5px;
-              }
-              header {
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-              }
-              header img {
-                  max-width: 60px;
-              }
-              .invoice-no {
-                  font-size: 14px;
-                  font-weight: bold;
-              }
-              h1 {
-                  text-align: center;
-                  font-size: 24px;
-              }
-              .billing-info {
-                  display: flex;
-                  justify-content: space-between;
-                  margin-bottom: 20px;
-              }
-              table {
-                  width: 100%;
-                  border-collapse: collapse;
-                  margin-bottom: 20px;
-              }
-              table th, table td {
-                  border: 1px solid #ddd;
-                  padding: 10px;
-              }
-              table th {
-                  background-color: #f4f4f4;
-              }
-              table tfoot td {
-                  font-weight: bold;
-              }
-          </style>
-      </head>
-      <body>
-          <div class="invoice">
-              <header>
-                  <img src="https://img.freepik.com/premium-vector/courier-logo-design_139869-1383.jpg" alt="Logo" width="50px" height="50px"> 
-                  <div class="invoice-no">Invoice No: ${invoiceorder.invoiceNo}</div>
-              </header>
-              <h1>Courier Invoice</h1>
-              <p><strong>Date:</strong> ${invoiceorder.orderDate}</p>
-              <div class="billing-info">
-                  <div>
-                      <strong>Billed From:</strong><br>
-                      ${invoiceorder.ConsignerName}<br>
-                      ${invoiceorder.consignermobileNumber}<br>
-                      ${invoiceorder.consignerAddress}<br>
-                      ${invoiceorder.consignerpincode}
-                  </div>
-                  <div>
-                       <strong>Billed To:</strong><br>
-                      ${invoiceorder.Consigneename}<br>
-                      ${invoiceorder.consigneemobileno}<br>
-                      ${invoiceorder.consigneeaddress}<br>
-                      ${invoiceorder.consigneepin}
-                  </div>
-              </div>
-              <table>
-                  <thead>
-                      <tr>
-                          <th>Product</th>
-                          <th>Quantity</th>
-                          <th>Total Weight</th>
-                          <th>Price</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <tr>
-                          <td>${invoiceorder.productname}</td>
-                          <td>${invoiceorder.noofpackage}</td>
-                          <td>${invoiceorder.packageWeight}</td>
-                          <td>${invoiceorder.price}</td>
-                      </tr>
-                  </tbody>
-                  <tfoot>
-                      <tr>
-                          <td colspan="3">Total Price</td>
-                          <td>${invoiceorder.price}</td>
-                      </tr>
-                  </tfoot>
-              </table>
-          </div>
-      </body>
-      </html>
-    `;
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Courier Invoice</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                    color: #333;
+                }
+                .invoice {
+                    max-width: 800px;
+                    margin: auto;
+                    border: 1px solid #ddd;
+                    padding: 20px;
+                    border-radius: 5px;
+                }
+                .top-section {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    margin-bottom: 20px;
+                }
+                .logo {
+                    width: 60px;
+                    height: 60px;
+                }
+                .invoice-details {
+                    text-align: right;
+                }
+                .invoice-no {
+                    font-size: 14px;
+                    margin-bottom: 10px;
+                }
+                .barcode-container {
+                    margin-top: 5px;
+                }
+                .barcode-container img {
+                    width: 200px;    /* Adjusted width */
+                    height: 50px;   /* Increased height */
+                }
+
+                .barcode-container p {
+                    margin-right: 30px;    
+                }
+                h1 {
+                    text-align: center;
+                    font-size: 24px;
+                    margin: 20px 0;
+                }
+                .billing-info {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 20px;
+                }
+                .billing-info > div {
+                    flex: 1;
+                    padding: 10px;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 20px;
+                }
+                table th, table td {
+                    border: 1px solid #ddd;
+                    padding: 10px;
+                }
+                table th {
+                    background-color: #f4f4f4;
+                }
+                table tfoot td {
+                    font-weight: bold;
+                }
+                tbody td {
+                    text-align: center;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="invoice">
+                <div class="top-section">
+                    <img class="logo" src="https://img.freepik.com/premium-vector/courier-logo-design_139869-1383.jpg" alt="Logo">
+                    <div class="invoice-details">
+                        <div class="invoice-no">Invoice No: ${invoiceorder.invoiceNo}</div>
+                        <div class="barcode-container">
+                            <img src="${barcodeBase64}" alt="barcode">
+                            <p>${invoiceorder.orderId}</p>
+                        </div>
+                    </div>
+                </div>
+                <h1>Courier Invoice</h1>
+                <p><strong>Date:</strong> ${invoiceorder.orderDate}</p>
+                <div class="billing-info">
+                    <div>
+                        <strong>Billed From:</strong><br>
+                        ${invoiceorder.ConsignerName}<br>
+                        ${invoiceorder.consignermobileNumber}<br>
+                        ${invoiceorder.consignerAddress}<br>
+                        ${invoiceorder.consignerpincode}
+                    </div>
+                    <div>
+                        <strong>Billed To:</strong><br>
+                        ${invoiceorder.Consigneename}<br>
+                        ${invoiceorder.consigneemobileno}<br>
+                        ${invoiceorder.consigneeaddress}<br>
+                        ${invoiceorder.consigneepin}
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Package Type</th>
+                            <th>Quantity</th>
+                            <th>Total weight</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${invoiceorder.packagetype}</td>
+                            <td>${invoiceorder.noofpackage}</td> 
+                            <td>${invoiceorder.packageWeight}</td> 
+                            <td>${invoiceorder.price}</td> 
+                        </tr>
+                    </tbody>  
+                    <tfoot>
+                        <tr>
+                            <td colspan="3">Total Price</td>
+                            <td>${invoiceorder.price}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </body>
+        </html>`;
 
     await page.setContent(htmlContent, { waitUntil: 'load' });
 
