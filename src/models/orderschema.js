@@ -1,57 +1,26 @@
 import mongoose from "mongoose";
-import Adduser from "../models/adduserschema.js";
 
 const orderschema = mongoose.Schema({
 
-    orderId:  String,
+    orderId:  {
+        type : String,
+    },
 
-    ConsignerName: String,
-
-    consignermobileNumber: String,
-
-    consignerAddress: String,
-
-    consignermail : String,
-
-    consignerstate: String,
-    
-    consignerdistrict:String,
-
-    consignerpincode: String,
-   
-    Consigneename: String,
-    
-    consigneemobileno: String,
-
-    consigneealterno: String,
-
-    consigneeaddress: String,
-
-    consigneestate: String,
-
-    consigneedistrict: String,
-
-    consigneepin: String,
-
-    productname: String,
-
-    noofpackage : String,
-
-    packageWeight: String,
-
-    packagetype: String,
-
-    price: String,
-
-    instruction: String,
-
+    ConsignerName: String,        
+    consignermobileNumber: String,         
+    consignerAddress: String,        
+    consignermail : String,       
+    consignerstate: String,          
+    consignerdistrict:String,       
+    consignerpincode: String,         
+    productname: String,       
+    noofpackage : String,       
+    packageWeight: String,       
+    packagetype: String,       
+    price: String,        
+    instruction: String,       
     Orderstatus : String,
-
     consignercity : String,
-
-    consigneecity : String,
-
-
     orderDate: {
         type: String ,
         default: () => {
@@ -64,18 +33,14 @@ const orderschema = mongoose.Schema({
     },
    
     todayorderDate : {
-        type: Date,
+        type: String,
         default:Date.now,
     },
 
     dispatchpincode : String,
-    
     dispatched: String,
-
     deliveryimage : String,
-
-    currentRegion : String,
-    
+    currentRegion : String,   
     statusHistory: [{
         status: String,
         timestamp: {
@@ -84,13 +49,10 @@ const orderschema = mongoose.Schema({
         },
         location: String,
         notes: String
-    }]
-
-    
-        
+    }],
    
 
 });
 
-const Order = mongoose.model("order", orderschema);
+const Order = mongoose.model("Order", orderschema);
 export default Order;
