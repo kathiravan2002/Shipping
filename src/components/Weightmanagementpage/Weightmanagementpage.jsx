@@ -49,7 +49,7 @@ function Weightmanagementpage() {
   return (
     <div>
       <Weightmanagement rows={rows} freightRate={freightRate} setFreightRate={setFreightRate} taxRate={taxRate} setTaxRate={setTaxRate} addRow={addRow} deleteRow={deleteRow} updateRow={updateRow} totalPackages={totalPackages} totalWeight={totalWeight} totalVolumetricWeight={totalVolumetricWeight} chargeableWeight={chargeableWeight} totalChargeableAmount={totalChargeableAmount} totalTax={totalTax} totalWithTax={totalWithTax} />
-      </div>
+    </div>
   )
 }
 

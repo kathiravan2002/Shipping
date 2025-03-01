@@ -2,6 +2,7 @@ import React from "react";
 import Home from "../../shared/components/Home";
 import { useNavigate } from "react-router-dom";
 
+
 function Homepage( ) {
   
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ function Homepage( ) {
     window.scrollTo({ top: 0, behavior: 'smooth' })
 
   }
+
+  
 
   return (
     <div>

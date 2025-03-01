@@ -5,6 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
+import Apiendpoint from "../../shared/services/Apiendpoint"
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+
 
 
 function Orderpage() {
@@ -14,6 +18,7 @@ function Orderpage() {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedRows,setExpandedRows] = useState(null);
 
   const UserRole = localStorage.getItem("role");
   const getregion =
@@ -26,6 +31,7 @@ function Orderpage() {
     sortField: null,
     sortOrder: null,
     filters: {
+      orderDate: { value: null, matchMode: FilterMatchMode.CONTAINS },
       orderId: { value: null, matchMode: FilterMatchMode.CONTAINS },
       ConsignerName: { value: null, matchMode: FilterMatchMode.CONTAINS },
       Orderstatus: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -34,12 +40,12 @@ function Orderpage() {
       consignermail: { value: null, matchMode: FilterMatchMode.CONTAINS },
       consignerdistrict: { value: null, matchMode: FilterMatchMode.CONTAINS },
       consignerstate: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      Consigneename: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      consigneemobileno: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      consigneealterno: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      consigneedistrict: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      consigneecity: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      consigneestate: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      // Consigneename: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      // consigneemobileno: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      // consigneealterno: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      // consigneedistrict: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      // consigneecity: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      // consigneestate: { value: null, matchMode: FilterMatchMode.CONTAINS },
       productname: { value: null, matchMode: FilterMatchMode.CONTAINS },
       packagetype: { value: null, matchMode: FilterMatchMode.CONTAINS },
       dispatchstate: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -93,7 +99,7 @@ function Orderpage() {
         }
 
         response = await axios.get(
-          `http://192.168.29.12:5000/api/order/orders/filter?${params.toString()}`,
+         `${Apiendpoint}/api/order/orders/filter?${params.toString()}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -107,7 +113,7 @@ function Orderpage() {
       } else {
         // If no filters are active, use the regular GET API
         response = await axios.get(
-            `http://192.168.29.12:5000/api/order/getorder/${getregion}?page=${lazyState.page + 1}&limit=${lazyState.rows}`,
+            `${Apiendpoint}/api/order/getorder/${getregion}?page=${lazyState.page + 1}&limit=${lazyState.rows}`,
             {
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem("authToken")}`
@@ -118,11 +124,6 @@ function Orderpage() {
         setOrder(response.data.order);
         setTotalRecords(response.data.total);
         setCurrentPage(response.data.page);
-
-        // const orders = response.data || [];
-        // setOrder(orders);
-        // setTotalRecords(orders.length);
-        // setCurrentPage(lazyState.page + 1);
       }
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -145,7 +146,38 @@ function Orderpage() {
 
     try {
       const response = await axios.post(
-        `http://192.168.29.12:5000/api/invoices/generate-invoice/${_id}`,
+        `${Apiendpoint}/api/invoices/generate-invoice/${_id}`,
+        {},
+        {
+          responseType: "blob",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `invoice_${_id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading the invoice:", error);
+      toast.error("Error downloading invoice. Please try again.");
+    }
+  };
+
+  const consigneeinvoice = async (_id) => {
+    if (!_id || typeof _id !== "string" || _id.length !== 24) {
+      console.error("Invalid ID passed to downloadInvoice");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${Apiendpoint}/api/invoices/consignee-invoice/${_id}`,
         {},
         {
           responseType: "blob",
@@ -171,7 +203,7 @@ function Orderpage() {
   const deleteOrder = async ({ _id }) => {
     if (window.confirm("Are you sure you want to delete this order?")) {
       try {
-        await axios.delete(`http://192.168.29.12:5000/api/order/${_id}`, {
+        await axios.delete(`${Apiendpoint}/api/order/${_id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
@@ -229,18 +261,20 @@ const handleSearchChange = (event) => {
 
   const actionBodyTemplate = (rowData) => {
     return (
-      <div>
-        <Button
-          icon="pi pi-pencil"
-          className="p-button-text p-button-rounded p-button-info"
-          onClick={() => navigate(`/Addorder/${rowData._id}`)}
-        />
-        <Button
-          icon="pi pi-trash"
-          className="p-button-text p-button-rounded p-button-info"
-          onClick={() => deleteOrder({ _id: rowData._id })}
-        />
-      </div>
+      <div className="flex items-center -space-x-4 -ml-5">
+      <Button
+        icon="pi pi-pencil"
+        className="p-button-text p-button-rounded p-button-info"
+        onClick={() => navigate(`/Addorder/${rowData._id}`)}
+      />
+      <Button
+        icon="pi pi-trash"
+        className="p-button-text p-button-rounded p-button-info"
+        onClick={() => deleteOrder({ _id: rowData._id })}
+      />
+    </div>
+    
+     
     );
   };
 
@@ -253,6 +287,16 @@ const handleSearchChange = (event) => {
       />
     );
   };
+  const consigneeinvTemplate = (rowData) => {
+    return (
+      <Button
+        icon="pi pi-download"
+        className="p-button-text p-button-rounded p-button-info"
+        onClick={() => consigneeinvoice(rowData._id)}
+      />
+    );
+  };
+
 
   const deliverytemplate = (rowData) => {
     return (
@@ -263,9 +307,51 @@ const handleSearchChange = (event) => {
       />
     );
   };
+
+  const productImage =(rowData) => {
+    return (
+      <img
+        src={`http://192.168.29.12:5000${rowData.productImage}`}
+        alt="Not Delivered"
+        className="w-25 h-20 rounded-lg"
+      />
+    );
+  };
+  const rowExpansionTemplate =(rowData) => {
+    return (
+      <div className='p-4 rounded-md bg-gray-50'>
+        <DataTable
+        value={rowData.consignees || []}
+        scrollable
+        scrollHeight="300px"
+        className="p-datatable-striped w-auto text-sm"
+        emptyMessage="No consignee details found"
+        > <Column field="invoice" header="Invoices" body={consigneeinvTemplate} />
+          <Column field="cid" header="Consignee Id" frozen />
+          <Column field="cstatus" header="Status" />
+          <Column field="Consigneename" header="Consignee Name" />
+          <Column field="consigneemobileno" header="Mobile No" />
+          {/* <Column field="consigneealterno" header="Alter No" /> */}
+          <Column field="consigneeaddress" header="Address" />
+          <Column field="consigneecity" header="ConsigneeCity" />
+          <Column field="consigneestate" header="ConsigneeState" />
+          <Column field="consigneedistrict" header="ConsigneeDistrict" />
+          <Column field="consigneepin" header="ConsigneePin" />
+          <Column field="typename" header="Product Name" />
+          <Column field="ptype" header="Packagetype" />
+          <Column field="totalWeight" header="TotalWeight" />
+          <Column field="cprice" header="Price" />
+        
+          <Column field='productImage' header="Image" body={productImage} />
+        </DataTable>
+
+      </div>
+    )
+  }
+
   return (
     <>
-      <Orderheader navigate={navigate} order={order} totalRecords={totalRecords} loading={loading}  searchQuery={searchQuery} currentPage={currentPage} lazyState={lazyState} onPage={onPage} onSort={onSort} onFilter={onFilter} handleStatusChange={handleStatusChange} handleSearchChange={handleSearchChange} actionBodyTemplate={actionBodyTemplate} invoiceBodyTemplate={invoiceBodyTemplate}  deliverytemplate={deliverytemplate} />
+      <Orderheader  rowExpansionTemplate={rowExpansionTemplate} expandedRows={expandedRows} setExpandedRows={setExpandedRows} navigate={navigate} order={order} totalRecords={totalRecords} loading={loading}  searchQuery={searchQuery} currentPage={currentPage} lazyState={lazyState} onPage={onPage} onSort={onSort} onFilter={onFilter} handleStatusChange={handleStatusChange} handleSearchChange={handleSearchChange} actionBodyTemplate={actionBodyTemplate} invoiceBodyTemplate={invoiceBodyTemplate}  deliverytemplate={deliverytemplate}  />
     </>
   );
 }

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import loginbgg from "/images/loginbgg.jpeg";
+import Apiendpoint from "../shared/services/Apiendpoint";
+
 
 function LoginPage({ setIsLoggedIn, onLogout }) {
   const [email, setEmail] = useState("");
@@ -25,7 +27,7 @@ function LoginPage({ setIsLoggedIn, onLogout }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://192.168.29.12:5000/api/login/user", {
+      const response = await fetch(`${Apiendpoint}/api/login/user`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,10 +46,12 @@ function LoginPage({ setIsLoggedIn, onLogout }) {
         localStorage.setItem("tokenExpiresAt", data.expiresAt);
 
         setIsLoggedIn(true);
-        navigate("/dashboard");
-        // if (data.role === "admin") {
-        //   navigate("/dashboard");
-        // }
+        if (data.role === "manager" || data.role === "admin")
+          navigate("/dashboard");
+        else if (data.role === "user") navigate("/Addorder");
+        else if(data.role ==="subdistributor") navigate("/dispatched");
+        else if(data.role === "deliveryman") navigate("/outfordelivery");
+        else navigate("/Order");
       } else {
         toast.error(data.message || "Login failed");
       }
@@ -56,44 +60,43 @@ function LoginPage({ setIsLoggedIn, onLogout }) {
     }
   };
 
-
   return (
-   
-      <div className="min-h-screen flex items-center justify-center bg-cover "  style={{ backgroundImage: `url(${loginbgg})` }}>
-        <form
-          onSubmit={handleLogin}
-          className="p-8 shadow-lg rounded-lg w-96 "
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover "
+      style={{ backgroundImage: `url(${loginbgg})` }}
+    >
+      <form onSubmit={handleLogin} className="p-8 shadow-lg rounded-lg w-96 ">
+        <h2 className="text-2xl font-bold mb-4 text-gray-100 text-center">
+          Login
+        </h2>
+        <div className="mb-4">
+          <label className="block text-gray-100 mb-1">Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-100 mb-1">Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-2 rounded-md"
         >
-          <h2 className="text-2xl font-bold mb-4 text-gray-100 text-center">Login</h2>
-          <div className="mb-4">
-            <label className="block text-gray-100 mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-100 mb-1">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-md"
-          >
-            Login
-          </button>
-        </form>
-      </div>
-
+          Login
+        </button>
+      </form>
+    </div>
   );
 }
 

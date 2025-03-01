@@ -1,120 +1,146 @@
-import React, { useState, useEffect } from 'react'
-import Outfordelivery from '../../shared/components/Outfordelivery'
-import { useNavigate,useParams } from 'react-router-dom';
-import axios from 'axios'
+import React, { useState, useEffect } from 'react';
+import Outfordelivery from '../../shared/components/Outfordelivery';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 import { toast } from 'react-toastify';
+import Apiendpoint from "../../shared/services/Apiendpoint";
 
 function Outdeliverypage() {
   const { id } = useParams();
   const [out, setOut] = useState([]);
   const [visible, setVisible] = useState(false);
-  const [formData, setFormData] = useState([]);
+  const [formData, setFormData] = useState({});
+  const [orders, setOrders] = useState([]);
+
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
-        ...prev,
-        [name]: value,
+      ...prev,
+      [name]: value,
     }));
   };
-  // Handle Image Upload
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     setFormData((prev) => ({
       ...prev,
-      deliveryimage: file, // Store file object in state
+      productImage: file, 
     }));
   };
 
-    const userrole = localStorage.getItem("role");
-    const outregion = userrole === "admin" ? "admin" : localStorage.getItem("Region");
-    if (!outregion) {
-        console.error("No Out for deliver region found ");
-        return;
+  const userRole = localStorage.getItem("role");
+  const outRegion = userRole === "admin" ? "admin" : localStorage.getItem("Region");
+
+  const fetchOut = async () => {
+    try {
+      const response = await axios.get(`${Apiendpoint}/api/order/orders/out/${outRegion}`);
+      setOut(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error("Error fetching Out for Delivery orders:", error);
+      setOut([]);
     }
-    console.log(outregion);
+  };
 
-    const fetchout = async () => {
-        try{
-            const response = await axios.get(`http://192.168.29.12:5000/api/order/orders/out/${outregion}`)
-            setOut(Array.isArray(response.data) ? response.data : []);
-        }
-        catch(error){
-            console.log("Error fetching Out of delivery Orders",error)
-            setOut([]);
-        }
+  useEffect(() => {
+    fetchOut();
+  }, []);
 
+  const Userrole = localStorage.getItem("role");
+  const deliverregion = Userrole === "admin" ? "admin" : localStorage.getItem("Region");
+  if (!deliverregion) {
+    console.error("No deliver region found ");
+    return;
+  }
+  console.log(deliverregion);
+
+  const fetchDeliveredOrders = async () => {
+    try {
+      const response = await axios.get(`${Apiendpoint}/api/order/orders/delivered/${deliverregion}`);
+      setOrders(Array.isArray(response.data) ? response.data : []);
+    } catch (err) {
+      console.error('Error fetching delivered orders:', err);
+      setOrders([]);
     }
+  };
 
-    useEffect(() => {
-        fetchout();
-    }, []);
+  useEffect(() => {
+    fetchDeliveredOrders();
 
-    const updateOrder = async () => {
-      try {
-        const formDataToSend = new FormData();
-        formDataToSend.append("Orderstatus", formData.Orderstatus);
-  
-        if (formData.deliveryimage) {
-          formDataToSend.append("deliveryimage", formData.deliveryimage);
-        }
-  
-        await axios.put(`http://192.168.29.12:5000/api/order/${formData._id}`, formDataToSend, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-  
-        toast.success("Order updated successfully!");
-        fetchout(); // Refresh orders after update
-        setVisible(false);
-      } catch (error) {
-        console.error("Error updating order:", error);
-        toast.error("Failed to update order.");
+  }, []);
+
+  const updateOrder = async () => {
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("cstatus", formData.cstatus); // Use cstatus for consignee
+
+      if (formData.productImage) {
+        formDataToSend.append("productImage", formData.productImage); // Match backend field
       }
-    };
 
-    const ORDER_STATUS = {
-      INITIAL: "",
-      PLACED: "Order Placed",
-      DISPATCHED: "Order Dispatched",
-      OUT_FOR_DELIVERY: "Out for Delivery",
-      DELIVERED: "Delivered",
-    };
-  
+      console.log("Updating with cid:", formData.cid); // Debug log
+      const response = await axios.put(
+        `${Apiendpoint}/api/order/consignee/${formData.cid}`, // Use consignee endpoint
+        formDataToSend,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
-    
-    const getNextAllowedStatuses = (currentStatus) => {
-      let allowedStatuses = [];
-  
-      switch (currentStatus) {
-          case ORDER_STATUS.INITIAL:
-              allowedStatuses = [ORDER_STATUS.PLACED];
-              break;
-          case ORDER_STATUS.PLACED:
-              allowedStatuses = [ORDER_STATUS.DISPATCHED];
-              break;
-          case ORDER_STATUS.DISPATCHED:
-              allowedStatuses = [ORDER_STATUS.OUT_FOR_DELIVERY];
-              break;
-          case ORDER_STATUS.OUT_FOR_DELIVERY:
-              allowedStatuses = [ORDER_STATUS.DELIVERED];
-              break;
-          case ORDER_STATUS.DELIVERED:
-              allowedStatuses = [ORDER_STATUS.DELIVERED]; // No further change possible
-              break;
-          default:
-              allowedStatuses = [];
-      }
-    // Ensure current status is included in the dropdown
+      toast.success("Consignee status updated successfully!");
+      await fetchOut(); // Refresh orders after update
+      setVisible(false);
+    } catch (error) {
+      console.error("Error updating consignee status:", error.response?.data || error.message);
+      toast.error(error.response?.data?.error || "Failed to update consignee status.");
+    }
+  };
+
+  const CONSIGNEE_STATUS = {
+    PLACED: "Order Placed",
+    DISPATCHED: "Order Dispatched",
+    OUT_FOR_DELIVERY: "Out for Delivery",
+    DELIVERED: "Delivered",
+  };
+
+  const getNextAllowedStatuses = (currentStatus) => {
+    let allowedStatuses = [];
+
+    switch (currentStatus) {
+      case CONSIGNEE_STATUS.PLACED:
+        allowedStatuses = [CONSIGNEE_STATUS.DISPATCHED];
+        break;
+      case CONSIGNEE_STATUS.DISPATCHED:
+        allowedStatuses = [CONSIGNEE_STATUS.OUT_FOR_DELIVERY];
+        break;
+      case CONSIGNEE_STATUS.OUT_FOR_DELIVERY:
+        allowedStatuses = [CONSIGNEE_STATUS.DELIVERED];
+        break;
+      case CONSIGNEE_STATUS.DELIVERED:
+        allowedStatuses = []; // No further change possible
+        break;
+      default:
+        allowedStatuses = [CONSIGNEE_STATUS.PLACED];
+    }
     return [currentStatus, ...allowedStatuses].filter(Boolean);
-}
-
-  
+  };
 
   return (
     <div>
-      <Outfordelivery out={out} visible={visible} setVisible={setVisible} formData={formData} setFormData={setFormData} handleInputChange={handleInputChange} handleImageUpload={handleImageUpload} updateOrder={updateOrder}  ORDER_STATUS={ ORDER_STATUS} getNextAllowedStatuses={getNextAllowedStatuses} />
-      </div>
-  )
+      <Outfordelivery
+        out={out}
+        navigate ={navigate}
+        visible={visible}
+        setVisible={setVisible}
+        formData={formData}
+        setFormData={setFormData}
+        handleInputChange={handleInputChange}
+        handleImageUpload={handleImageUpload}
+        updateOrder={updateOrder}
+        CONSIGNEE_STATUS={CONSIGNEE_STATUS}
+        getNextAllowedStatuses={getNextAllowedStatuses}
+        orders={orders}
+      />
+    </div>
+  );
 }
-
-export default Outdeliverypage
+export default Outdeliverypage;

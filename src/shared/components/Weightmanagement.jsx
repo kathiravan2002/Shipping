@@ -6,7 +6,7 @@ const Weightmanagement = ({rows,freightRate,setFreightRate,taxRate,setTaxRate,ad
 
   return (
     <>
-      <div className="p-6 space-y-6 bg-white shadow-lg shadow-violet-400 rounded-lg">
+      <div className="p-6 space-y-6 bg-white shadow-lg shadow-violet-100 rounded-lg">
         {/* Table Section */}
         <table className="w-full border-collapse border border-gray-300 text-sm">
           <thead className="bg-gray-100">
@@ -96,7 +96,7 @@ const Weightmanagement = ({rows,freightRate,setFreightRate,taxRate,setTaxRate,ad
               </tr>
             ))}
             <tr className="bg-gray-100">
-              <td className="border border-gray-300 p-2" colSpan="6">
+              <td className="border border-gray-300 p-2" colSpan="5">
                 Totals
               </td>
               <td className="border border-gray-300 p-2">{totalPackages}</td>
@@ -122,7 +122,7 @@ const Weightmanagement = ({rows,freightRate,setFreightRate,taxRate,setTaxRate,ad
       </div>
 
       {/* Freight and Tax Section */}
-      <div className="p-6 mt-8 bg-white shadow-lg shadow-violet-400 rounded-lg space-y-6">
+      <div className="p-6 mt-8 bg-white shadow-lg shadow-violet-100 rounded-lg space-y-6">
         <h3 className="font-semibold text-lg text-center">Enter price </h3>
         <div className="grid justify-self-center">
           {/* Freight Rate Input */}

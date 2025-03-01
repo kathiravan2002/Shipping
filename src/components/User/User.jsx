@@ -1,19 +1,14 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Userpage from "../../shared/components/Userpage";
 import { useNavigate } from "react-router-dom";
-import Apiendpoint from "../../shared/services/Apiendpoint"
-
-
+import Apiendpoint from "../../shared/services/Apiendpoint";
 
 function User() {
   const [user, setUser] = useState([]);
   const navigate = useNavigate();
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedRole, setSelectedRole] = useState("");
-  const edituser = ({ _id }) => {
-    navigate(`/Adduser/${_id}`);
-  };
 
   const getuser = async () => {
     try {
@@ -28,6 +23,7 @@ function User() {
       console.log("Error fetching user data", error);
     }
   };
+
   useEffect(() => {
     getuser();
   }, []);
@@ -44,13 +40,20 @@ function User() {
       );
     }
   };
+
   useEffect(() => {
     setFilteredUsers(user);
   }, [user]);
 
   return (
     <div>
-      <Userpage filteredUsers={filteredUsers} selectedRole={selectedRole} navigate={navigate} edituser={edituser} handleRoleChange={handleRoleChange} />
+      <Userpage 
+        filteredUsers={filteredUsers} 
+        selectedRole={selectedRole} 
+        navigate={navigate} 
+        handleRoleChange={handleRoleChange} 
+        refreshUsers={getuser} // Added to refresh user list
+      />
     </div>
   );
 }

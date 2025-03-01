@@ -3,41 +3,53 @@ import Dashboard from "../../shared/components/Dashboard";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Spinner from "../../shared/components/Spinner";
+import Apiendpoint from "../../shared/services/Apiendpoint"
 
 export default function Dashboardpage() {
-
-  const [totalorder, setTotalorder] = useState([]);
+  const [totalorder, setTotalorder] = useState(0);
+  const [singleConsignee, setSingleConsignee] = useState(0);
+  const [multipleConsignee, setMultipleConsignee] = useState(0);
+  //for orders
+  // const [allOrders, setAllOrders] = useState([]);
+  // const [singleConsigneeOrders, setSingleConsigneeOrders] = useState([]);
+  // const [multipleConsigneeOrders, setMultipleConsigneeOrders] = useState([]);
   const [todayorder, setTodayorder] = useState([]);
   const [totaluser, setTotaluser] = useState([]);
   const [dispatch, setDispatch] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [pending,setPending] =useState([]);
+  const [pending, setPending] = useState([]);
   const navigate = useNavigate();
   const [out, setOut] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
   const userRole = localStorage.getItem("role");
   const getregion =
     userRole === "admin" ? "admin" : localStorage.getItem("Region");
 
-    const getTotalOrders = async () => {
-      try {
-          const response = await axios.get(
-              `http://192.168.29.12:5000/api/order/total/${getregion}`,
-              {
-                  headers: {
-                      Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-                  },
-              }
-          );
-          setTotalorder(response.data.total);
-      } catch (error) {
-          console.error("Error fetching total orders:", error);
-          setTotalorder(0);
-      }
-  };
+  const getTotalOrders = async () => {
+    try {
+      const response = await axios.get(
+        `${Apiendpoint}/api/order/total/${getregion}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+      setTotalorder(response.data.total.count);
+      setSingleConsignee(response.data.singleConsignee.count);
+      setMultipleConsignee(response.data.multipleConsignee.count);
 
+      // setAllOrders(response.data.total.orders);
+      // setSingleConsigneeOrders(response.data.singleConsignee.orders);
+      // setMultipleConsigneeOrders(response.data.multipleConsignee.orders);
+    } catch (error) {
+      console.error("Error fetching total orders:", error);
+      setTotalorder(0);
+      setSingleConsignee(0);
+      setMultipleConsignee(0);
+    }
+  };
 
   useEffect(() => {
     getTotalOrders();
@@ -47,7 +59,7 @@ export default function Dashboardpage() {
     const fetchOrders = async () => {
       try {
         const response = await axios.get(
-          `http://192.168.29.12:5000/api/order/orders/today/${getregion}`
+          `${Apiendpoint}/api/order/orders/today/${getregion}`
         );
         //  const data = await response.json();
         setTodayorder(response.data.today);
@@ -67,14 +79,14 @@ export default function Dashboardpage() {
   const getuser = async () => {
     try {
       const userdata = await axios.get(
-        "http://192.168.29.12:5000/api/add/getuser",
+        `${Apiendpoint}/api/add/getuser`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
         }
       );
-      console.log(userdata.data);
+      // console.log(userdata.data);
       setTotaluser(userdata.data || []);
     } catch (error) {
       console.log("Error fetching user data", error);
@@ -86,7 +98,7 @@ export default function Dashboardpage() {
 
   const fetchdispatched = async () => {
     const response = await axios.get(
-      `http://192.168.29.12:5000/api/order/orders/dispatche/${getregion}`
+      `${Apiendpoint}/api/order/orders/dispatche/${getregion}`
     );
     setDispatch(response.data);
   };
@@ -97,7 +109,7 @@ export default function Dashboardpage() {
 
   const fetchout = async () => {
     const response = await axios.get(
-      `http://192.168.29.12:5000/api/order/orders/out/${getregion}`
+      `${Apiendpoint}/api/order/orders/out/${getregion}`
     );
     setOut(response.data);
   };
@@ -108,7 +120,7 @@ export default function Dashboardpage() {
 
   const fetchDeliveredOrders = async () => {
     const response = await axios.get(
-      `http://192.168.29.12:5000/api/order/orders/delivered/${getregion}`
+      `${Apiendpoint}/api/order/orders/delivered/${getregion}`
     );
     setOrders(response.data);
   };
@@ -117,11 +129,13 @@ export default function Dashboardpage() {
     fetchDeliveredOrders();
   }, []);
 
-  const fetchPendingOrders = async () =>{
-    const response = await axios.get(`http://192.168.29.12:5000/api/order/pending/${getregion}`);
-    setPending(response.data)
+  const fetchPendingOrders = async () => {
+    const response = await axios.get(
+      `${Apiendpoint}/api/order/pending/${getregion}`
+    );
+    setPending(response.data);
   };
-  
+
   useEffect(() => {
     fetchPendingOrders();
   }, []);
@@ -130,7 +144,7 @@ export default function Dashboardpage() {
 
   const orderData = [
     { name: "Total Orders", value: Number(totalorder) || 0 },
-    // { name: "Today Orders", value: Number(todayorder.length) || 0 },
+    { name: "Today Orders", value: Number(todayorder.length) || 0 },
     { name: "Total Dispatched", value: Number(dispatch.length) || 0 },
     { name: "Total Out for Delivery", value: Number(out.length) || 0 },
     { name: "Total Delivered", value: Number(orders.length) || 0 },
@@ -139,9 +153,22 @@ export default function Dashboardpage() {
   const COLORS = ["#8884d8", "#82ca9d", "#cea193", "#ff5733", "#baa6b1"];
 
   return (
-
     <>
-      <Dashboard  pending={pending}  totalorder={totalorder} todayorder={todayorder} totaluser={totaluser} dispatch={dispatch} orders={orders} out={out} loading={loading} orderData={orderData} COLORS={COLORS} navigate={navigate} />
+      <Dashboard
+        pending={pending}
+        totalorder={totalorder}
+        multipleConsignee= {multipleConsignee}
+        singleConsignee= {singleConsignee}
+        todayorder={todayorder}
+        totaluser={totaluser}
+        dispatch={dispatch}
+        orders={orders}
+        out={out}
+        loading={loading}
+        orderData={orderData}
+        COLORS={COLORS}
+        navigate={navigate}
+      />
     </>
-  )
+  );
 }

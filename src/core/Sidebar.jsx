@@ -4,17 +4,19 @@
     const [isOpen, setIsOpen] = useState(false);
     const roles = localStorage.getItem("role");
     console.log(roles); 
-    const allowedRoles = ["admin", "manager" ];
-    const allowedsubdist = ["admin", "manager","subdistributor"]
+    const allowedRoles = ["admin", "manager",];
+    const allowedsubdist =["admin", "manager","subdistributor",];
+    const allowedRolesuser=["admin", "manager","user"]
+    const allowedRoledeliver=["admin", "manager","deliveryman","subdistributor"]
     const menuItems = [
-      { name: "Home", icon: "🏠", path: "/" },
-      { name: "Dashboard", icon: "📊", path: "/dashboard" },
+      // { name: "Home", icon: "🏠", path: "/" },
+      ...(allowedRoles.includes(roles)  ? [{ name: "Dashboard", icon: "📊", path: "/dashboard" }]:[]),
       ...(allowedRoles.includes(roles)  ? [{ name: "User", icon: "🤵🏻", path: "/User" }] : []),
-      ...(allowedRoles.includes(roles) ? [{ name: "Order", icon: "🛒", path: "/Order" }] : []),    
-      ...(allowedsubdist.includes(roles) ? [{ name: "Sub Distributor", icon:"📦" , path:"/dispatched"}] : []),
-      {name: "Out for Delivery", icon:"📭" ,path:"/outfordelivery"},
-      { name: "Delivered order", icon: "🚚", path: "/delivered" },
-      { name: "Weight Management", icon: "🗂️", path: "/Weightmanagementpage" },
+      ...(allowedRolesuser.includes(roles) ? [{ name: "Order", icon: "🛒", path: "/Order" }] : []),
+     ...(allowedsubdist.includes(roles) ? [{ name: "Sub Distributor", icon:"📦" , path:"/dispatched"}]:[]),
+     ...(allowedRoledeliver.includes(roles) ? [ {name: "Out for Delivery", icon:"📭" ,path:"/outfordelivery"}]:[]),
+    //  ...(allowedRoledeliver.includes(roles) ? [  { name: "Delivered order", icon: "🚚", path: "/delivered" }]:[]),
+      ...(allowedRolesuser.includes(roles) ? [  { name: "Weight Management", icon: "🗂️", path: "/Weightmanagementpage" }]:[]),
       // { name: "Buyer Experience", icon: "💬", path: "/Buyer Experience" },
       // { name: "Setting", icon: "⚙️", path: "/Settting" },
       // { name: "Help & Support", icon: "⁉", path: "/Help & Supportt" },

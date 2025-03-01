@@ -44,7 +44,7 @@ function Approuter() {
   return (
     <div>
     <BrowserRouter>
-    <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+    {/* <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} /> */}
       <Routes>
            
           <Route path="/" element={<Homepage isLoggedIn={isLoggedIn} onLogout={handleLogout} />}/>
@@ -52,12 +52,13 @@ function Approuter() {
           <Route path='/Trackorder' element={<Trackorder/>} />
           {/* <Route path='/header' element={ <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} />} /> */}
           <Route element={ <ProtectedRoute  isLoggedIn={isLoggedIn} onLogout={handleLogout}  ><Main />  </ProtectedRoute> }>
+             
               <Route path="/dashboard" element={<Dashboardpage /> } />
               <Route path="/Order" element={ <Orderpage />  } />
               <Route path="/Addorder/:id?" element={<Addorder />} />
               <Route path="/Weightmanagementpage" element={<Weightmanagementpage />}></Route>
               <Route path="/User" element={<User />}></Route>
-              <Route path='/Adduser/:id?' element={<Adduser />} /> 
+              {/* <Route path='/Adduser/:id?' element={<Adduser />} />  */}
               <Route path="/delivered" element={<Deliverpage/>} />
               <Route path="/dispatched" element={<Dispatchpage/>} />
               <Route path="/outfordelivery" element={<Outdeliverypage/>} />
