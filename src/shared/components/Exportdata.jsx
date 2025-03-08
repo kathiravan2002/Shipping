@@ -8,24 +8,24 @@ const Exportdata = ({ data, fileName }) => {
       return;
     }
 
-    // Extract headers from the first data object
+   
     const headers = Object.keys(data[0]);
 
-    // Create CSV rows
+    
     const csvRows = [
-      headers.join(','), // Header row
+      headers.join(','), 
       ...data.map(row =>
         headers.map(header => JSON.stringify(row[header] || '')).join(',')
       ),
     ];
 
-    // Combine rows into a single CSV string
+    
     const csvString = csvRows.join('\n');
 
-    // Create a Blob from the CSV string
+    
     const blob = new Blob([csvString], { type: 'text/csv' });
 
-    // Create a download link and trigger the download
+    
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -36,7 +36,7 @@ const Exportdata = ({ data, fileName }) => {
   };
 
   return (
-    <button onClick={exportToFile}  className="flex items-center gap-2 px-3 py-2 text-purple-600 bg-purple-50 rounded-md text-sm">
+    <button onClick={exportToFile}  className="flex items-center gap-2 px-2 py-2 text-purple-600 bg-purple-50 rounded-md text-sm font-medium ">
       Download CSV <ArrowDownToLine />
     </button>
   );

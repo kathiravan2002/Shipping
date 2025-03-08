@@ -39,7 +39,7 @@ function Approuter() {
   return (
     <div>
     <BrowserRouter>
-    <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+    {/* <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} /> */}
       <Routes>
            
           <Route path="/" element={<Homepage isLoggedIn={isLoggedIn} onLogout={handleLogout} />}/>

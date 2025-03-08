@@ -22,6 +22,7 @@ function LoginPage({ setIsLoggedIn }) {
         },
         body: JSON.stringify({ email, password }),
       });
+      console.log(response)
       const data = await response.json();
       console.log("Login successful:", data);
 
@@ -36,10 +37,12 @@ function LoginPage({ setIsLoggedIn }) {
         
   
         setIsLoggedIn(true); 
-        navigate("/dashboard");
-        // if (data.role === "admin") {
-        //   navigate("/dashboard");
-        // }
+        if (data.role === "manager" || data.role === "admin")
+          navigate("/dashboard");
+        else if (data.role === "user") navigate("/Addorder");
+        else if(data.role ==="subdistributor") navigate("/dispatched");
+        else if(data.role === "deliveryman") navigate("/outfordelivery");
+        else navigate("/Order");
       
       } else {
         toast.error(data.message || "Login failed");

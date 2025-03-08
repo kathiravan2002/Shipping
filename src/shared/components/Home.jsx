@@ -1,47 +1,127 @@
-import React from "react";
+import React, { useEffect, useState } from 'react'
 import { Link} from "react-router-dom";
-import { Truck, Package, Clock, MapPin, ChevronRight, Calendar, Shield } from 'lucide-react';
+import { Truck, Package, Clock, MapPin, ChevronRight, Calendar, Shield, Menu, X } from 'lucide-react';
 import Courier from "/assets/images/Courier.jpeg"
-
 
 function Home({navigate,scrolltotop}) {
 
- return (
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 20;
+      setScrolled(isScrolled);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
+  return (
     <div className="min-h-screen">
+
+        <nav className={`fixed w-full z-50 transition-all duration-500 ${
+          scrolled ? 'bg-white text-gray-800 shadow-md' : 'bg-gradient-to-r from-red-800 to-purple-800 text-white'
+         }`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex-shrink">
+              <a href="/" className="text-2xl font-bold hover:opacity-75">
+                TCZ Courier
+              </a>
+            </div>
+
+            <div className="hidden md:block">
+              <ul className="ml-10 flex items-center space-x-8">
+                <li>
+                  <a href="#home" className={`font-medium hover:opacity-75 transition-opacity ${scrolled ? 'text-gray-800' : 'text-white'}`}>
+                    Home
+                  </a>
+                </li>
+                <li>
+                  <a href="#about" className={`font-medium hover:opacity-75 transition-opacity ${scrolled ? 'text-gray-800' : 'text-white'}`}>
+                    About
+                  </a>
+                </li>
+                <li>
+                  <a href="#services" className={`font-medium hover:opacity-75 transition-opacity ${scrolled ? 'text-gray-800' : 'text-white'}`}>
+                    Services
+                  </a>
+                </li>
+                <li>
+                  <a href="/Trackorder" className={`font-medium hover:opacity-75 transition-opacity ${scrolled ? 'text-gray-800' : 'text-white'}`}>
+                    Track
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="md:hidden">
+              <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-md hover:bg-opacity-20 hover:bg-gray-700 focus:outline-none">
+                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
+            </div>
+          </div>
+
+          {isOpen && (
+            <div className="md:hidden">
+              <ul className="px-2 pt-2 pb-3 space-y-1">
+                <li>
+                  <a href="#home" className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-opacity-20 hover:bg-gray-700 ${scrolled ? 'text-gray-800' : 'text-white'}`}>
+                    Home
+                  </a>
+                </li>
+                <li>
+                  <a href="#about" className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-opacity-20 hover:bg-gray-700 ${scrolled ? 'text-gray-800' : 'text-white'}`}>
+                    About
+                  </a>
+                </li>
+                <li>
+                  <a href="#services" className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-opacity-20 hover:bg-gray-700 ${scrolled ? 'text-gray-800' : 'text-white'}`}>
+                    Services
+                  </a>
+                </li>
+                <li>
+                  <a href="/Trackorder" className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-opacity-20 hover:bg-gray-700 ${scrolled ? 'text-gray-800' : 'text-white'}`}>
+                    Track
+                  </a>
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+      </nav>
+
       {/* Hero Section */}
-      <header className="bg-gradient-to-r from-red-800 to-purple-800 text-white mt-10">
+      <header className="bg-gradient-to-r from-red-800 to-purple-800 text-white " id='home'>
         <div className="container mx-auto px-6 py-24">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-12 md:mb-0">
               <h1 className="text-4xl md:text-6xl font-bold mb-6">Fast & Reliable Courier Services</h1>
               <p className="text-xl mb-8">Delivering your packages safely and on time.</p>
-              <div className=" grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <button
-                  onClick={() => navigate("/Trackorder")}
-                  className="border-2 border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-500"
-                >
-                  Track your order
+              {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-4"> */}
+              <div> 
+                 <button className="border-2 border-white px-3 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-all duration-300" onClick={() => navigate("/Trackorder")}>
+                  Track Your Order
                 </button>
-                {/* <button className=" border-2 border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-500">
+                {/* <button className="border-2 border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-all duration-300">
                   Grab yours
                 </button>
-                <button className="border-2 border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-500">
-                  Get in Touch
+                <button className="border-2 border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-all duration-300">
+                  Get in Touch hover:-scale-x-125
                 </button> */}
-               
               </div>
             </div>
-
-
-
             <div className="flex justify-end md:w-1/2 ">
-              <img src={Courier} alt="Delivery illustration" className="rounded-lg  " />
+              <img src={Courier} alt="Delivery illustration" className="rounded-lg  transition-transform duration-500" />
             </div>
           </div>
         </div>
       </header>
       {/* Features Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-gray-50" id='about'>
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-16">Why Choose TCZ Courier  </h2>
           <div className="grid md:grid-cols-3 gap-12">
@@ -72,7 +152,7 @@ function Home({navigate,scrolltotop}) {
 
 
       {/* Services Section */}
-      <section className="py-20">
+      <section className="py-20" id='services'>
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold mb-16 text-center">Our Services</h2>
           <div className="grid md:grid-cols-2 gap-8">
@@ -165,8 +245,8 @@ function Home({navigate,scrolltotop}) {
             <div>
               <h4 className="font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Home</a></li>
-                <li><a href="#" className="hover:text-white">Services</a></li>
+                <li><a href="#home" className="hover:text-white">Home</a></li>
+                <li><a href="#services" className="hover:text-white">Services</a></li>
                 <li><a href="#" className="hover:text-white">Contact</a></li>
                 <li><a href="#" className="hover:text-white">Support</a></li>
               </ul>

@@ -3,6 +3,7 @@ import React,{useEffect, useState} from "react";
 import {useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Apiendpoint from "../services/Apiendpoint";
 
 const Adduser = () => {
     const { id } = useParams(); // Get the user ID  
@@ -22,7 +23,7 @@ const Adduser = () => {
   // Fetch user details if `id` is present
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`http://192.168.29.71:5000/api/add/${id}`);
+      const response = await axios.get(`${Apiendpoint}/api/add/${id}`);
       setUser(response.data); // Assuming `response.data` contains the user object
     } catch (error) {
       toast.error("Failed to fetch user details. Please try again.");
@@ -66,7 +67,7 @@ const Adduser = () => {
       if (id) {
         // Update user
         await axios.put(
-          `http://192.168.29.71:5000/api/add/${id}`,user,{
+          `${Apiendpoint}/api/add/${id}`,user,{
             headers : {
                "Authorization": `Bearer ${localStorage.getItem("authToken")}`
             }
@@ -75,7 +76,7 @@ const Adduser = () => {
         navigate("/User");
       }
       else{
-        await axios.post(`http://192.168.29.71:5000/api/add/adduser`, user,{
+        await axios.post(`${Apiendpoint}/api/add/adduser`, user,{
           headers : {
              "Authorization": `Bearer ${localStorage.getItem("authToken")}`
           }
@@ -152,7 +153,11 @@ const Adduser = () => {
               type="number"
               name="ContactNo"
               value={user.ContactNo}
-              onChange={handleChange}
+              onChange= {(e) => {
+                if(e.target.value.length <= 10){
+                  handleChange(e);
+                }
+              }}
               placeholder="Contact Number"
               className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-purple-700 focus:ring-2"
               required
