@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const orderschema = mongoose.Schema({
 
 
-    orderId: {type: String, },
+    orderId: {type: String },
 
     ConsignerName: String,
 
@@ -21,22 +21,6 @@ const orderschema = mongoose.Schema({
 
     consignermail: String,
 
-    Consigneename: String,
-
-    consigneemobileno: String,
-
-    consigneealterno: String,
-
-    consigneeaddress: String,
-
-    consigneecity: String,
-
-    consigneestate: String,
-
-    consigneeedistrict: String,
-
-    consigneepin: String,
-
     productname: String,
 
     noofpackage: String,
@@ -52,12 +36,15 @@ const orderschema = mongoose.Schema({
     Orderstatus: String,
 
     orderDate: {
-        type: String,
-        default: () => {
-          const today = new Date();
-          return today.toISOString().split("T")[0]; // Extracts only 'YYYY-MM-DD'
-        }
+      type: String,
+      default: () => {
+        const today = new Date();
+        const day = String(today.getDate()).padStart(2, "0"); 
+        const month = String(today.getMonth() + 1).padStart(2, "0"); 
+        const year = today.getFullYear();
+        return `${day}-${month}-${year}`; 
       },
+    },
       
     invoiceNo: {
         type: String},
@@ -72,7 +59,7 @@ const orderschema = mongoose.Schema({
 
     deliveryimage:String,
 
-    currentRegion:String,
+    currentRegion:{type:String},
 
     statusHistory: [{
       status: String,
@@ -82,7 +69,8 @@ const orderschema = mongoose.Schema({
       },
       location: String,
       notes: String
-  }]
+  }],
+  
 })
 
 const Order = mongoose.model("order", orderschema);

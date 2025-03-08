@@ -48,8 +48,9 @@ const seedAdmin = async () => {
        
       const tokenPayload = {
         email: user.email,
-        role: user.role,
-        region:user.region
+        role: user.role || "user", // Default to "user" if role is undefined
+      Name: user.Name || "", // Ensure Name is included
+      region: user.region || "", // Ensure region is included
          
       };
       const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: "10h" });
@@ -62,7 +63,7 @@ const seedAdmin = async () => {
       res.status(500).json({ message: "Server error", error });
     }
   };
-
+    
 
 
 
