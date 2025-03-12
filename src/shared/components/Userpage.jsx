@@ -6,7 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { MultiSelect } from "primereact/multiselect";
 import axios from "axios";
 import { toast } from "react-toastify";
-import Apiendpoint from "../services/Apiendpoint";
+import Apiendpoint from "../services/Apiendpoint/Apiendpoint";
 import { Button } from "primereact/button";
 import Exportdata from "./Exportdata";
 

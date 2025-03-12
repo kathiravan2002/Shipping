@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Button } from "primereact/button";
-import Apiendpoint from "../../shared/services/Apiendpoint";
+import Apiendpoint from "../../shared/services/Apiendpoint/Apiendpoint";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 

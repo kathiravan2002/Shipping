@@ -1,10 +1,11 @@
-import { Plus, House, MoreVertical } from "lucide-react"; // Added MoreVertical for three-dot menu
-import React, { useEffect, useState, useRef } from "react";
+/* eslint-disable react/prop-types */
+import {  House, MoreVertical } from "lucide-react"; // Added MoreVertical for three-dot menu
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import login from "/assets/images/user.png";
 import account from "/assets/images/user-avatar.png";
 import home from "/assets/images/home.png"
-import { toast } from "react-toastify";
+import { apigetName } from "../shared/services/Apiauthentication/Apilogin";
 
 function Header({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
@@ -22,22 +23,7 @@ function Header({ isLoggedIn, onLogout }) {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem("authToken");
-      // console.log("Fetching username with token:", token);
-      if (!token) {
-        throw new Error("No token found in localStorage");
-      }
-
-      const response = await fetch("http://192.168.29.71:5000/api/add/login/getname", {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API error: ${response.status} - ${errorText}`);
-      }
-      const data = await response.json();
+      const data = await apigetName ();
       // console.log("API Response:", data);
       setUsername(data.Name || "");
     } catch (err) {
@@ -100,17 +86,17 @@ function Header({ isLoggedIn, onLogout }) {
 
   return (
     <header>
-      <nav className="bg-white border-gray-200 dark:bg-gray-800 shadow sm:block fixed top-0 w-full pl-20 py-4 px-5 z-20">
-        <div className="flex justify-between items-center">
+      <nav className="fixed top-0 z-20 w-full px-5 py-4 pl-20 bg-white border-gray-200 shadow dark:bg-gray-800 sm:block">
+        <div className="flex items-center justify-between">
           
-          <h2 className="lg:text-2xl font-bold text-xl">TCZ Courier</h2>
+          <h2 className="text-xl font-bold lg:text-2xl">TCZ Courier</h2>
 
-          <div className="flex lg:space-x-4 space-x-2 items-center">
+          <div className="flex items-center space-x-2 lg:space-x-4">
           
-            <div className="hidden lg:flex lg:space-x-4 items-center">
+            <div className="items-center hidden lg:flex lg:space-x-4">
               <button
                 onClick={handleHome}
-                className=" text-purple-700 hover:bg-gray-200 px-2 py-0 rounded-md lg:py-2 lg:px-2"
+                className="px-2 py-0 text-purple-700 rounded-md hover:bg-gray-200 lg:py-2 lg:px-2"
                 type="button"
               >
                 <img
@@ -122,7 +108,7 @@ function Header({ isLoggedIn, onLogout }) {
 
               {/* <button
                 onClick={handleAddOrder}
-                className="flex justify-between bg-purple-700 text-white px-2 py-1 rounded-md lg:py-2 lg:px-4"
+                className="flex justify-between px-2 py-1 text-white bg-purple-700 rounded-md lg:py-2 lg:px-4"
                 type="button"
               >
                 <Plus /> Add Order
@@ -133,24 +119,24 @@ function Header({ isLoggedIn, onLogout }) {
                   <div className="flex items-center">
                     <button
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                      className=" px-2 py-1 rounded-md lg:py-2 lg:px-4 flex items-center hover:bg-gray-200 focus:outline-none"
+                      className="flex items-center px-2 py-1 rounded-md lg:py-2 lg:px-4 hover:bg-gray-200 focus:outline-none"
                       type="button"
                     >
                       <img
                         src={login} 
                         alt="Profile Icon"
-                        className="w-7 h-7 mr-2"
+                        className="mr-2 w-7 h-7"
                       />
                       {/* welcome, {username}! */}
                     </button>
 
                     {isDropdownOpen && (
-                      <div className="absolute right-0 mt-36 w-48 bg-purple-700 border border-gray-200 rounded-md shadow-lg z-10">
+                      <div className="absolute right-0 z-10 w-48 bg-purple-700 border border-gray-200 rounded-md shadow-lg mt-36">
                         <ul className="py-1">
                           <li>
                             <button
                               // onClick={handleMyAccount}
-                              className="w-full text-left px-4 py-2 text-white hover:bg-purple-500 flex items-center"
+                              className="flex items-center w-full px-4 py-2 text-left text-white hover:bg-purple-500"
                             >
                               <span className="mr-2"><img src={account} alt="account" className="w-5 h-5"/></span> {username}
                             </button>
@@ -158,7 +144,7 @@ function Header({ isLoggedIn, onLogout }) {
                           <li>
                             <button
                               onClick={handleLoginLogout}
-                              className="w-full text-left px-4 py-2 text-white hover:bg-purple-500  flex items-center"
+                              className="flex items-center w-full px-4 py-2 text-left text-white hover:bg-purple-500"
                             >
                               <span className="mr-2">↩</span> Logout
                             </button>
@@ -170,13 +156,13 @@ function Header({ isLoggedIn, onLogout }) {
                 ) : (
                   <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className=" px-2 py-1 rounded-md lg:py-2 lg:px-4 flex items-center hover:bg-gray-200 focus:outline-none"
+                  className="flex items-center px-2 py-1 rounded-md lg:py-2 lg:px-4 hover:bg-gray-200 focus:outline-none"
                   type="button"
                 >
                   <img
                     src={login} 
                     alt="Profile Icon"
-                    className="w-7 h-7 mr-2"
+                    className="mr-2 w-7 h-7"
                   />
                   {/* welcome, {username}! */}
                 </button>
@@ -188,7 +174,7 @@ function Header({ isLoggedIn, onLogout }) {
             <div className="lg:hidden ">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="bg-purple-700 text-white p-2 rounded-md focus:outline-none"
+                className="p-2 text-white bg-purple-700 rounded-md focus:outline-none"
                 aria-label="Toggle mobile menu"
                 aria-expanded={isMobileMenuOpen}
               >
@@ -198,13 +184,13 @@ function Header({ isLoggedIn, onLogout }) {
               {isMobileMenuOpen && (
                 <div
                   ref={mobileMenuRef}
-                  className="absolute right-5  w-48 bg-purple-800 border border-gray-200 rounded-md shadow-lg z-10"
+                  className="absolute z-10 w-48 bg-purple-800 border border-gray-200 rounded-md shadow-lg right-5"
                 >
                   <ul className="py-1">
                     <li>
                       <button
                         onClick={handleHome}
-                        className="w-full text-left mt-5 px-4 py-2 text-white hover:bg-purple-500 flex items-center"
+                        className="flex items-center w-full px-4 py-2 mt-5 text-left text-white hover:bg-purple-500"
                       >
                         <House className="w-5 h-5 mr-2" /> Home
                       </button>
@@ -212,7 +198,7 @@ function Header({ isLoggedIn, onLogout }) {
                     {/* <li>
                       <button
                         onClick={handleAddOrder}
-                        className="w-full text-left px-4 py-2 text-white hover:bg-purple-500 flex items-center"
+                        className="flex items-center w-full px-4 py-2 text-left text-white hover:bg-purple-500"
                       >
                         <Plus className="w-5 h-5 mr-2" /> Add Order
                       </button>
@@ -221,7 +207,7 @@ function Header({ isLoggedIn, onLogout }) {
                       <>
                         <li>
                           <button
-                            className="w-full text-left px-4 py-2 text-white hover:bg-purple-500 flex items-center"
+                            className="flex items-center w-full px-4 py-2 text-left text-white hover:bg-purple-500"
                           >
                             <img
                               src={account}
@@ -234,7 +220,7 @@ function Header({ isLoggedIn, onLogout }) {
                         <li>
                           <button
                             onClick={handleLoginLogout}
-                            className="w-full text-left px-4 py-2 text-white hover:bg-purple-500 flex items-center"
+                            className="flex items-center w-full px-4 py-2 text-left text-white hover:bg-purple-500"
                           >
                             <span className="mr-2">↩</span> Logout
                           </button>
@@ -244,7 +230,7 @@ function Header({ isLoggedIn, onLogout }) {
                       <li>
                         <button
                           onClick={handleLoginLogout}
-                          className="w-full text-left px-4 py-2 text-white hover:bg-purple-500 flex items-center"
+                          className="flex items-center w-full px-4 py-2 text-left text-white hover:bg-purple-500"
                         >
                           <img
                             src={user}
@@ -260,7 +246,7 @@ function Header({ isLoggedIn, onLogout }) {
               )}
             </div>
             {error && (
-              <span className="text-red-500 text-sm">Error: {error}</span>
+              <span className="text-sm text-red-500">Error: {error}</span>
             )}
           </div>
         </div>
@@ -358,14 +344,14 @@ export default Header;
 
 //   return (
 //     <header>
-//       <nav className="bg-white border-gray-200 dark:bg-gray-800 shadow sm:block fixed top-0 w-full pl-20 py-4 px-5 z-20">
-//         <div className="flex justify-between items-center">
-//           <h2 className="lg:text-2xl font-medium text-base">TCZ Courier</h2>
+//       <nav className="fixed top-0 z-20 w-full px-5 py-4 pl-20 bg-white border-gray-200 shadow dark:bg-gray-800 sm:block">
+//         <div className="flex items-center justify-between">
+//           <h2 className="text-base font-medium lg:text-2xl">TCZ Courier</h2>
 
-//           <div className="flex lg:space-x-4 space-x-2 items-center">
+//           <div className="flex items-center space-x-2 lg:space-x-4">
 //             <button
 //               onClick={() => navigate("/")}
-//               className="bg-purple-700 text-white px-2 py-0 rounded-md lg:py-2 lg:px-4"
+//               className="px-2 py-0 text-white bg-purple-700 rounded-md lg:py-2 lg:px-4"
 //               type="button"
 //             >
 //               <House />
@@ -373,7 +359,7 @@ export default Header;
 
 //             <button
 //               onClick={() => navigate("/Addorder")}
-//               className="flex justify-between bg-purple-700 text-white px-2 py-1 rounded-md lg:py-2 lg:px-4"
+//               className="flex justify-between px-2 py-1 text-white bg-purple-700 rounded-md lg:py-2 lg:px-4"
 //               type="button"
 //             >
 //               <Plus /> Add Order
@@ -384,7 +370,7 @@ export default Header;
 //                 <div className="flex items-center">
 //                   <button
 //                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-//                     className="bg-purple-700 text-white px-2 py-1 rounded-md lg:py-2 lg:px-4 flex items-center hover:bg-purple-800 focus:outline-none"
+//                     className="flex items-center px-2 py-1 text-white bg-purple-700 rounded-md lg:py-2 lg:px-4 hover:bg-purple-800 focus:outline-none"
 //                     type="button"
 //                   >
 //                     <img
@@ -396,12 +382,12 @@ export default Header;
 //                   </button>
 
 //                   {isDropdownOpen && (
-//                     <div className="absolute right-0 mt-36 w-48 bg-purple-700 border border-gray-200 rounded-md shadow-lg z-10">
+//                     <div className="absolute right-0 z-10 w-48 bg-purple-700 border border-gray-200 rounded-md shadow-lg mt-36">
 //                       <ul className="py-1">
 //                         <li>
 //                           <button
 //                             onClick={handleMyAccount}
-//                             className="w-full text-left px-4 py-2 text-white hover:bg-purple-500 flex items-center"
+//                             className="flex items-center w-full px-4 py-2 text-left text-white hover:bg-purple-500"
 //                           >
 //                             <span className="mr-2"><img src={account} alt="account" className="w-5 h-5"/></span> My Account
 //                           </button>
@@ -409,7 +395,7 @@ export default Header;
 //                         <li>
 //                           <button
 //                             onClick={handleLoginLogout}
-//                             className="w-full text-left px-4 py-2 text-white hover:bg-purple-500  flex items-center"
+//                             className="flex items-center w-full px-4 py-2 text-left text-white hover:bg-purple-500"
 //                           >
 //                             <span className="mr-2">↩</span> Logout
 //                           </button>
@@ -421,7 +407,7 @@ export default Header;
 //               ) : (
 //                 <button
 //                   onClick={handleLoginLogout}
-//                   className="bg-purple-700 text-white px-2 py-1 rounded-md lg:py-2 lg:px-4 flex items-center"
+//                   className="flex items-center px-2 py-1 text-white bg-purple-700 rounded-md lg:py-2 lg:px-4"
 //                   type="button"
 //                 >
 //                   <img
@@ -433,7 +419,7 @@ export default Header;
 //                 </button>
 //               )}
 //               {error && (
-//                 <span className="text-red-500 text-sm">Error: {error}</span>
+//                 <span className="text-sm text-red-500">Error: {error}</span>
 //               )}
 //             </div>
 //           </div>
@@ -506,14 +492,14 @@ export default Header;
 
 //   return (
 //     <header>
-//       <nav className="bg-white border-gray-200 dark:bg-gray-800 shadow sm:block fixed top-0 w-full pl-20 py-4 px-5 z-20">
-//         <div className="flex justify-between items-center">
-//           <h2 className="lg:text-2xl font-medium text-base">TCZ Courier</h2>
+//       <nav className="fixed top-0 z-20 w-full px-5 py-4 pl-20 bg-white border-gray-200 shadow dark:bg-gray-800 sm:block">
+//         <div className="flex items-center justify-between">
+//           <h2 className="text-base font-medium lg:text-2xl">TCZ Courier</h2>
 
-//           <div className="flex lg:space-x-4 space-x-2">
+//           <div className="flex space-x-2 lg:space-x-4">
 //             <button
 //               onClick={() => navigate("/")}
-//               className="bg-purple-700 text-white px-2 py-0 rounded-md lg:py-2 lg:px-4"
+//               className="px-2 py-0 text-white bg-purple-700 rounded-md lg:py-2 lg:px-4"
 //               type="button"
 //             >
 //               <House />
@@ -521,7 +507,7 @@ export default Header;
 
 //             <button
 //               onClick={() => navigate("/Addorder")}
-//               className="flex justify-between bg-purple-700 text-white px-2 py-1 rounded-md lg:py-2 lg:px-4"
+//               className="flex justify-between px-2 py-1 text-white bg-purple-700 rounded-md lg:py-2 lg:px-4"
 //               type="button"
 //             >
 //               <Plus /> Add Order
@@ -532,11 +518,11 @@ export default Header;
 //                 <span className="text-violet-600">Welcome, {username}!</span>
 //               )}
 //               {error && (
-//                 <span className="text-red-500 text-sm">Error: {error}</span> // Display error if any
+//                 <span className="text-sm text-red-500">Error: {error}</span> // Display error if any
 //               )}
 //               <button
 //                 onClick={handleLoginLogout}
-//                 className=" text-white px-2 py-1 rounded-md lg:py-2 lg:px-4 flex items-center"
+//                 className="flex items-center px-2 py-1 text-white rounded-md lg:py-2 lg:px-4"
 //                 type="button"
 //               >
 //                 {isLoggedIn ? (
@@ -619,22 +605,22 @@ export default Header;
 
 //   return (
 //     <header>
-//       <nav className="bg-white border-gray-200 dark:bg-gray-800 shadow sm:block fixed top-0 w-full pl-20   py-4 px-5 z-20">
-//         <div className="flex justify-between items-center ">
+//       <nav className="fixed top-0 z-20 w-full px-5 py-4 pl-20 bg-white border-gray-200 shadow dark:bg-gray-800 sm:block">
+//         <div className="flex items-center justify-between ">
 
-//           <h2 className="lg:text-2xl font-medium text-base">TCZ Courier</h2>
+//           <h2 className="text-base font-medium lg:text-2xl">TCZ Courier</h2>
 
 
-//           <div className="flex lg:space-x-4 space-x-2">
+//           <div className="flex space-x-2 lg:space-x-4">
 //             {/* {isLoggedIn ? <button
 //               onClick={() => navigate("/")}
-//               className="bg-purple-700 text-white px-4 py-2 rounded-md"
+//               className="px-4 py-2 text-white bg-purple-700 rounded-md"
 //               type="button"
 //             >
 //              Home
 //             </button> : <button
 //               onClick={() => navigate("/Dashboard")}
-//               className="bg-purple-700 text-white px-4 py-2 rounded-md"
+//               className="px-4 py-2 text-white bg-purple-700 rounded-md"
 //               type="button"
 //             >
 //               Dashboard
@@ -642,7 +628,7 @@ export default Header;
 
 //             <button
 //               onClick={() => navigate("/")}
-//               className="bg-purple-700 text-white px-2 py-0  rounded-md lg:py-2 lg:px-4"
+//               className="px-2 py-0 text-white bg-purple-700 rounded-md lg:py-2 lg:px-4"
 //               type="button"
 //             >
 //               <House />
@@ -650,7 +636,7 @@ export default Header;
 
 //             <button
 //               onClick={() => navigate("/Addorder")}
-//               className="flex justify-between bg-purple-700  text-white px-2 py-1  rounded-md lg:py-2 lg:px-4"
+//               className="flex justify-between px-2 py-1 text-white bg-purple-700 rounded-md lg:py-2 lg:px-4"
 //               type="button"
 //             >
 //               <Plus /> Add Order
@@ -658,7 +644,7 @@ export default Header;
 
 //             {/* <button
 //               onClick={() => navigate("/Dashboard")}
-//               className="bg-purple-700 text-white px-4 py-2 rounded-md"
+//               className="px-4 py-2 text-white bg-purple-700 rounded-md"
 //               type="button"
 //             >
 //               Dashboard
@@ -670,7 +656,7 @@ export default Header;
 //               )}
 //               <button
 //                 onClick={handleLoginLogout}
-//                 className="bg-purple-700 text-white px-2 py-1 rounded-md lg:py-2 lg:px-4 flex items-center"
+//                 className="flex items-center px-2 py-1 text-white bg-purple-700 rounded-md lg:py-2 lg:px-4"
 //                 type="button"
 //               >
 //                 {isLoggedIn ? (

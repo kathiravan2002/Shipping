@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import { CornerDownLeft, Trash } from 'lucide-react';
-import Apiendpoint from "../../shared/services/Apiendpoint";
+import Apiendpoint from "../services/Apiendpoint/Apiendpoint";
 
 const Addorder = () => {
   const { id } = useParams();

@@ -3,7 +3,7 @@ import Outfordelivery from '../../shared/components/Outfordelivery';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import Apiendpoint from "../../shared/services/Apiendpoint";
+import Apiendpoint from "../../shared/services/Apiendpoint/Apiendpoint";
 
 function Outdeliverypage() {
   const { id } = useParams();

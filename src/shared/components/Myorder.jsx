@@ -8,7 +8,7 @@ import { FilterMatchMode } from "primereact/api";
 import { Search } from "lucide-react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import Apiendpoint from "../../shared/services/Apiendpoint";
+import Apiendpoint from "../services/Apiendpoint/Apiendpoint";
 import { toast } from "react-toastify"; // Ensure toast is imported
 import { MultiSelect } from "primereact/multiselect";
 

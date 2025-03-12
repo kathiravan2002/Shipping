@@ -1,7 +1,7 @@
 import React , { useState, useEffect, } from 'react'
 import Delivered from "../../shared/components/Delivered";
 import axios from 'axios';
-import Apiendpoint from '../../shared/services/Apiendpoint';
+import Apiendpoint from '../../shared/services/Apiendpoint/Apiendpoint';
 import { useNavigate } from 'react-router-dom';
 
 export function Deliverpage() {

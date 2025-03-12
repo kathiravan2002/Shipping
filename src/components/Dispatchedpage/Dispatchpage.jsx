@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Dispatched from "../../shared/components/Dispatched";
 import { toast } from "react-toastify";
-import Apiendpoint from "../../shared/services/Apiendpoint";
+import Apiendpoint from "../../shared/services/Apiendpoint/Apiendpoint";
 
 function Dispatchpage() {
   const { id } = useParams();

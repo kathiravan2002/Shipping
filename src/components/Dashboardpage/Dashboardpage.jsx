@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Dashboard from "../../shared/components/Dashboard";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Spinner from "../../shared/components/Spinner";
-import Apiendpoint from "../../shared/services/Apiendpoint"
+import apiurl from "../../shared/services/Apiendpoint/Apiendpoint";
+
 
 export default function Dashboardpage() {
   const [totalorder, setTotalorder] = useState(0);
@@ -29,7 +30,7 @@ export default function Dashboardpage() {
   const getTotalOrders = async () => {
     try {
       const response = await axios.get(
-        `${Apiendpoint}/api/order/total/${getregion}`,
+        `${apiurl()}/api/order/total/${getregion}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -59,7 +60,7 @@ export default function Dashboardpage() {
     const fetchOrders = async () => {
       try {
         const response = await axios.get(
-          `${Apiendpoint}/api/order/orders/today/${getregion}`
+          `${apiurl()}/api/order/orders/today/${getregion}`
         );
         //  const data = await response.json();
         setTodayorder(response.data.today);
@@ -79,7 +80,7 @@ export default function Dashboardpage() {
   const getuser = async () => {
     try {
       const userdata = await axios.get(
-        `${Apiendpoint}/api/add/getuser`,
+        `${apiurl()}/api/add/getuser`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -98,7 +99,7 @@ export default function Dashboardpage() {
 
   const fetchdispatched = async () => {
     const response = await axios.get(
-      `${Apiendpoint}/api/order/orders/dispatche/${getregion}`
+      `${apiurl()}/api/order/orders/dispatche/${getregion}`
     );
     setDispatch(response.data);
   };
@@ -109,7 +110,7 @@ export default function Dashboardpage() {
 
   const fetchout = async () => {
     const response = await axios.get(
-      `${Apiendpoint}/api/order/orders/out/${getregion}`
+      `${apiurl()}/api/order/orders/out/${getregion}`
     );
     setOut(response.data);
   };
@@ -120,7 +121,7 @@ export default function Dashboardpage() {
 
   const fetchDeliveredOrders = async () => {
     const response = await axios.get(
-      `${Apiendpoint}/api/order/orders/delivered/${getregion}`
+      `${apiurl()}/api/order/orders/delivered/${getregion}`
     );
     setOrders(response.data);
   };
@@ -131,7 +132,7 @@ export default function Dashboardpage() {
 
   const fetchPendingOrders = async () => {
     const response = await axios.get(
-      `${Apiendpoint}/api/order/pending/${getregion}`
+      `${apiurl()}/api/order/pending/${getregion}`
     );
     setPending(response.data);
   };
@@ -144,7 +145,7 @@ export default function Dashboardpage() {
 
   const orderData = [
     { name: "Total Orders", value: Number(totalorder) || 0 },
-    { name: "Today Orders", value: Number(todayorder.length) || 0 },
+    { name: "Today Orders", value: Number(todayorder?.length) || 0 },
     { name: "Total Dispatched", value: Number(dispatch.length) || 0 },
     { name: "Total Out for Delivery", value: Number(out.length) || 0 },
     { name: "Total Delivered", value: Number(orders.length) || 0 },

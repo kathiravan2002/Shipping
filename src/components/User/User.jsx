@@ -1,9 +1,8 @@
 
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import Userpage from "../../shared/components/Userpage";
 import { useNavigate } from "react-router-dom";
-import Apiendpoint from "../../shared/services/Apiendpoint";
+import { apigetUser } from "../../shared/services/Apiusers/apiusers";
 
 function User() {
   const [user, setUser] = useState([]);
@@ -13,11 +12,7 @@ function User() {
 
   const getuser = async () => {
     try {
-      const userdata = await axios.get(`${Apiendpoint}/api/add/getuser`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      });
+      const userdata = await apigetUser();
       console.log(userdata.data);
       setUser(userdata.data || []);
     } catch (error) {
