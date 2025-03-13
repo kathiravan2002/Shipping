@@ -3,7 +3,8 @@ import Outfordelivery from '../../shared/components/Outfordelivery';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import Apiendpoint from "../../shared/services/Apiendpoint/Apiendpoint";
+import {apidelivery, apiout, apiupdateout} from '../../shared/services/Apioutdelivery/apioutdelivery.js'
+
 
 function Outdeliverypage() {
   const { id } = useParams();
@@ -30,12 +31,11 @@ function Outdeliverypage() {
     }));
   };
 
-  const userRole = localStorage.getItem("role");
-  const outRegion = userRole === "admin" ? "admin" : localStorage.getItem("Region");
+
 
   const fetchOut = async () => {
     try {
-      const response = await axios.get(`${Apiendpoint}/api/order/orders/out/${outRegion}`);
+      const response = await apiout()
       setOut(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching Out for Delivery orders:", error);
@@ -46,12 +46,11 @@ function Outdeliverypage() {
   useEffect(() => {
     fetchOut();
   }, []);
-  const UserRole = localStorage.getItem("role");
-  const getregion = UserRole === "admin" ? "admin" : localStorage.getItem("Region");
+
 
   const fetchDeliveredOrders = async () => {
     try {
-      const response = await axios.get(`${Apiendpoint}/api/order/orders/delivered/${getregion}`);
+      const response = await apidelivery()
       setOrders(response.data);
     } catch (err) {
       console.error('Error fetching delivered orders:', err);
@@ -74,11 +73,7 @@ function Outdeliverypage() {
       }
 
       console.log("Updating with cid:", formData.cid); // Debug log
-      const response = await axios.put(
-        `${Apiendpoint}/api/order/consignee/${formData.cid}`, // Use consignee endpoint
-        formDataToSend,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      const response = await apiupdateout();
 
       toast.success("Consignee status updated successfully!");
       await fetchOut(); // Refresh orders after update
