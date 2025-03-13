@@ -13,10 +13,11 @@ function User() {
   const getuser = async () => {
     try {
       const userdata = await apigetUser();
-      console.log(userdata.data);
-      setUser(userdata.data || []);
+      // console.log("User data:", userdata);
+      setUser(userdata || []);
     } catch (error) {
-      console.log("Error fetching user data", error);
+      console.error("Error fetching user data:", error.message);
+      setUser([]);
     }
   };
 
