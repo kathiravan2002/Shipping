@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import Userpage from "../../shared/components/Userpage";
+import Userpage from "../../shared/components/User/Userpage";
 import { useNavigate } from "react-router-dom";
 import { apigetUser } from "../../shared/services/Apiusers/apiusers";
 

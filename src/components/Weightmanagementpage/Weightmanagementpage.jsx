@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Weightmanagement from '../../shared/components/Weightmanagement'
 
 function Weightmanagementpage() {
@@ -47,7 +47,23 @@ function Weightmanagementpage() {
   const totalWithTax = totalChargeableAmount + totalTax;
 
   return (
-    <div><Weightmanagement totalWithTax={totalWithTax} totalTax={totalTax}  totalChargeableAmount={totalChargeableAmount} chargeableWeight={chargeableWeight} taxRate={taxRate}  freightRate={freightRate} updateRow={updateRow} deleteRow={deleteRow} addRow={addRow}  rows={rows} totalPackages={totalPackages}  totalWeight={totalWeight} totalVolumetricWeight={totalVolumetricWeight}/></div>
+    <div>
+      <Weightmanagement 
+        totalWithTax={totalWithTax} 
+        totalTax={totalTax}  
+        totalChargeableAmount={totalChargeableAmount} 
+        chargeableWeight={chargeableWeight} 
+        taxRate={taxRate}  
+        freightRate={freightRate} 
+        updateRow={updateRow} 
+        deleteRow={deleteRow} 
+        addRow={addRow}  
+        rows={rows} 
+        totalPackages={totalPackages}  
+        totalWeight={totalWeight} 
+        totalVolumetricWeight={totalVolumetricWeight}
+      />
+    </div>
   )
 }
 

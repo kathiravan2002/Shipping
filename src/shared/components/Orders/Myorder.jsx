@@ -1,16 +1,16 @@
+/* eslint-disable react/prop-types */
 import axios from "axios";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FilterMatchMode } from "primereact/api";
-import { Search } from "lucide-react";
-import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
-import Apiendpoint from "../services/Apiendpoint/Apiendpoint";
-import { toast } from "react-toastify"; // Ensure toast is imported
+import { toast } from "react-toastify";
 import { MultiSelect } from "primereact/multiselect";
+import apiurl from "../../services/Apiendpoint/Apiendpoint";
+import MyorderHeader from "./MyorderHeader";
+import MyorderDatatable from "./MyorderDatatable";
 
 export function Myorder() {
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ export function Myorder() {
       packagetype: { value: null, matchMode: FilterMatchMode.CONTAINS },
       dispatchstate: { value: null, matchMode: FilterMatchMode.CONTAINS },
       dispatchdistrict: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      cid: { value: null, matchMode: FilterMatchMode.CONTAINS }, // Added for consignee ID filtering
+      cid: { value: null, matchMode: FilterMatchMode.CONTAINS },
     },
     status: "",
   });
@@ -68,7 +68,7 @@ export function Myorder() {
     const fetchFilterOptions = async () => {
       try {
         const response = await axios.get(
-          `${Apiendpoint}/api/order/myorders/filter?region=${getregion}&getFilterOptions=true`,
+          `${apiurl()}/api/order/myorders/filter?region=${getregion}&getFilterOptions=true`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -143,7 +143,7 @@ export function Myorder() {
 
 
         response = await axios.get(
-          `${Apiendpoint}/api/order/myorders/filter?${params.toString()}`,
+          `${apiurl()}/api/order/myorders/filter?${params.toString()}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -157,7 +157,7 @@ export function Myorder() {
 
       } else {
         response = await axios.get(
-          `${Apiendpoint}/api/order/myorder/${getregion}?page=${lazyState.page + 1}&limit=${lazyState.rows}`,
+          `${apiurl()}/api/order/myorder/${getregion}?page=${lazyState.page + 1}&limit=${lazyState.rows}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -190,7 +190,7 @@ export function Myorder() {
 
     try {
       const response = await axios.post(
-        `${Apiendpoint}/api/invoice/generate-invoice/${_id}`,
+        `${apiurl()}/api/invoice/generate-invoice/${_id}`,
         {},
         {
           responseType: "blob",
@@ -221,7 +221,7 @@ export function Myorder() {
 
     try {
       const response = await axios.post(
-        `${Apiendpoint}/api/invoice/consignee-invoice/${_id}`,
+        `${apiurl()}/api/invoice/consignee-invoice/${_id}`,
         {},
         {
           responseType: "blob",
@@ -277,7 +277,7 @@ export function Myorder() {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`${Apiendpoint}/api/order/${_id}`, {
+      await axios.delete(`${apiurl()}/api/order/${_id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
@@ -354,20 +354,20 @@ export function Myorder() {
 
   const actionBodyTemplate = (rowData) => {
     return (
-      <div className="flex items-center -space-x-4 -ml-5">
+      <div className="flex items-center -ml-5 -space-x-4">
         <Button
           icon="pi pi-pencil"
-          className="p-button-text p-button-rounded p-button-info text-teal-400"
+          className="text-teal-400 p-button-text p-button-rounded p-button-info"
           onClick={() => navigate(`/Addorder/${rowData._id}`)}
         />
         <Button
           icon="pi pi-trash"
-          className="p-button-text p-button-rounded p-button-info text-red-400"
+          className="text-red-400 p-button-text p-button-rounded p-button-info"
           onClick={() => deleteOrder({ _id: rowData._id })}
         />
         <Button
           icon="pi pi-download"
-          className="p-button-text p-button-rounded p-button-info text-yellow-600"
+          className="text-yellow-600 p-button-text p-button-rounded p-button-info"
           onClick={() => downloadinvoice(rowData._id)}
         />
       </div>
@@ -397,9 +397,9 @@ export function Myorder() {
   const productImage = (rowData) => {
     return (
       <img
-        src={`http://192.168.29.71:5000${rowData.productImage}`}
+        src={`${apiurl()}${rowData.productImage}`}
         alt="Not Delivered"
-        className="w-25 h-20 rounded-lg"
+        className="h-20 rounded-lg w-25"
       />
     );
   };
@@ -414,7 +414,7 @@ export function Myorder() {
           value={consignees}
           scrollable
           scrollHeight="300px"
-          className="p-datatable-striped w-auto text-sm"
+          className="w-auto text-sm p-datatable-striped"
           emptyMessage="No consignee details found."
         >
           <Column field="invoice" header="Invoices" body={consigneeinvTemplate} />
@@ -473,7 +473,7 @@ export function Myorder() {
     });
   };
 
-  const consignerNameFilterTemplate = (options) => {
+  const consignerNameFilterTemplate = () => {
     return (
       <MultiSelect
         value={filterValues.consignerNames}
@@ -513,7 +513,7 @@ export function Myorder() {
       />
     );
   };
-  const orderStatusFilterTemplate = (options) => {
+  const orderStatusFilterTemplate = () => {
     return (
       <MultiSelect
         value={filterValues.orderStatuses}
@@ -544,7 +544,7 @@ export function Myorder() {
           </div>
         )}
         placeholder="Any"
-        className="p-multiselect w-full"
+        className="w-full p-multiselect"
         maxSelectedLabels={3}
         selectedItemsLabel="{0} items selected"
         filter
@@ -554,7 +554,7 @@ export function Myorder() {
     );
   };
 
-  const consignerCityFilterTemplate = (options) => {
+  const consignerCityFilterTemplate = () => {
     return (
       <MultiSelect
         value={filterValues.consignerCities}
@@ -585,7 +585,7 @@ export function Myorder() {
           </div>
         )}
         placeholder="Any"
-        className="p-multiselect w-full"
+        className="w-full p-multiselect"
         maxSelectedLabels={3}
         selectedItemsLabel="{0} items selected"
         filter
@@ -595,7 +595,7 @@ export function Myorder() {
     );
   };
 
-  const orderDateFilterTemplate = (options) => {
+  const orderDateFilterTemplate = () => {
     return (
       <MultiSelect
         value={filterValues.orderDates}
@@ -626,7 +626,7 @@ export function Myorder() {
           </div>
         )}
         placeholder="Any"
-        className="p-multiselect w-full"
+        className="w-full p-multiselect"
         maxSelectedLabels={3}
         selectedItemsLabel="{0} items selected"
         filter
@@ -636,7 +636,7 @@ export function Myorder() {
     );
   };
 
-  const orderIdFilterTemplate = (options) => {
+  const orderIdFilterTemplate = () => {
     return (
       <MultiSelect
         value={filterValues.orderIds}
@@ -667,7 +667,7 @@ export function Myorder() {
           </div>
         )}
         placeholder="Any"
-        className="p-multiselect w-full"
+        className="w-full p-multiselect"
         maxSelectedLabels={1}
         selectedItemsLabel="{0} items selected"
         filter
@@ -677,7 +677,7 @@ export function Myorder() {
     );
   };
 
-  const conrDistrictFilterTemplate = (options) => {
+  const conrDistrictFilterTemplate = () => {
     return (
       <MultiSelect
         value={filterValues.conrDistricts}
@@ -708,7 +708,7 @@ export function Myorder() {
           </div>
         )}
         placeholder="Any"
-        className="p-multiselect w-full"
+        className="w-full p-multiselect"
         maxSelectedLabels={3}
         selectedItemsLabel="{0} items selected"
         filter
@@ -719,196 +719,18 @@ export function Myorder() {
   };
 
   return (
-    <div className="w-full mx-auto p-4 sm:p-6 bg-white shadow-lg rounded-sm border border-gray-300 mt-3">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-        <div className="flex items-center gap-4">
-          <h3 className="text-2xl font-semibold">My Region Orders</h3>
-        </div>
-        <div className="flex-1 flex justify-center gap-10">
-          <div className="relative w-full sm:max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <InputText
-              type="text"
-              placeholder="Search for Order ID or Consigneer Name"
-              className="pl-10 pr-4 py-2 border rounded-md w-full text-sm"
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-          </div>
-          <div>
-            <Button
-              icon="pi pi-filter-slash"
-              className="flex items-center gap-2 px-3 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-all duration-300 text-sm font-medium shadow-sm"
-              onClick={handleClearAllFilters}
-            />
-          </div>
-          
-        </div>
-        <h1 className="text-purple-500 flext justify-end">Total My order :<span className="text-lg"> {myorder.length}</span></h1>
-
-      </header>
-      <DataTable
-        value={myorder}
-        lazy
-        scrollable
-        scrollHeight="650px"
-        dataKey="_id"
-        paginator
-        first={lazyState.first}
-        rows={lazyState.rows}
-        totalRecords={totalRecords}
-        onPage={onPage}
-        onSort={onSort}
-        sortField={lazyState.sortField}
-        sortOrder={lazyState.sortOrder}
-        onFilter={onFilter}
-        filters={lazyState.filters}
-        loading={loading}
-        showGridlines
-        filterDisplay="menu"
-        emptyMessage={
-          <div className="flex flex-col items-center py-8">
-            <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-            </svg>
-            <span className="text-gray-600 font-medium mt-2">No orders found.</span>
-          </div>}
-        className="p-datatable-striped text-sm text-gray-700 rounded-lg   border border-gray-200"
-        rowsPerPageOptions={[10, 20, 50, 100]}
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        currentPageReportTemplate={`Showing page ${currentPage} of ${Math.ceil(
-          totalRecords / lazyState.rows
-        )}`}
-        expandedRows={expandedRows}
-        onRowToggle={(e) => setExpandedRows(e.data)}
-        rowExpansionTemplate={rowExpansionTemplate}
-      >
-        <Column expander style={{ width: "3rem" }} />
-        <Column header="S.No" body={(data, options) => options.rowIndex + 1} style={{ width: "4rem" }} />
-        <Column field="action" header="Action" body={actionBodyTemplate} style={{ width: "6rem" }} />
-        <Column
-          field="orderId"
-          header="Order Id"
-          filter
-          showFilterMatchModes={false}
-          filterElement={orderIdFilterTemplate}
-          filterPlaceholder="Search by Order ID"
-          showFilterMenu={true}
-          frozen
-          style={{ minWidth: "8rem" }}
-          className="font-medium text-indigo-600"
-        />
-        <Column
-          field="orderDate"
-          header="Order Date"
-          filter
-          showFilterMatchModes={false}
-          filterElement={orderDateFilterTemplate}
-          filterPlaceholder="Search by Order Date"
-          showFilterMenu={true}
-          style={{ minWidth: "8rem" }}
-        />
-        <Column
-          field="Orderstatus"
-          header="Order Status"
-          filter
-          showFilterMatchModes={false}
-          filterElement={orderStatusFilterTemplate}
-          showFilterMenu={true}
-          style={{ minWidth: "8rem" }}
-          body={(rowData) => (
-            <span
-              className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${rowData?.Orderstatus === "Delivered"
-                  ? "bg-green-100 text-green-800"
-                  : rowData?.Orderstatus === "Order Placed"
-                    ? "bg-blue-100 text-blue-800"
-                    : "bg-yellow-100 text-yellow-800"
-                }`}
-            >
-              {rowData?.Orderstatus || "N/A"}
-            </span>
-          )}
-        />
-        <Column
-          field="ConsignerName"
-          header="Consigner Name"
-          filter
-          showFilterMatchModes={false}
-          filterElement={consignerNameFilterTemplate}
-          showFilterMenu={true}
-          style={{ minWidth: "10rem" }}
-        />
-        <Column
-          field="consignermobileNumber"
-          header="Consigner No"
-          filterPlaceholder="Search by Consigner Mobile"
-          style={{ minWidth: "8rem" }}
-        />
-        <Column
-          field="consignerAddress"
-          header="Consigner Address"
-          filterPlaceholder="Search by Consigner Address"
-          style={{ minWidth: "12rem" }}
-        />
-        <Column
-          field="consignercity"
-          header="Consigner City"
-          filter
-          showFilterMatchModes={false}
-          filterElement={consignerCityFilterTemplate}
-          showFilterMenu={true}
-          style={{ minWidth: "8rem" }}
-        />
-        <Column
-          field="consignerdistrict"
-          header="Consigner District"
-          filter
-          showFilterMatchModes={false}
-          filterElement={conrDistrictFilterTemplate}
-          filterPlaceholder="Search by Consigner District"
-          showFilterMenu={true}
-          style={{ minWidth: "10rem" }}
-        />
-        <Column
-          field="consignerstate"
-          header="Consigner State"
-          filter
-          showFilterMatchModes={false}
-          filterPlaceholder="Search by Consigner State"
-          showFilterMenu={true}
-          style={{ minWidth: "8rem" }}
-        />
-        <Column
-          field="consignerpincode"
-          header="Consigner Pincode"
-          filterPlaceholder="Search by Consigner Pincode"
-          style={{ minWidth: "8rem" }}
-        />
-        <Column
-          field="noofpackage"
-          header="No of Package"
-          filterPlaceholder="Search by No. of Packages"
-          style={{ minWidth: "8rem" }}
-        />
-        <Column
-          field="packageWeight"
-          header="Package Weight"
-          filterPlaceholder="Search by Package Weight"
-          style={{ minWidth: "8rem" }}
-        />
-        <Column
-          field="price"
-          header="Price"
-          filterPlaceholder="Search by Price"
-          style={{ minWidth: "6rem" }}
-          body={(rowData) => `₹${rowData?.price || 0}`}
-        />
-      </DataTable>
+    <div className="w-full p-4 mx-auto mt-3 bg-white border border-gray-300 rounded-sm shadow-lg sm:p-6">
+      <MyorderHeader searchQuery={searchQuery} handleSearchChange={handleSearchChange} handleClearAllFilters={handleClearAllFilters} myorder={myorder} />
+      <MyorderDatatable myorder={myorder} lazyState={lazyState} onPage={onPage} onSort={onSort} onFilter={onFilter} expandedRows={expandedRows} setExpandedRows={setExpandedRows} 
+        loading={loading} totalRecords={totalRecords} currentPage={currentPage} rowExpansionTemplate={rowExpansionTemplate} 
+        orderIdFilterTemplate={orderIdFilterTemplate} orderDateFilterTemplate={orderDateFilterTemplate} orderStatusFilterTemplate={orderStatusFilterTemplate} 
+        consignerNameFilterTemplate={consignerNameFilterTemplate} consignerCityFilterTemplate={consignerCityFilterTemplate} conrDistrictFilterTemplate={conrDistrictFilterTemplate} 
+        actionBodyTemplate={actionBodyTemplate} />
       <div>
         <Button
           type=""
           onClick={() => navigate("/Order")}
-          className="bg-gradient-to-r from-purple-600 to-green-500 text-white px-7 py-3 rounded"
+          className="py-3 text-white rounded bg-gradient-to-r from-purple-600 to-green-500 px-7"
         >
           Back
         </Button>

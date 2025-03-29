@@ -1,22 +1,21 @@
-import React, { useState} from 'react'
+import { useState} from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Dashboardpage from '../components/Dashboardpage/Dashboardpage'
 import Main from '../core/Main'
 import Homepage from '../components/Home/Homepage'
 import Orderpage from '../components/Orderpage/Orderpage'
-import Addorder from '../shared/components/Addorder'
 import Weightmanagementpage from '../components/Weightmanagementpage/Weightmanagementpage'
 import { toast } from "react-toastify";
 import LoginPage from '../core/LoginPage';
 import ProtectedRoute from './ProtectedRoute';
 import User from '../components/User/User';
 import Adduser from '../shared/components/Adduser'
-import Header from '../core/Header'
 import { Deliverpage } from '../components/Deliveredpage/Deliverpage'
 import Dispatchpage from '../components/Dispatchedpage/Dispatchpage'
 import Outdeliverypage from '../components/Outdeliverypage/Outdeliverypage'
 import Trackorder from '../shared/components/Trackorder.jsx'
-import { Myorder } from '../shared/components/Myorder.jsx'
+import { Myorder } from '../shared/components/Orders/Myorder.jsx'
+import Addorder from '../shared/components/Addorder/Addorder.jsx'
 
 
 function Approuter() {

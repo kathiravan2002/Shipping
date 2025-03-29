@@ -1,10 +1,10 @@
-
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import { CornerDownLeft, Trash } from 'lucide-react';
-import Apiendpoint from "../services/Apiendpoint/Apiendpoint";
+import apiurl from "../../services/Apiendpoint/Apiendpoint";
+import ConsignerDetails from "./ConsignerDetails";
 
 const Addorder = () => {
   const { id } = useParams();
@@ -155,7 +155,7 @@ const Addorder = () => {
     if (id) {
       const fetchOrderDetails = async () => {
         try {
-          const response = await axios.get(`${Apiendpoint}/api/order/${id}`);
+          const response = await axios.get(`${apiurl()}/api/order/${id}`);
           const { savedOrder, cosaveorder } = response.data;
           
           if (!savedOrder) throw new Error("Order data not found in response");
@@ -377,8 +377,8 @@ const Addorder = () => {
       };
   
       const url = id 
-        ? `${Apiendpoint}/api/order/${id}` 
-        : `${Apiendpoint}/api/order/createorder`;
+        ? `${apiurl()}/api/order/${id}` 
+        : `${apiurl()}/api/order/createorder`;
       const method = id ? axios.put : axios.post;
   
       const response = await method(url, formDataToSend, { headers });
@@ -415,34 +415,16 @@ const Addorder = () => {
   };
 
   return (
-    <div className="max-w-full mx-auto p-4 bg-gray-50 shadow-lg shadow-purple-300 rounded-lg">
-      <h1 className="text-center text-2xl font-semibold mb-2">Order Details</h1>
+    <div className="max-w-full p-4 mx-auto rounded-lg shadow-lg bg-gray-50 shadow-purple-300">
+      <h1 className="mb-2 text-2xl font-semibold text-center">Order Details</h1>
       <form onSubmit={handleSubmit} className="text-sm">
-        <div>
-          <h2 className="font-semibold text-xl mb-6">1. Consigner Details</h2>
-          <div className="grid lg:grid-cols-5 gap-2">
-            <input type="text" name="ConsignerName" value={formData.orderDetails.ConsignerName} onChange={handleOrderInputChange} placeholder="Consigner Name" className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required  />
-            <input type="tel" name="consignermobileNumber" value={formData.orderDetails.consignermobileNumber} onChange={(e) => handleOrderInputChange({ target: { name: e.target.name, value: e.target.value.replace(/\D/g, "").slice(0, 10) } })} placeholder="Mobile Number" className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required />
-            <input type="text" name="consignerAddress" value={formData.orderDetails.consignerAddress} onChange={handleOrderInputChange} placeholder="Address" className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required />
-            <input type="text" name="consignercity" value={formData.orderDetails.consignercity} onChange={handleOrderInputChange} placeholder="City" className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required />
-            <input type="email" name="consignermail" value={formData.orderDetails.consignermail} onChange={handleOrderInputChange} placeholder="Email (optional)" className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" />
-            <select name="consignerstate" value={formData.orderDetails.consignerstate} onChange={handleOrderInputChange} className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required>
-              <option value="">Select State</option>
-              {states.map((state, idx) => (<option key={idx} value={state}>{state}</option>))}
-            </select>
-            <select name="consignerdistrict" value={formData.orderDetails.consignerdistrict} onChange={handleOrderInputChange} className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required>
-              <option value="">Select District</option>
-              {consignerDistricts.map((district, idx) => (<option key={idx} value={district}>{district}</option>))}
-            </select>
-            <select name="consignerpincode" value={formData.orderDetails.consignerpincode} onChange={handleOrderInputChange} className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required>
-              <option value="">Select Pincode</option>
-              {consignerPincodes.map((pincode, idx) => (<option key={idx} value={`${pincode.pincode}-${pincode.officename}`}>{pincode.pincode} - {pincode.officename}</option>))}
-            </select>
-          </div>
-        </div>
+    
+
+        <ConsignerDetails  formData={formData} handleOrderInputChange={handleOrderInputChange} states={states} consignerDistricts={consignerDistricts} 
+        consignerPincodes={consignerPincodes} />
 
         <div className="mt-6">
-          <h2 className="font-semibold text-xl mb-4">2. Consignee Type</h2>
+          <h2 className="mb-4 text-xl font-semibold">2. Consignee Type</h2>
           <div className="flex gap-4">
             <label className="flex items-center"><input type="radio" name="consigneeType" value="Single" checked={consigneeType === "Single"} onChange={() => setConsigneeType("Single")} className="mr-2" />Single Consignee</label>
             <label className="flex items-center"><input type="radio" name="consigneeType" value="Multiple" checked={consigneeType === "Multiple"} onChange={() => setConsigneeType("Multiple")} className="mr-2" />Multiple Consignee</label>
@@ -451,51 +433,51 @@ const Addorder = () => {
 
         {consigneeType === "Single" && (
           <div className="mt-6">
-            <h2 className="font-semibold text-xl mb-6">3. Consignee Details</h2>
-            <div className="grid lg:grid-cols-5 gap-2">
-              <input type="text" name="Consigneename" value={singleConsignee.Consigneename} onChange={handleSingleConsigneeChange} placeholder="Consignee Name" className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required />
-              <input type="tel" name="consigneemobileno" value={singleConsignee.consigneemobileno} onChange={(e) => handleSingleConsigneeChange({ target: { name: e.target.name, value: e.target.value.replace(/\D/g, "").slice(0, 10) } })} placeholder="Mobile Number" className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required />
-              {/* <input type="tel" name="consigneealterno" value={singleConsignee.consigneealterno} onChange={(e) => handleSingleConsigneeChange({ target: { name: e.target.name, value: e.target.value.replace(/\D/g, "").slice(0, 10) } })} placeholder="Alternate Mobile" className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" /> */}
-              <input type="text" name="consigneeaddress" value={singleConsignee.consigneeaddress} onChange={handleSingleConsigneeChange} placeholder="Address" className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required />
-              <input type="text" name="consigneecity" value={singleConsignee.consigneecity} onChange={handleSingleConsigneeChange} placeholder="City" className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required />
-              <select name="consigneestate" value={singleConsignee.consigneestate} onChange={handleSingleConsigneeChange} className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required>
+            <h2 className="mb-6 text-xl font-semibold">3. Consignee Details</h2>
+            <div className="grid gap-2 lg:grid-cols-5">
+              <input type="text" name="Consigneename" value={singleConsignee.Consigneename} onChange={handleSingleConsigneeChange} placeholder="Consignee Name" className="w-full p-4 mb-2 border-2 rounded bg-purple-50 focus:outline-none focus:ring-purple-400 focus:ring-2" required />
+              <input type="tel" name="consigneemobileno" value={singleConsignee.consigneemobileno} onChange={(e) => handleSingleConsigneeChange({ target: { name: e.target.name, value: e.target.value.replace(/\D/g, "").slice(0, 10) } })} placeholder="Mobile Number" className="w-full p-4 mb-2 border-2 rounded bg-purple-50 focus:outline-none focus:ring-purple-400 focus:ring-2" required />
+              {/* <input type="tel" name="consigneealterno" value={singleConsignee.consigneealterno} onChange={(e) => handleSingleConsigneeChange({ target: { name: e.target.name, value: e.target.value.replace(/\D/g, "").slice(0, 10) } })} placeholder="Alternate Mobile" className="w-full p-4 mb-2 border-2 rounded bg-purple-50 focus:outline-none focus:ring-purple-400 focus:ring-2" /> */}
+              <input type="text" name="consigneeaddress" value={singleConsignee.consigneeaddress} onChange={handleSingleConsigneeChange} placeholder="Address" className="w-full p-4 mb-2 border-2 rounded bg-purple-50 focus:outline-none focus:ring-purple-400 focus:ring-2" required />
+              <input type="text" name="consigneecity" value={singleConsignee.consigneecity} onChange={handleSingleConsigneeChange} placeholder="City" className="w-full p-4 mb-2 border-2 rounded bg-purple-50 focus:outline-none focus:ring-purple-400 focus:ring-2" required />
+              <select name="consigneestate" value={singleConsignee.consigneestate} onChange={handleSingleConsigneeChange} className="w-full p-4 mb-2 border-2 rounded bg-purple-50 focus:outline-none focus:ring-purple-400 focus:ring-2" required>
                 <option value="">Select State</option>
                 {states.map((state, idx) => (<option key={idx} value={state}>{state}</option>))}
               </select>
-              <select name="consigneeedistrict" value={singleConsignee.consigneeedistrict} onChange={handleSingleConsigneeChange} className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required>
+              <select name="consigneeedistrict" value={singleConsignee.consigneeedistrict} onChange={handleSingleConsigneeChange} className="w-full p-4 mb-2 border-2 rounded bg-purple-50 focus:outline-none focus:ring-purple-400 focus:ring-2" required>
                 <option value="">Select District</option>
                 {consigneeDistrictsMap["single"]?.map((district, idx) => (<option key={idx} value={district}>{district}</option>))}
               </select>
-              <select name="consigneepin" value={singleConsignee.consigneepin} onChange={handleSingleConsigneeChange} className="w-full p-4 border-2 bg-purple-50 rounded mb-2 focus:outline-none focus:ring-purple-400 focus:ring-2" required>
+              <select name="consigneepin" value={singleConsignee.consigneepin} onChange={handleSingleConsigneeChange} className="w-full p-4 mb-2 border-2 rounded bg-purple-50 focus:outline-none focus:ring-purple-400 focus:ring-2" required>
                 <option value="">Select Pincode</option>
                 {consigneePincodesMap["single"]?.map((pincode, idx) => (<option key={idx} value={`${pincode.pincode}-${pincode.officename}`}>{pincode.pincode} - {pincode.officename}</option>))}
               </select>
             </div>
 
             <div className="mt-6">
-              <h2 className="font-semibold text-xl mb-6">4. Product Details</h2>
-              <table className="w-full border-collapse border border-gray-300 text-sm">
+              <h2 className="mb-6 text-xl font-semibold">4. Product Details</h2>
+              <table className="w-full text-sm border border-collapse border-gray-300">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="border p-2">S.NO</th>
-                    <th className="border p-2">Type</th>
-                    <th className="border p-2">Weight</th>
-                    <th className="border p-2">Quantity</th>
-                    <th className="border p-2">Total Weight</th>
-                    <th className="border p-2">Price/kg</th>
-                    <th className="border p-2">Price</th>
+                    <th className="p-2 border">S.NO</th>
+                    <th className="p-2 border">Type</th>
+                    <th className="p-2 border">Weight</th>
+                    <th className="p-2 border">Quantity</th>
+                    <th className="p-2 border">Total Weight</th>
+                    <th className="p-2 border">Price/kg</th>
+                    <th className="p-2 border">Price</th>
                     <th className="border p-2 w-[170px]">Status</th>
-                    {/* <th className="border p-2">Image</th> */}
-                    <th className="border p-2">Action</th>
+                    {/* <th className="p-2 border">Image</th> */}
+                    <th className="p-2 border">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {formData.consignees.map((consignee, index) => (
                     <tr key={index}>
-                      <td className="border p-2">{index + 1}</td>
-                      <td className="border p-2 space-x-1">
-                        <input type="text" value={consignee.typename} onChange={(e) => handleConsigneeChange(index, "typename", e.target.value)} placeholder="Product" className="w-1/2 border p-1 rounded bg-violet-50 " required  disabled={isEditMode}/>
-                        <select value={consignee.ptype} onChange={(e) => handleConsigneeChange(index, "ptype", e.target.value)} className="border p-1 rounded bg-violet-50 mt-1" required  disabled={isEditMode}>
+                      <td className="p-2 border">{index + 1}</td>
+                      <td className="p-2 space-x-1 border">
+                        <input type="text" value={consignee.typename} onChange={(e) => handleConsigneeChange(index, "typename", e.target.value)} placeholder="Product" className="w-1/2 p-1 border rounded bg-violet-50 " required  disabled={isEditMode}/>
+                        <select value={consignee.ptype} onChange={(e) => handleConsigneeChange(index, "ptype", e.target.value)} className="p-1 mt-1 border rounded bg-violet-50" required  disabled={isEditMode}>
                           <option value="">Package Type</option>
                           <option>Spoiled items</option>
                           <option>Breakable things</option>
@@ -504,42 +486,42 @@ const Addorder = () => {
                           <option>Envelope</option>
                         </select>
                       </td>
-                      <td className="border p-2"><input type="tel" value={consignee.weight} onChange={(e) => handleConsigneeChange(index, "weight", e.target.value)} placeholder="Weight" className="w-full border p-1 rounded bg-violet-50" required min="0"  disabled={isEditMode} /></td>
-                      <td className="border p-2"><input type="tel" value={consignee.packages} onChange={(e) => handleConsigneeChange(index, "packages", e.target.value)} placeholder="Qty" className="w-full border p-1 rounded bg-violet-50" required min="0"  disabled={isEditMode} /></td>
-                      <td className="border p-2"><input value={consignee.totalWeight ? `${consignee.totalWeight} Kg` : ""} className="w-full border p-1 rounded bg-violet-50" required min="0" /></td>
-                      <td className="border p-2"><input type="tel" value={consignee.cpriceperkg} onChange={(e) => handleConsigneeChange(index, "cpriceperkg", e.target.value)} placeholder="₹/kg" className="w-full border p-1 rounded bg-violet-50" min="0"  disabled={isEditMode} /></td>
-                      <td className="border p-2"><input value={consignee.cprice ? `₹${consignee.cprice}` : ""} className="w-full border p-1 rounded bg-violet-50" required min="0" /></td>
-                      <td className="border p-2">
-                        <select value={consignee.cstatus} onChange={(e) => handleConsigneeChange(index, "cstatus", e.target.value)} className="w-full border p-1 rounded bg-violet-50" required>
+                      <td className="p-2 border"><input type="tel" value={consignee.weight} onChange={(e) => handleConsigneeChange(index, "weight", e.target.value)} placeholder="Weight" className="w-full p-1 border rounded bg-violet-50" required min="0"  disabled={isEditMode} /></td>
+                      <td className="p-2 border"><input type="tel" value={consignee.packages} onChange={(e) => handleConsigneeChange(index, "packages", e.target.value)} placeholder="Qty" className="w-full p-1 border rounded bg-violet-50" required min="0"  disabled={isEditMode} /></td>
+                      <td className="p-2 border"><input value={consignee.totalWeight ? `${consignee.totalWeight} Kg` : ""} className="w-full p-1 border rounded bg-violet-50" required min="0" /></td>
+                      <td className="p-2 border"><input type="tel" value={consignee.cpriceperkg} onChange={(e) => handleConsigneeChange(index, "cpriceperkg", e.target.value)} placeholder="₹/kg" className="w-full p-1 border rounded bg-violet-50" min="0"  disabled={isEditMode} /></td>
+                      <td className="p-2 border"><input value={consignee.cprice ? `₹${consignee.cprice}` : ""} className="w-full p-1 border rounded bg-violet-50" required min="0" /></td>
+                      <td className="p-2 border">
+                        <select value={consignee.cstatus} onChange={(e) => handleConsigneeChange(index, "cstatus", e.target.value)} className="w-full p-1 border rounded bg-violet-50" required>
                           <option value="">Select Status</option>
                           {getNextConsigneeStatuses(consignee.cstatus).map(status => (
                             <option key={status} value={status}>{status}</option>
                           ))}
                         </select>
                       </td>
-                      {/* <td className="border p-2">
+                      {/* <td className="p-2 border">
                         {consignee.cstatus === "Delivered" && (
-                          <input type="file" accept="image/*" onChange={(e) => handleImageChange(index, e)} className="w-full border p-1 rounded bg-violet-50" />
+                          <input type="file" accept="image/*" onChange={(e) => handleImageChange(index, e)} className="w-full p-1 border rounded bg-violet-50" />
                         )}
                         {consignee.productImage && consignee.cstatus === "Delivered" && (
                           <span className="text-sm text-gray-600">{typeof consignee.productImage === "string" ? "Image Uploaded" : consignee.productImage.name}</span>
                         )}
                       </td> */}
-                      <td className="border p-2 text-center"><button type="button" onClick={() => deleteConsignee(index)} className="text-red-500 hover:underline"><Trash /></button></td>
+                      <td className="p-2 text-center border"><button type="button" onClick={() => deleteConsignee(index)} className="text-red-500 hover:underline"><Trash /></button></td>
                     </tr>
                   ))}
                   <tr className="bg-gray-100">
-                    <td className="border p-2" colSpan="3">Totals</td>
-                    <td className="border p-2">{totalPackages || ""}</td>
-                    <td className="border p-2">{totalWeight ? `${totalWeight.toFixed(2)} Kg` : ""}</td>
-                    <td className="border p-2" colSpan="1"></td>
-                    <td className="border p-2">{totalAmount ? `₹${totalAmount.toFixed(2)}` : ""}</td>
-                    <td className="border p-2" colSpan="2"></td>
+                    <td className="p-2 border" colSpan="3">Totals</td>
+                    <td className="p-2 border">{totalPackages || ""}</td>
+                    <td className="p-2 border">{totalWeight ? `${totalWeight.toFixed(2)} Kg` : ""}</td>
+                    <td className="p-2 border" colSpan="1"></td>
+                    <td className="p-2 border">{totalAmount ? `₹${totalAmount.toFixed(2)}` : ""}</td>
+                    <td className="p-2 border" colSpan="2"></td>
                   </tr>
                 </tbody>
               </table>
               <div className="flex justify-end mt-4">
-                <button type="button" onClick={addConsignee} className="text-white border p-2 rounded bg-purple-500 flex items-center">
+                <button type="button" onClick={addConsignee} className="flex items-center p-2 text-white bg-purple-500 border rounded">
                   Add Product <CornerDownLeft className="ml-2" />
                 </button>
               </div>
@@ -549,14 +531,14 @@ const Addorder = () => {
 
         {consigneeType === "Multiple" && (
           <div className="mt-6">
-            <h2 className="font-semibold text-xl mb-6">3. Consignee Details</h2>
-            <table className="w-full border-collapse border border-gray-300 text-sm">
+            <h2 className="mb-6 text-xl font-semibold">3. Consignee Details</h2>
+            <table className="w-full text-sm border border-collapse border-gray-300">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="border p-2">S.NO</th>
-                  <th className="border p-2">Name</th>
+                  <th className="p-2 border">S.NO</th>
+                  <th className="p-2 border">Name</th>
                   <th className="border p-2 w-[150px]">Mobile</th>
-                  <th className="border p-2">Address</th>
+                  <th className="p-2 border">Address</th>
                   <th className="border p-2 w-[250px]">Location</th>
                   <th className="border p-2 w-[200px]">Type</th>
                   <th className="border p-2 w-[80px]">Weight</th>
@@ -565,40 +547,40 @@ const Addorder = () => {
                   <th className="border p-2 w-[80px]">Price/kg</th>
                   <th className="border p-2 w-[90px]">Price</th>
                   <th className="border p-2 w-[170px]">Status</th>
-                  {/* <th className="border p-2">Image</th> */}
-                  <th className="border p-2">Action</th>
+                  {/* <th className="p-2 border">Image</th> */}
+                  <th className="p-2 border">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {formData.consignees.map((consignee, index) => (
                   <tr key={index}>
-                    <td className="border p-2">{index + 1}</td>
-                    <td className="border p-2"><input type="text" value={consignee.Consigneename} onChange={(e) => handleConsigneeChange(index, "Consigneename", e.target.value)} placeholder="Name" className="border p-1 rounded bg-violet-50" required /></td>
-                    <td className="border p-2 space-y-1">
-                      <input type="tel" value={consignee.consigneemobileno} onChange={(e) => handleConsigneeChange(index, "consigneemobileno", e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="Mobile" className="w-full border p-1 rounded bg-violet-50" required />
-                      {/* <input type="tel" value={consignee.consigneealterno} onChange={(e) => handleConsigneeChange(index, "consigneealterno", e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="AlterMobile" className="w-full border p-1 rounded bg-violet-50" /> */}
+                    <td className="p-2 border">{index + 1}</td>
+                    <td className="p-2 border"><input type="text" value={consignee.Consigneename} onChange={(e) => handleConsigneeChange(index, "Consigneename", e.target.value)} placeholder="Name" className="p-1 border rounded bg-violet-50" required /></td>
+                    <td className="p-2 space-y-1 border">
+                      <input type="tel" value={consignee.consigneemobileno} onChange={(e) => handleConsigneeChange(index, "consigneemobileno", e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="Mobile" className="w-full p-1 border rounded bg-violet-50" required />
+                      {/* <input type="tel" value={consignee.consigneealterno} onChange={(e) => handleConsigneeChange(index, "consigneealterno", e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="AlterMobile" className="w-full p-1 border rounded bg-violet-50" /> */}
                     </td>
-                    <td className="border p-2">
-                      <textarea value={consignee.consigneeaddress} onChange={(e) => handleConsigneeChange(index, "consigneeaddress", e.target.value)} placeholder="Address" className="w-full border p-1 rounded bg-violet-50" required />
-                      <input type="text" value={consignee.consigneecity} onChange={(e) => handleConsigneeChange(index, "consigneecity", e.target.value)} placeholder="City" className="w-full border p-1 rounded bg-violet-50 mt-1" required />
+                    <td className="p-2 border">
+                      <textarea value={consignee.consigneeaddress} onChange={(e) => handleConsigneeChange(index, "consigneeaddress", e.target.value)} placeholder="Address" className="w-full p-1 border rounded bg-violet-50" required />
+                      <input type="text" value={consignee.consigneecity} onChange={(e) => handleConsigneeChange(index, "consigneecity", e.target.value)} placeholder="City" className="w-full p-1 mt-1 border rounded bg-violet-50" required />
                     </td>
-                    <td className="border p-2">
-                      <select value={consignee.consigneestate} onChange={(e) => handleConsigneeChange(index, "consigneestate", e.target.value)} className="w-full border p-1 rounded bg-violet-50" required>
+                    <td className="p-2 border">
+                      <select value={consignee.consigneestate} onChange={(e) => handleConsigneeChange(index, "consigneestate", e.target.value)} className="w-full p-1 border rounded bg-violet-50" required>
                         <option value="">State</option>
                         {states.map((state, idx) => (<option key={idx} value={state}>{state}</option>))}
                       </select>
-                      <select value={consignee.consigneeedistrict} onChange={(e) => handleConsigneeChange(index, "consigneeedistrict", e.target.value)} className="w-full border p-1 rounded bg-violet-50 mt-1" required>
+                      <select value={consignee.consigneeedistrict} onChange={(e) => handleConsigneeChange(index, "consigneeedistrict", e.target.value)} className="w-full p-1 mt-1 border rounded bg-violet-50" required>
                         <option value="">District</option>
                         {consigneeDistrictsMap[index]?.map((district, idx) => (<option key={idx} value={district}>{district}</option>))}
                       </select>
-                      <select value={consignee.consigneepin} onChange={(e) => handleConsigneeChange(index, "consigneepin", e.target.value)} className="w-full border p-1 rounded bg-violet-50 mt-1" required>
+                      <select value={consignee.consigneepin} onChange={(e) => handleConsigneeChange(index, "consigneepin", e.target.value)} className="w-full p-1 mt-1 border rounded bg-violet-50" required>
                         <option value="">Pincode</option>
                         {consigneePincodesMap[index]?.map((pincode, idx) => (<option key={idx} value={`${pincode.pincode}-${pincode.officename}`}>{pincode.pincode} - {pincode.officename}</option>))}
                       </select>
                     </td>
-                    <td className="border p-2">
-                      <input type="text" value={consignee.typename} onChange={(e) => handleConsigneeChange(index, "typename", e.target.value)} placeholder="Product" className="w-full border p-1 rounded bg-violet-50" required />
-                      <select value={consignee.ptype} onChange={(e) => handleConsigneeChange(index, "ptype", e.target.value)} className="w-full border p-1 rounded bg-violet-50 mt-1" required>
+                    <td className="p-2 border">
+                      <input type="text" value={consignee.typename} onChange={(e) => handleConsigneeChange(index, "typename", e.target.value)} placeholder="Product" className="w-full p-1 border rounded bg-violet-50" required />
+                      <select value={consignee.ptype} onChange={(e) => handleConsigneeChange(index, "ptype", e.target.value)} className="w-full p-1 mt-1 border rounded bg-violet-50" required>
                       <option value="">Package Type</option>
                           <option>Spoiled items</option>
                           <option>Breakable things</option>
@@ -607,75 +589,75 @@ const Addorder = () => {
                           <option>Envelope</option>
                       </select>
                     </td>
-                    <td className="border p-2"><input type="tel" value={consignee.weight} onChange={(e) => handleConsigneeChange(index, "weight", e.target.value)} placeholder="Weight" className="w-full border p-1 rounded bg-violet-50" required min="0" /></td>
-                    <td className="border p-2"><input type="tel" value={consignee.packages} onChange={(e) => handleConsigneeChange(index, "packages", e.target.value)} placeholder="Qty" className="w-full border p-1 rounded bg-violet-50" required min="0" /></td>
-                    <td className="border p-2"><input value={consignee.totalWeight ? `${consignee.totalWeight} Kg` : ""} className="w-full border p-1 rounded bg-violet-50" required min="0" /></td>
-                    <td className="border p-2"><input type="tel" value={consignee.cpriceperkg} onChange={(e) => handleConsigneeChange(index, "cpriceperkg", e.target.value)} placeholder="₹/kg" className="w-full border p-1 rounded bg-violet-50" min="0" /></td>
-                    <td className="border p-2"><input value={consignee.cprice ? `₹${consignee.cprice}` : ""} className="w-full border p-1 rounded bg-violet-50" required min="0" /></td>
-                    <td className="border p-2">
-                      <select value={consignee.cstatus} onChange={(e) => handleConsigneeChange(index, "cstatus", e.target.value)} className="w-full border p-1 rounded bg-violet-50" required>
+                    <td className="p-2 border"><input type="tel" value={consignee.weight} onChange={(e) => handleConsigneeChange(index, "weight", e.target.value)} placeholder="Weight" className="w-full p-1 border rounded bg-violet-50" required min="0" /></td>
+                    <td className="p-2 border"><input type="tel" value={consignee.packages} onChange={(e) => handleConsigneeChange(index, "packages", e.target.value)} placeholder="Qty" className="w-full p-1 border rounded bg-violet-50" required min="0" /></td>
+                    <td className="p-2 border"><input value={consignee.totalWeight ? `${consignee.totalWeight} Kg` : ""} className="w-full p-1 border rounded bg-violet-50" required min="0" /></td>
+                    <td className="p-2 border"><input type="tel" value={consignee.cpriceperkg} onChange={(e) => handleConsigneeChange(index, "cpriceperkg", e.target.value)} placeholder="₹/kg" className="w-full p-1 border rounded bg-violet-50" min="0" /></td>
+                    <td className="p-2 border"><input value={consignee.cprice ? `₹${consignee.cprice}` : ""} className="w-full p-1 border rounded bg-violet-50" required min="0" /></td>
+                    <td className="p-2 border">
+                      <select value={consignee.cstatus} onChange={(e) => handleConsigneeChange(index, "cstatus", e.target.value)} className="w-full p-1 border rounded bg-violet-50" required>
                         <option value="">Select Status</option>
                         {getNextConsigneeStatuses(consignee.cstatus).map(status => (
                           <option key={status} value={status}>{status}</option>
                         ))}
                       </select>
                     </td>
-                    {/* <td className="border p-2">
+                    {/* <td className="p-2 border">
                       {consignee.cstatus === "Delivered" && (
-                        <input type="file" accept="image/*" onChange={(e) => handleImageChange(index, e)} className="w-full border p-1 rounded bg-violet-50" />
+                        <input type="file" accept="image/*" onChange={(e) => handleImageChange(index, e)} className="w-full p-1 border rounded bg-violet-50" />
                       )}
                       {consignee.productImage && consignee.cstatus === "Delivered" && (
                         <span className="text-sm text-gray-600">{typeof consignee.productImage === "string" ? "Image Uploaded" : consignee.productImage.name}</span>
                       )}
                     </td> */}
-                    <td className="border p-2 text-center"><button type="button" onClick={() => deleteConsignee(index)} className="text-red-500 hover:underline"><Trash /></button></td>
+                    <td className="p-2 text-center border"><button type="button" onClick={() => deleteConsignee(index)} className="text-red-500 hover:underline"><Trash /></button></td>
                   </tr>
                 ))}
                 <tr className="bg-gray-100">
-                  <td className="border p-2" colSpan="7">Totals</td>
-                  <td className="border p-2">{totalPackages || ""}</td>
-                  <td className="border p-2">{totalWeight ? `${totalWeight.toFixed(2)} Kg` : ""}</td>
-                  <td className="border p-2" colSpan="1"></td>
-                  <td className="border p-2">{totalAmount ? `₹${totalAmount.toFixed(2)}` : ""}</td>
-                  <td className="border p-2" colSpan="2"></td>
+                  <td className="p-2 border" colSpan="7">Totals</td>
+                  <td className="p-2 border">{totalPackages || ""}</td>
+                  <td className="p-2 border">{totalWeight ? `${totalWeight.toFixed(2)} Kg` : ""}</td>
+                  <td className="p-2 border" colSpan="1"></td>
+                  <td className="p-2 border">{totalAmount ? `₹${totalAmount.toFixed(2)}` : ""}</td>
+                  <td className="p-2 border" colSpan="2"></td>
                 </tr>
               </tbody>
             </table>
             <div className="flex justify-end mt-4">
-              <button type="button" onClick={addConsignee} className="text-white border p-2 rounded bg-purple-500 flex items-center">
+              <button type="button" onClick={addConsignee} className="flex items-center p-2 text-white bg-purple-500 border rounded">
                 Add Consignee <CornerDownLeft className="ml-2" />
               </button>
             </div>
           </div>
         )}
 
-        <div className="grid lg:grid-cols-5 gap-2 mt-4">
-          {/* <div><label className="text-gray-700 text-[15px] ml-2">Tax Rate (%):</label><input type="tel" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} className="w-full p-2 border bg-purple-50 rounded" min="0" /></div> */}
-          {/* <div><label className="text-gray-700 text-[15px] ml-2">Total Weight:</label><input type="text" value={totalWeight ? `${totalWeight.toFixed(2)} Kg` : ""} readOnly className="w-full p-2 border bg-purple-50 rounded" /></div> */}
-          {/* <div><label className="text-gray-700 text-[15px] ml-2">Tax Amount:</label><input type="text" value={taxAmount ? `₹${taxAmount.toFixed(2)}` : ""} readOnly className="w-full p-2 border bg-purple-50 rounded" /></div> */}
-          {/* <div><label className="text-gray-700 text-[15px] ml-2">Total Amount:</label><input type="text" value={totalAmount ? `₹${totalAmount.toFixed(2)}` : ""} readOnly className="w-full p-2 border bg-purple-50 rounded" /></div> */}
-          {/* <div><label className="text-gray-700 text-[15px] ml-2">Total with Tax:</label><input type="text" value={totalWithTax ? `₹${totalWithTax.toFixed(2)}` : ""} readOnly className="w-full p-2 border bg-purple-50 rounded" /></div> */}
+        <div className="grid gap-2 mt-4 lg:grid-cols-5">
+          {/* <div><label className="text-gray-700 text-[15px] ml-2">Tax Rate (%):</label><input type="tel" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} className="w-full p-2 border rounded bg-purple-50" min="0" /></div> */}
+          {/* <div><label className="text-gray-700 text-[15px] ml-2">Total Weight:</label><input type="text" value={totalWeight ? `${totalWeight.toFixed(2)} Kg` : ""} readOnly className="w-full p-2 border rounded bg-purple-50" /></div> */}
+          {/* <div><label className="text-gray-700 text-[15px] ml-2">Tax Amount:</label><input type="text" value={taxAmount ? `₹${taxAmount.toFixed(2)}` : ""} readOnly className="w-full p-2 border rounded bg-purple-50" /></div> */}
+          {/* <div><label className="text-gray-700 text-[15px] ml-2">Total Amount:</label><input type="text" value={totalAmount ? `₹${totalAmount.toFixed(2)}` : ""} readOnly className="w-full p-2 border rounded bg-purple-50" /></div> */}
+          {/* <div><label className="text-gray-700 text-[15px] ml-2">Total with Tax:</label><input type="text" value={totalWithTax ? `₹${totalWithTax.toFixed(2)}` : ""} readOnly className="w-full p-2 border rounded bg-purple-50" /></div> */}
         </div>
 
-        <div className="grid lg:grid-cols-5 gap-2 mt-4">
-          <input type="text" name="packageWeight" value={formData.orderDetails.packageWeight ? `${formData.orderDetails.packageWeight}kg` : ""} onChange={handleOrderInputChange} placeholder="Package Weight (kg)" className="p-4 border-2 bg-purple-50 rounded mb-2" readOnly />
-          <input type="text" name="noofpackage" value={formData.orderDetails.noofpackage} onChange={handleOrderInputChange} placeholder="No of Packages" className="p-4 border-2 bg-purple-50 rounded mb-2" readOnly />
-          <input type="text" name="price" value={formData.orderDetails.price ? `₹${formData.orderDetails.price}` : ""}onChange={handleOrderInputChange} placeholder="Price (₹)" className="p-4 border-2 bg-purple-50 rounded mb-2" readOnly />
-          <select name="instruction" value={formData.orderDetails.instruction} onChange={handleOrderInputChange} className="p-4 border-2 bg-purple-50 rounded mb-2" required>
+        <div className="grid gap-2 mt-4 lg:grid-cols-5">
+          <input type="text" name="packageWeight" value={formData.orderDetails.packageWeight ? `${formData.orderDetails.packageWeight}kg` : ""} onChange={handleOrderInputChange} placeholder="Package Weight (kg)" className="p-4 mb-2 border-2 rounded bg-purple-50" readOnly />
+          <input type="text" name="noofpackage" value={formData.orderDetails.noofpackage} onChange={handleOrderInputChange} placeholder="No of Packages" className="p-4 mb-2 border-2 rounded bg-purple-50" readOnly />
+          <input type="text" name="price" value={formData.orderDetails.price ? `₹${formData.orderDetails.price}` : ""}onChange={handleOrderInputChange} placeholder="Price (₹)" className="p-4 mb-2 border-2 rounded bg-purple-50" readOnly />
+          <select name="instruction" value={formData.orderDetails.instruction} onChange={handleOrderInputChange} className="p-4 mb-2 border-2 rounded bg-purple-50" required>
             <option value="">Select Handling Instruction</option>
             <option>Do not Tilt</option>
             <option>Handle with care</option>
           </select>
-          <select name="Orderstatus" value={formData.orderDetails.Orderstatus} onChange={handleOrderInputChange} className="p-4 border-2 bg-purple-50 rounded mb-2" disabled>
+          <select name="Orderstatus" value={formData.orderDetails.Orderstatus} onChange={handleOrderInputChange} className="p-4 mb-2 border-2 rounded bg-purple-50" disabled>
             <option value="Order Placed">Order Placed</option>
             <option value="Partial">Partial</option>
             <option value="Delivered">Delivered</option>
           </select>
           {formData.orderDetails.Orderstatus === "Delivered" && (
-            <input type="file" accept="image/*" onChange={(e) => setFormData(prev => ({ ...prev, orderDetails: { ...prev.orderDetails, deliveryimage: e.target.files[0] } }))} className="p-4 border-2 rounded mb-2 bg-violet-50" />
+            <input type="file" accept="image/*" onChange={(e) => setFormData(prev => ({ ...prev, orderDetails: { ...prev.orderDetails, deliveryimage: e.target.files[0] } }))} className="p-4 mb-2 border-2 rounded bg-violet-50" />
           )}
           {formData.orderDetails.Orderstatus === "Order Placed" && (
-            <select name="currentRegion" value={formData.orderDetails.currentRegion} onChange={handleOrderInputChange} className="p-4 border-2 rounded mb-2 bg-violet-50">
+            <select name="currentRegion" value={formData.orderDetails.currentRegion} onChange={handleOrderInputChange} className="p-4 mb-2 border-2 rounded bg-violet-50">
              <option value="">Select office Region</option>
                  <option value="Ariyalur">Ariyalur</option>
                  <option value="Chengalpattu">Chengalpattu</option>
@@ -720,8 +702,8 @@ const Addorder = () => {
         </div>
 
         <div className="flex justify-between mt-4">
-          <button type="button" onClick={() => navigate("/order")} className="bg-gradient-to-r from-purple-600 to-green-500 text-white px-7 py-3 rounded">Back</button>
-          <button type="submit" className="bg-gradient-to-r from-purple-600 to-green-500 text-white px-7 py-3 rounded">{id ? "Update Order" : "Add Order"}</button>
+          <button type="button" onClick={() => navigate("/order")} className="py-3 text-white rounded bg-gradient-to-r from-purple-600 to-green-500 px-7">Back</button>
+          <button type="submit" className="py-3 text-white rounded bg-gradient-to-r from-purple-600 to-green-500 px-7">{id ? "Update Order" : "Add Order"}</button>
         </div>
       </form>
     </div>
