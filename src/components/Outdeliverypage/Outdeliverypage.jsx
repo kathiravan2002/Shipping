@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Outfordelivery from '../../shared/components/Outfordelivery';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
 import { toast } from 'react-toastify';
-import Apiendpoint from "../../shared/services/Apiendpoint";
+import {apidelivery, apiout, apiupdateout} from '../../shared/services/Apioutdelivery/apioutdelivery.js'
+
 
 function Outdeliverypage() {
   const { id } = useParams();
   const [out, setOut] = useState([]);
   const [visible, setVisible] = useState(false);
   const [formData, setFormData] = useState({});
-  const [orders, setOrders] = useState([]);
+   const [orders, setOrders] = useState([]);
 
   const navigate = useNavigate();
 
@@ -30,13 +30,12 @@ function Outdeliverypage() {
     }));
   };
 
-  const userRole = localStorage.getItem("role");
-  const outRegion = userRole === "admin" ? "admin" : localStorage.getItem("Region");
+
 
   const fetchOut = async () => {
     try {
-      const response = await axios.get(`${Apiendpoint}/api/order/orders/out/${outRegion}`);
-      setOut(Array.isArray(response.data) ? response.data : []);
+      const response = await apiout()
+      setOut(Array.isArray(response) ? response : []);
     } catch (error) {
       console.error("Error fetching Out for Delivery orders:", error);
       setOut([]);
@@ -47,18 +46,11 @@ function Outdeliverypage() {
     fetchOut();
   }, []);
 
-  const Userrole = localStorage.getItem("role");
-  const deliverregion = Userrole === "admin" ? "admin" : localStorage.getItem("Region");
-  if (!deliverregion) {
-    console.error("No deliver region found ");
-    return;
-  }
-  console.log(deliverregion);
 
   const fetchDeliveredOrders = async () => {
     try {
-      const response = await axios.get(`${Apiendpoint}/api/order/orders/delivered/${deliverregion}`);
-      setOrders(Array.isArray(response.data) ? response.data : []);
+      const response = await apidelivery()
+      setOrders(response);
     } catch (err) {
       console.error('Error fetching delivered orders:', err);
       setOrders([]);
@@ -73,28 +65,23 @@ function Outdeliverypage() {
   const updateOrder = async () => {
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append("cstatus", formData.cstatus); // Use cstatus for consignee
-
+      formDataToSend.append("cstatus", formData.cstatus);
+  
       if (formData.productImage) {
-        formDataToSend.append("productImage", formData.productImage); // Match backend field
+        formDataToSend.append("productImage", formData.productImage);
       }
-
+  
       console.log("Updating with cid:", formData.cid); // Debug log
-      const response = await axios.put(
-        `${Apiendpoint}/api/order/consignee/${formData.cid}`, // Use consignee endpoint
-        formDataToSend,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-
+      const response = await apiupdateout(formData, formDataToSend);
+  
       toast.success("Consignee status updated successfully!");
       await fetchOut(); // Refresh orders after update
       setVisible(false);
     } catch (error) {
-      console.error("Error updating consignee status:", error.response?.data || error.message);
+      console.error("Error updating consignee status:", error.response || error.message);
       toast.error(error.response?.data?.error || "Failed to update consignee status.");
     }
   };
-
   const CONSIGNEE_STATUS = {
     PLACED: "Order Placed",
     DISPATCHED: "Order Dispatched",
@@ -128,7 +115,6 @@ function Outdeliverypage() {
     <div>
       <Outfordelivery
         out={out}
-        navigate ={navigate}
         visible={visible}
         setVisible={setVisible}
         formData={formData}
@@ -138,6 +124,7 @@ function Outdeliverypage() {
         updateOrder={updateOrder}
         CONSIGNEE_STATUS={CONSIGNEE_STATUS}
         getNextAllowedStatuses={getNextAllowedStatuses}
+        navigate={navigate}
         orders={orders}
       />
     </div>

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Dispatched from "../../shared/components/Dispatched";
+import Dispatched from "../../shared/components/Dispatch/Dispatched";
 import { toast } from "react-toastify";
-import Apiendpoint from "../../shared/services/Apiendpoint";
+import { apigetdispatch, apiupdatedispatch } from "../../shared/services/apidispatch/apidispatch";
+
 
 function Dispatchpage() {
   const { id } = useParams();
@@ -18,7 +18,7 @@ function Dispatchpage() {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }));
+    }));                                            
   };
 
   const handleImageUpload = (e) => {
@@ -32,12 +32,11 @@ function Dispatchpage() {
   const UserRole = localStorage.getItem("role");
   const getRegion = UserRole === "admin" ? "admin" : localStorage.getItem("Region");
 
-  const fetchDispatched = async () => {
+  const fetchDispatched = async (filters = {}) => {
     try {
-      const response = await axios.get(
-        `${Apiendpoint}/api/order/orders/dispatche/${getRegion}`
-      );
-      setDispatch(response.data);
+      const queryParams = new URLSearchParams(filters).toString();
+      const response = await apigetdispatch(getRegion, queryParams);
+      setDispatch(response);
     } catch (error) {
       console.error("Error fetching dispatched orders:", error);
     }
@@ -56,12 +55,9 @@ function Dispatchpage() {
         formDataToSend.append("productImage", formData.productImage);
       }
 
-      console.log("Updating with cid:", formData.cid); // Debug log
-      const response = await axios.put(
-        `${Apiendpoint}/api/order/consignee/${formData.cid}`, // Updated endpoint
-        formDataToSend,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      console.log("Updating with cid:", formData.cid);
+      const response = await apiupdatedispatch(formData, formDataToSend);
+      console.log("Update response:", response);
 
       toast.success("Consignee status updated successfully!");
       await fetchDispatched();
@@ -72,6 +68,15 @@ function Dispatchpage() {
     }
   };
 
+  const applyFilters = (filterData) => {
+    const filters = {};
+    if (filterData.cid?.value) filters.cid = filterData.cid.value.join(',');
+    if (filterData.Consigneename?.value) filters.Consigneename = filterData.Consigneename.value.join(',');
+    if (filterData.consigneeedistrict?.value) filters.consigneeedistrict = filterData.consigneeedistrict.value.join('');
+    if (filterData.cstatus?.value) filters.cstatus = filterData.cstatus.value.join('');
+    if (filterData.search) filters.search = filterData.search;
+    fetchDispatched(filters);
+  }
   const CONSIGNEE_STATUS = {
     PLACED: "Order Placed",
     DISPATCHED: "Order Dispatched",
@@ -114,6 +119,7 @@ function Dispatchpage() {
         handleImageUpload={handleImageUpload}
         CONSIGNEE_STATUS={CONSIGNEE_STATUS}
         getNextAllowedStatuses={getNextAllowedStatuses}
+        applyFilters={applyFilters}
       />
     </div>
   );

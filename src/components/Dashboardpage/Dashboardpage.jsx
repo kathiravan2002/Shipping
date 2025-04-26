@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Dashboard from "../../shared/components/Dashboard";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Spinner from "../../shared/components/Spinner";
-import Apiendpoint from "../../shared/services/Apiendpoint"
+import  {apigetTotalOrders,totalpending,totaldelivered,totaldispatch,apigetuser,apitoday,apiout}from "../../shared/services/Apidashboard/apidashboard.js"
 
 export default function Dashboardpage() {
   const [totalorder, setTotalorder] = useState(0);
@@ -28,17 +28,10 @@ export default function Dashboardpage() {
 
   const getTotalOrders = async () => {
     try {
-      const response = await axios.get(
-        `${Apiendpoint}/api/order/total/${getregion}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        }
-      );
-      setTotalorder(response.data.total.count);
-      setSingleConsignee(response.data.singleConsignee.count);
-      setMultipleConsignee(response.data.multipleConsignee.count);
+      const data = await apigetTotalOrders();
+      setTotalorder(data.total.count);
+      setSingleConsignee(data.singleConsignee.count);
+      setMultipleConsignee(data.multipleConsignee.count);
 
       // setAllOrders(response.data.total.orders);
       // setSingleConsigneeOrders(response.data.singleConsignee.orders);
@@ -58,11 +51,8 @@ export default function Dashboardpage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get(
-          `${Apiendpoint}/api/order/orders/today/${getregion}`
-        );
-        //  const data = await response.json();
-        setTodayorder(response.data.today);
+        const data = await apitoday();
+        setTodayorder(data.today);
       } catch (error) {
         console.error("Error fetching today's orders:", error);
       }
@@ -78,16 +68,9 @@ export default function Dashboardpage() {
 
   const getuser = async () => {
     try {
-      const userdata = await axios.get(
-        `${Apiendpoint}/api/add/getuser`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        }
-      );
+      const data = await apigetuser();
       // console.log(userdata.data);
-      setTotaluser(userdata.data || []);
+      setTotaluser(data || []);
     } catch (error) {
       console.log("Error fetching user data", error);
     }
@@ -97,10 +80,8 @@ export default function Dashboardpage() {
   }, []);
 
   const fetchdispatched = async () => {
-    const response = await axios.get(
-      `${Apiendpoint}/api/order/orders/dispatche/${getregion}`
-    );
-    setDispatch(response.data);
+    const data = await totaldispatch();
+    setDispatch(data);
   };
 
   useEffect(() => {
@@ -108,10 +89,8 @@ export default function Dashboardpage() {
   }, []);
 
   const fetchout = async () => {
-    const response = await axios.get(
-      `${Apiendpoint}/api/order/orders/out/${getregion}`
-    );
-    setOut(response.data);
+    const data = await apiout();
+    setOut(data);
   };
 
   useEffect(() => {
@@ -119,10 +98,8 @@ export default function Dashboardpage() {
   }, []);
 
   const fetchDeliveredOrders = async () => {
-    const response = await axios.get(
-      `${Apiendpoint}/api/order/orders/delivered/${getregion}`
-    );
-    setOrders(response.data);
+    const data = await totaldelivered();
+    setOrders(data);
   };
 
   useEffect(() => {
@@ -130,10 +107,8 @@ export default function Dashboardpage() {
   }, []);
 
   const fetchPendingOrders = async () => {
-    const response = await axios.get(
-      `${Apiendpoint}/api/order/pending/${getregion}`
-    );
-    setPending(response.data);
+    const data = await totalpending();
+    setPending(data);
   };
 
   useEffect(() => {
@@ -144,7 +119,7 @@ export default function Dashboardpage() {
 
   const orderData = [
     { name: "Total Orders", value: Number(totalorder) || 0 },
-    { name: "Today Orders", value: Number(todayorder.length) || 0 },
+    { name: "Today Orders", value: Number(todayorder?.length) || 0 },
     { name: "Total Dispatched", value: Number(dispatch.length) || 0 },
     { name: "Total Out for Delivery", value: Number(out.length) || 0 },
     { name: "Total Delivered", value: Number(orders.length) || 0 },

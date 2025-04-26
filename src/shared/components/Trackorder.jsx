@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import tracking from "/images/tracking.jpeg";
-import Apiendpoint from "../../shared/services/Apiendpoint";
+import Apiendpoint from "../services/Apiendpoint/Apiendpoint";
 
 const Trackorder = () => {
   const [trackingId, setTrackingId] = useState("");

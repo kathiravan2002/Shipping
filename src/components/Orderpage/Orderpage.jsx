@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import Orderheader from '../../shared/components/Orderheader'
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
-import Apiendpoint from "../../shared/services/Apiendpoint"
-import { Column } from 'primereact/column';
-import { DataTable } from 'primereact/datatable';
-
+import { Column } from "primereact/column";
+import { DataTable } from "primereact/datatable";
+import apiurl from "../../shared/services/Apiendpoint/Apiendpoint";
+import { apideleteOrder, apigetRegionFilter } from "../../shared/services/Apiorders/apiorders";
+import Orderheader from "../../shared/components/Orders/Orderheader";
 
 
 function Orderpage() {
@@ -18,7 +17,14 @@ function Orderpage() {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [expandedRows,setExpandedRows] = useState(null);
+  const [expandedRows, setExpandedRows] = useState(null);
+  const [consignerNames, setConsignerNames] = useState([]);
+  const [orderStatuses, setOrderStatuses] = useState([]);
+  const [orderDate, setOrderDate] = useState([]);
+  const [orderId, setOrderId] = useState([]);
+  const [consignerDistrict, setConsignerDistrict] = useState([]);
+  const [consignerCities, setConsignerCities] = useState([]);
+  const [consignerPincode, setConsignerPincode] = useState([]);
 
   const UserRole = localStorage.getItem("role");
   const getregion =
@@ -31,30 +37,53 @@ function Orderpage() {
     sortField: null,
     sortOrder: null,
     filters: {
-      orderDate: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      orderId: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      ConsignerName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      Orderstatus: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      consignermobileNumber: { value: null, matchMode: FilterMatchMode.CONTAINS,},
-      consignercity: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      consignermail: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      consignerdistrict: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      consignerstate: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      productname: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      packagetype: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      dispatchstate: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      dispatchdistrict: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      orderDate: { value: null },
+      orderId: { value: null },
+      ConsignerName: { value: null }, // Multi-select filter
+      Orderstatus: { value: null }, // Multi-select filter
+      consignermobileNumber: { value: null },
+      consignercity: { value: null }, // Multi-select filter
+      consignermail: { value: null },
+      consignerdistrict: { value: null },
+      consignerpincode: { value: null },
+      consignerstate: { value: null },
+      productname: { value: null },
+      packagetype: { value: null },
+      dispatchstate: { value: null },
+      dispatchdistrict: { value: null },
     },
     status: "",
   });
+
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+      try {
+        const response = await apigetRegionFilter(getregion);
+        const { filterOptions } = response.data;
+
+        setConsignerNames(filterOptions.consignerNames || []);
+        setOrderStatuses(filterOptions.orderStatuses || []);
+        setConsignerCities(filterOptions.consignerCities || []);
+        setOrderDate(filterOptions.orderDates || []);
+        setOrderId(filterOptions.orderIds || []);
+        setConsignerDistrict(filterOptions.consignerDistricts || []);
+        setConsignerPincode(filterOptions.consignerPincodes || []);
+      } catch (error) {
+        console.error("Error fetching filter options:", error);
+      }
+    };
+    fetchFilterOptions();
+  }, [getregion]);
 
   const loadOrders = async () => {
     try {
       setLoading(true);
 
-      // Check if any filters are active
       const hasActiveFilters = Object.values(lazyState.filters).some(
-        (filter) => filter.value !== null && filter.value !== ""
+        (filter) =>
+          filter.value !== null &&
+          filter.value !== "" &&
+          (Array.isArray(filter.value) ? filter.value.length > 0 : true)
       );
       const hasSearch = searchQuery !== "";
       const hasStatus = lazyState.status !== "";
@@ -62,7 +91,6 @@ function Orderpage() {
 
       let response;
 
-      // If there are any active filters, use the filter API
       if (hasActiveFilters || hasSearch || hasStatus || hasSort) {
         const params = new URLSearchParams();
         params.append("page", lazyState.page + 1);
@@ -85,7 +113,11 @@ function Orderpage() {
         if (hasActiveFilters) {
           const activeFilters = {};
           Object.entries(lazyState.filters).forEach(([key, filter]) => {
-            if (filter.value !== null && filter.value !== "") {
+            if (
+              filter.value !== null &&
+              filter.value !== "" &&
+              (Array.isArray(filter.value) ? filter.value.length > 0 : true)
+            ) {
               activeFilters[key] = filter;
             }
           });
@@ -93,32 +125,27 @@ function Orderpage() {
         }
 
         response = await axios.get(
-         `${Apiendpoint}/api/order/orders/filter?${params.toString()}`,
+          `${apiurl()}/api/order/orders/filter?${params.toString()}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
             },
           }
         );
-
-        setOrder(response.data.order);
-        setTotalRecords(response.data.total);
-        setCurrentPage(response.data.page);
       } else {
-        // If no filters are active, use the regular GET API
         response = await axios.get(
-            `${Apiendpoint}/api/order/getorder/${getregion}?page=${lazyState.page + 1}&limit=${lazyState.rows}`,
-            {
-                headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("authToken")}`
-                }
-            }
+          `${apiurl()}/api/order/getorder/${getregion}?page=${lazyState.page + 1}&limit=${lazyState.rows}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
         );
-        
-        setOrder(response.data.order);
-        setTotalRecords(response.data.total);
-        setCurrentPage(response.data.page);
       }
+
+      setOrder(response.data.order);
+      setTotalRecords(response.data.total);
+      setCurrentPage(response.data.page);
     } catch (error) {
       console.error("Error fetching orders:", error);
       toast.error("Error loading orders. Please try again.");
@@ -140,7 +167,7 @@ function Orderpage() {
 
     try {
       const response = await axios.post(
-        `${Apiendpoint}/api/invoices/generate-invoice/${_id}`,
+        `${apiurl()}/api/invoice/generate-invoice/${_id}`,
         {},
         {
           responseType: "blob",
@@ -171,7 +198,7 @@ function Orderpage() {
 
     try {
       const response = await axios.post(
-        `${Apiendpoint}/api/invoices/consignee-invoice/${_id}`,
+        `${apiurl()}/api/invoice/consignee-invoice/${_id}`,
         {},
         {
           responseType: "blob",
@@ -194,21 +221,67 @@ function Orderpage() {
     }
   };
 
-  const deleteOrder = async ({ _id }) => {
-    if (window.confirm("Are you sure you want to delete this order?")) {
-      try {
-        await axios.delete(`${Apiendpoint}/api/order/${_id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        });
-        loadOrders();
-        toast.success("Order deleted successfully");
-      } catch (error) {
-        console.error("Error deleting order:", error);
-        toast.error("Error deleting order. Please try again.");
-      }
+  const deleteOrder = async ({ _id }, loadOrders) => {
+    const confirmDelete = new Promise((resolve) => {
+      toast.info(
+        <div>
+          Are you sure you want to delete this order?
+          <div className="flex gap-2 mt-2">
+            <button onClick={() => resolve(true)} className="text-blue-500 underline">
+              Yes
+            </button>
+            <button onClick={() => resolve(false)} className="text-gray-500 underline">
+              No
+            </button>
+          </div>
+        </div>,
+        {
+          autoClose: false,
+          closeOnClick: true,
+          closeButton: true,
+        }
+      );
+    });
+  
+    const confirmed = await confirmDelete;
+    if (!confirmed) return; 
+  
+    try {
+      await apideleteOrder(_id);
+      loadOrders();
+      toast.success("Order deleted successfully");
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      toast.error("Error deleting order. Please try again.");
     }
+  };
+
+  const handleClearAllFilters = () => {
+    setSearchQuery(""); // Reset global search
+    setLazyState({
+      first: 0,
+      rows: 10,
+      page: 0,
+      sortField: null,
+      sortOrder: null,
+      filters: {
+        orderDate: { value: null },
+        orderId: { value: null },
+        ConsignerName: { value: null },
+        Orderstatus: { value: null },
+        consignermobileNumber: { value: null },
+        consignercity: { value: null },
+        consignermail: { value: null },
+        consignerdistrict: { value: null },
+        consignerpincode: { value: null },
+        consignerstate: { value: null },
+        productname: { value: null },
+        packagetype: { value: null },
+        dispatchstate: { value: null },
+        dispatchdistrict: { value: null },
+      },
+      status: "", // Reset status dropdown
+    });
   };
 
   const onPage = (event) => {
@@ -236,51 +309,43 @@ function Orderpage() {
   };
 
   const handleStatusChange = (event) => {
-    setLazyState(prevState => ({
-        ...prevState,
-        status: event.value,
-        page: 0,
-        first: 0
+    setLazyState((prevState) => ({
+      ...prevState,
+      status: event.value,
+      page: 0,
+      first: 0,
     }));
-};
+  };
 
-const handleSearchChange = (event) => {
+  const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
-    setLazyState(prevState => ({
-        ...prevState,
-        page: 0,
-        first: 0
+    setLazyState((prevState) => ({
+      ...prevState,
+      page: 0,
+      first: 0,
     }));
-};
+  };
 
   const actionBodyTemplate = (rowData) => {
     return (
-      <div className="flex items-center -space-x-4 -ml-5">
-      <Button
-        icon="pi pi-pencil"
-        className="p-button-text p-button-rounded p-button-info"
-        onClick={() => navigate(`/Addorder/${rowData._id}`)}
-      />
-      <Button
-        icon="pi pi-trash"
-        className="p-button-text p-button-rounded p-button-info"
-        onClick={() => deleteOrder({ _id: rowData._id })}
-      />
-    </div>
-    
-     
+      <div className="flex items-center -ml-5 -space-x-4">
+        <Button icon="pi pi-pencil" className="text-teal-400 p-button-text p-button-rounded p-button-info" onClick={() => navigate(`/Addorder/${rowData._id}`)}/>
+        <Button icon="pi pi-trash" className="text-red-400 p-button-text p-button-rounded p-button-info" onClick={() => deleteOrder({ _id: rowData._id }, loadOrders)} />
+        <Button icon="pi pi-download" className="text-yellow-600 p-button-text p-button-rounded p-button-info" onClick={() => downloadinvoice(rowData._id)} />
+      </div>
     );
   };
 
-  const invoiceBodyTemplate = (rowData) => {
-    return (
-      <Button
-        icon="pi pi-download"
-        className="p-button-text p-button-rounded p-button-info"
-        onClick={() => downloadinvoice(rowData._id)}
-      />
-    );
-  };
+  // const invoiceBodyTemplate = (rowData) => {
+  //   return (
+  //     <Button
+  //       icon="pi pi-download"
+  //       className="p-button-text p-button-rounded p-button-info"
+  //       onClick={() => downloadinvoice(rowData._id)}
+  //     />
+  //   );
+  // };
+
   const consigneeinvTemplate = (rowData) => {
     return (
       <Button
@@ -291,63 +356,81 @@ const handleSearchChange = (event) => {
     );
   };
 
-
   const deliverytemplate = (rowData) => {
     return (
-      <img
-        src={`http://192.168.29.12:5000${rowData.deliveryimage}`}
-        alt="Not Delivered"
-        className="w-auto h-auto rounded-lg"
-      />
+      <img src={`${apiurl()}${rowData.deliveryimage}`} alt="Not Delivered" className="w-auto h-auto rounded-lg" />
     );
   };
 
-  const productImage =(rowData) => {
+  const productImage = (rowData) => {
     return (
-      <img
-        src={`http://192.168.29.12:5000${rowData.productImage}`}
-        alt="Not Delivered"
-        className="w-25 h-20 rounded-lg"
-      />
+      <img src={`${apiurl()}${rowData.productImage}`} alt="Not Delivered" className="h-20 rounded-lg w-25" />
     );
   };
-  const rowExpansionTemplate =(rowData) => {
+
+  const rowExpansionTemplate = (rowData) => {
     return (
-      <div className='p-4 rounded-md bg-gray-50'>
+      <div className="p-4 rounded-md bg-gray-50">
         <DataTable
-        value={rowData.consignees || []}
-        scrollable
-        scrollHeight="300px"
-        className="p-datatable-striped w-auto text-sm"
-        emptyMessage="No consignee details found"
-        > <Column field="invoice" header="Invoices" body={consigneeinvTemplate} />
+          value={rowData.consignees || []}
+          scrollable
+          scrollHeight="300px"
+          className="w-auto text-sm p-datatable-striped"
+          emptyMessage="No consignee details found"
+        >
+          <Column field="invoice" header="Invoices" body={consigneeinvTemplate} />
           <Column field="cid" header="Consignee Id" frozen />
           <Column field="cstatus" header="Status" />
           <Column field="Consigneename" header="Consignee Name" />
           <Column field="consigneemobileno" header="Mobile No" />
-          {/* <Column field="consigneealterno" header="Alter No" /> */}
           <Column field="consigneeaddress" header="Address" />
           <Column field="consigneecity" header="ConsigneeCity" />
           <Column field="consigneestate" header="ConsigneeState" />
-          <Column field="consigneedistrict" header="ConsigneeDistrict" />
+          <Column field="consigneeedistrict" header="ConsigneeDistrict" />
           <Column field="consigneepin" header="ConsigneePin" />
           <Column field="typename" header="Product Name" />
           <Column field="ptype" header="Packagetype" />
           <Column field="totalWeight" header="TotalWeight" />
           <Column field="cprice" header="Price" />
-        
-          <Column field='productImage' header="Image" body={productImage} />
+          <Column field="productImage" header="Image" body={productImage} />
         </DataTable>
-
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <>
-      <Orderheader  rowExpansionTemplate={rowExpansionTemplate} expandedRows={expandedRows} setExpandedRows={setExpandedRows} navigate={navigate} order={order} totalRecords={totalRecords} loading={loading}  searchQuery={searchQuery} currentPage={currentPage} lazyState={lazyState} onPage={onPage} onSort={onSort} onFilter={onFilter} handleStatusChange={handleStatusChange} handleSearchChange={handleSearchChange} actionBodyTemplate={actionBodyTemplate} invoiceBodyTemplate={invoiceBodyTemplate}  deliverytemplate={deliverytemplate}  />
+      <Orderheader
+        rowExpansionTemplate={rowExpansionTemplate}
+        expandedRows={expandedRows}
+        setExpandedRows={setExpandedRows}
+        navigate={navigate}
+        order={order}
+        totalRecords={totalRecords}
+        loading={loading}
+        searchQuery={searchQuery}
+        currentPage={currentPage}
+        lazyState={lazyState}
+        onPage={onPage}
+        onSort={onSort}
+        onFilter={onFilter}
+        handleStatusChange={handleStatusChange}
+        handleSearchChange={handleSearchChange}
+        actionBodyTemplate={actionBodyTemplate}
+        // invoiceBodyTemplate={invoiceBodyTemplate}
+        deliverytemplate={deliverytemplate}
+        consignerNames={consignerNames}
+        orderStatuses={orderStatuses}
+        consignerCities={consignerCities}
+        OrderDate={orderDate}
+        OrderId={orderId}
+        conrDistrict={consignerDistrict}
+        ConsignerPincode={consignerPincode}
+        handleClearAllFilters={handleClearAllFilters}
+        
+      />
     </>
   );
 }
-  
+
 export default Orderpage;

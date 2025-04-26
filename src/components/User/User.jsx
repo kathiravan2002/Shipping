@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Userpage from "../../shared/components/Userpage";
+
+import { useState, useEffect } from "react";
+import Userpage from "../../shared/components/User/Userpage";
 import { useNavigate } from "react-router-dom";
-import Apiendpoint from "../../shared/services/Apiendpoint";
+import { apigetUser } from "../../shared/services/Apiusers/apiusers";
 
 function User() {
   const [user, setUser] = useState([]);
@@ -12,15 +12,12 @@ function User() {
 
   const getuser = async () => {
     try {
-      const userdata = await axios.get(`${Apiendpoint}/api/add/getuser`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      });
-      console.log(userdata.data);
-      setUser(userdata.data || []);
+      const userdata = await apigetUser();
+      // console.log("User data:", userdata);
+      setUser(userdata || []);
     } catch (error) {
-      console.log("Error fetching user data", error);
+      console.error("Error fetching user data:", error.message);
+      setUser([]);
     }
   };
 
@@ -59,3 +56,41 @@ function User() {
 }
 
 export default User;
+// import React, { useEffect, useState } from 'react'
+// import Userpage from '../../shared/components/Userpage'
+// import { useNavigate } from 'react-router-dom';
+// import axios from 'axios';
+// import Apiendpoint from '../../shared/services/Apiendpoint';
+
+// function User() {
+
+//   const [user,setUser]= useState([]);
+//   const navigate = useNavigate();
+//   const edituser = ({ _id }) => {
+//       navigate(`/Adduser/${_id}`); 
+//     };
+ 
+// const getuser =async() =>{
+//   try{
+//       const userdata = await axios.get(`${Apiendpoint}/api/add/getuser`,{
+//         headers : {
+//            "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+//         }
+//   });
+//       console.log(userdata.data);
+//       setUser(userdata.data || []);
+//   }
+//   catch(error){
+//       console.log("Error fetching user data",error);
+//   }
+// };
+//  useEffect(()=>{
+//   getuser();
+//  },[]);
+
+//   return (
+//     <div><Userpage user={user} edituser={edituser} navigate={navigate}/></div>
+//   )
+// }
+
+// export default User;

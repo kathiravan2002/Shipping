@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link} from "react-router-dom";
 import { Truck, Package, Clock, MapPin, ChevronRight, Calendar, Shield, Menu, X } from 'lucide-react';
-import Courier from "/images/Courier.jpeg"
+import Courier from "/assets/images/Courier.jpeg"
 
 function Home({navigate,scrolltotop}) {
 

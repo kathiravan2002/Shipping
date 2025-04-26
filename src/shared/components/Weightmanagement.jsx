@@ -1,8 +1,9 @@
 import React from "react";
 import { CornerDownLeft, Trash2 } from "lucide-react";
 
-const Weightmanagement = ({rows,freightRate,setFreightRate,taxRate,setTaxRate,addRow,deleteRow,updateRow,totalPackages,totalWeight,totalVolumetricWeight,chargeableWeight,totalChargeableAmount,totalTax,totalWithTax}) => {
-  
+const Weightmanagement = (props) => {
+ 
+  const {totalWithTax,totalTax,totalChargeableAmount,chargeableWeight,rows,totalPackages,totalWeight,totalVolumetricWeight,updateRow,deleteRow,addRow,freightRate,taxRate} = props
 
   return (
     <>
@@ -145,7 +146,7 @@ const Weightmanagement = ({rows,freightRate,setFreightRate,taxRate,setTaxRate,ad
             <input
               type="number"
               value={taxRate}
-              onChange={(e) => setTaxRate(parseFloat(e.target.value) / 100)}
+              onChange={(e) => setTaxRate(parseFloat(e.target.value))}
               className="pl-2 pr-2 py-1 border border-gray-300 rounded-md bg-purple-100 w-32"
               placeholder=""
             />

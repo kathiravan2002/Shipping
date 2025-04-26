@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+/* eslint-disable react/prop-types */
+import { useState  } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import loginbgg from "/images/loginbgg.jpeg";
-import Apiendpoint from "../shared/services/Apiendpoint";
+import loginbgg from "/assets/images/loginbgg.jpeg"
+import { apilogin } from "../shared/services/Apiauthentication/Apilogin";
 
 
 function LoginPage({ setIsLoggedIn, onLogout }) {
@@ -27,50 +28,50 @@ function LoginPage({ setIsLoggedIn, onLogout }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${Apiendpoint}/api/login/user`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
+      const data = await apilogin(  { email, password });
+      console.log(data)
       console.log("Login successful:", data);
 
-      if (response.ok) {
+      if (data.message === "Login successful") {
         toast.success("Login successfully!");
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("role", data.role);
         localStorage.setItem("authToken", data.token);
-        localStorage.setItem("Region", data.region);
-        localStorage.setItem("tokenExpiresAt", data.expiresAt);
-
-        setIsLoggedIn(true);
+        localStorage.setItem("Region",data.region);
+        
+        setIsLoggedIn(true); 
         if (data.role === "manager" || data.role === "admin")
           navigate("/dashboard");
         else if (data.role === "user") navigate("/Addorder");
         else if(data.role ==="subdistributor") navigate("/dispatched");
         else if(data.role === "deliveryman") navigate("/outfordelivery");
         else navigate("/Order");
+      
       } else {
         toast.error(data.message || "Login failed");
       }
     } catch (error) {
       toast.error("An error occurred. Please try again.");
     }
+
+
+    // if (data.user.status === "inactive") {
+    //       alert("Your account is inactive. Please contact support.");
+    //       return;
+    //     }
+
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover "
-      style={{ backgroundImage: `url(${loginbgg})` }}
-    >
-      <form onSubmit={handleLogin} className="p-8 shadow-lg rounded-lg w-96 ">
-        <h2 className="text-2xl font-bold mb-4 text-gray-100 text-center">
-          Login
-        </h2>
+ 
+    <div className="flex items-center justify-center min-h-screen bg-cover" style={{backgroundImage:`url(${loginbgg})`}}>
+      <form
+        onSubmit={handleLogin}
+        className="p-8 rounded-lg shadow-lg w-96"
+      >
+        <h2 className="mb-4 text-2xl font-bold text-gray-100">Login</h2>
         <div className="mb-4">
-          <label className="block text-gray-100 mb-1">Email</label>
+          <label className="block mb-1 text-gray-100">Email</label>
           <input
             type="email"
             value={email}
@@ -80,7 +81,7 @@ function LoginPage({ setIsLoggedIn, onLogout }) {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-100 mb-1">Password</label>
+          <label className="block mb-1 text-gray-100">Password</label>
           <input
             type="password"
             value={password}
@@ -91,12 +92,13 @@ function LoginPage({ setIsLoggedIn, onLogout }) {
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded-md"
+          className="w-full py-2 text-white bg-blue-500 rounded-md"
         >
           Login
         </button>
       </form>
     </div>
+    
   );
 }
 

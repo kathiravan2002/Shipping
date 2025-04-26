@@ -1,11 +1,7 @@
 import React from 'react';
-import {CheckCircle} from "lucide-react";
 
 const Delivered = ({orders,navigate}) => {
- 
- 
-
-   return (
+return (
     <div>
       <h1 className="text-2xl font-bold mb-4 sm:mt-0 mt-4 ">
         {/* <button onClick={() => navigate("/outfordelivery")} className='border text-white bg-purple-600 rounded-md px-3'>{"< "}</button> */}
@@ -32,6 +28,13 @@ const Delivered = ({orders,navigate}) => {
         <p>No delivered orders found.</p>
       )}
       </div>
+      <button
+        onClick={() =>navigate("/outfordelivery")}
+         className="mt-3 px-5 py-2 hover:bg-purple-500 bg-gradient-to-r from-purple-600 to-green-500 text-white font-semibold rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-400"
+
+      >
+        Back
+      </button>
     </div>
   );
 };
