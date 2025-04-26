@@ -38,7 +38,8 @@ const seedAdmin = async () => {
       const tokenPayload = {       
         email: user.email,      
         role: user.role,           
-        region : user.region         
+        region : user.region,
+        Name : user.Name,      
       };
 
 

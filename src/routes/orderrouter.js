@@ -22,4 +22,3 @@ Orderrouter.get("/pending/:region",getpending);
 Orderrouter.get("/myorder/:region",getmyorder);
 
 export default Orderrouter;
-
