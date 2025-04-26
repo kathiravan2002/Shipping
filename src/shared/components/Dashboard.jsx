@@ -123,9 +123,9 @@ function Dashboard(props) {
       </div>
 
       {/* Charts Section */}
-      <div className="bg-white rounded-xl shadow-md p-3">
+      {/* <div className="bg-white rounded-xl shadow-md p-3">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Pie Chart */}
+        
           <div className="flex flex-col items-center">
             <h2 className="text-lg font-semibold text-gray-700 mb-4">Order Distribution</h2>
             <PieChart width={400} height={400}>
@@ -149,6 +149,65 @@ function Dashboard(props) {
               <Tooltip  contentStyle={{ borderRadius: "8px", boxShadow: "0 2px 10px rgba(0,0,0,0.1)" }}/>
               <Legend wrapperStyle={{ paddingTop: "10px" }}/>
             </PieChart>
+          </div> */}
+
+<div className="bg-white rounded-xl shadow-md p-3">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Pie Chart (Mobile Responsive on small screens, original format on lg and above) */}
+          <div className="flex flex-col items-center">
+            <h2 className="text-lg font-semibold text-gray-700 mb-4">Order Distribution</h2>
+            <div className="lg:w-96 w-full">
+              {/* Original format (400x400) on lg and above */}
+              <div className="hidden lg:block ">
+                <PieChart width={400} height={400}>
+                  <Pie
+                    data={orderData}
+                    cx={200}
+                    cy={180}
+                    innerRadius={60}
+                    outerRadius={140}
+                    fill="#8884d8"
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    {orderData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ borderRadius: "8px", boxShadow: "0 2px 10px rgba(0,0,0,0.1)" }} />
+                  <Legend wrapperStyle={{ paddingTop: "10px" }} />
+                </PieChart>
+              </div>
+              {/* Mobile-responsive format on smaller screens */}
+              <div className="lg:hidden">
+                <ResponsiveContainer width="100%" height={300} className="max-w-xs md:max-w-md">
+                  <PieChart>
+                    <Pie
+                      data={orderData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      paddingAngle={3}
+                      dataKey="value"
+                    >
+                      {orderData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ borderRadius: "8px", boxShadow: "0 2px 10px rgba(0,0,0,0.1)" }} />
+                    <Legend wrapperStyle={{ paddingTop: "10px" }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
 
           {/* Bar Chart */}

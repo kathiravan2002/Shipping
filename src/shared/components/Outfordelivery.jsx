@@ -134,7 +134,7 @@ function Outfordelivery({
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.isArray(orders) && orders.length > 0 ? (
             orders.map((order, index) => (
-              <div key={index} className="border rounded-lg shadow-md hover:shadow-xl transition-shadow p-4 bg-white">
+              <div key={index} className="border rounded-lg shadow-md hover:shadow-2xl transition-shadow p-4 bg-white">
                 <div className='flex '>
                   <CheckCircle className="text-green-600 mr-3" size={22} />
                   <h2 className="text-lg font-semibold">Consignee ID : {order.cid}</h2>

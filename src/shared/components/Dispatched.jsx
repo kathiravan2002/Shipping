@@ -17,6 +17,11 @@ function Dispatched(props) {
     setVisible,
   } = props;
 
+  const getDispatchedTimestamp = (statusHistory) => {
+    const dispatchedEntry = statusHistory.find(entry => entry.status === CONSIGNEE_STATUS.DISPATCHED);
+    return dispatchedEntry ? new Date(dispatchedEntry.timestamp).toLocaleString() : "N/A";
+  };
+
   return (
     <div className="w-full mx-auto p-4 sm:p-6 bg-white shadow-lg rounded-sm border border-gray-200">
       <h1 className="text-2xl font-bold mb-4">Dispatched Orders</h1>
@@ -67,6 +72,7 @@ function Dispatched(props) {
                 {[
                   "S.No",
                   "Consignee Id",
+                  "Dispatched Date",
                   "Consignee Name",
                   "Mobile no",
                   // "Alternate Mobile no",
@@ -91,6 +97,7 @@ function Dispatched(props) {
                   <tr key={order._id}>
                     <td className="px-4 py-3 whitespace-nowrap">{index + 1}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-sky-600">{order.cid}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">{getDispatchedTimestamp(order.statusHistory)}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-indigo-600">{order.Consigneename}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{order.consigneemobileno}</td>
                     {/* <td className="px-4 py-3 whitespace-nowrap">{order.consigneealterno}</td> */}
