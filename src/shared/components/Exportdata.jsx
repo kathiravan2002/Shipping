@@ -36,7 +36,7 @@ const Exportdata = ({ data, fileName }) => {
   };
 
   return (
-    <button onClick={exportToFile}  className="flex items-center gap-2 px-2 py-2 text-sm font-medium text-purple-600 rounded-md bg-purple-50 ">
+    <button onClick={exportToFile}  className="flex items-center gap-2 px-2 py-2 text-purple-600 bg-purple-50 rounded-md text-sm font-medium ">
       Download CSV <ArrowDownToLine />
     </button>
   );

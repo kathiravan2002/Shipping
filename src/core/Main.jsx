@@ -24,9 +24,9 @@ const [isLoggedIn, setIsLoggedIn] = useState(
     <div>   
     <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} />
       <Sidebar /> 
-      <main className="w-full pt-[90px] lg:pl-20 lg:pr-5 pl-5 pr-5 ">
+      <main className="w-full pt-[90px] lg:pl-20 lg:pr-5 md:pl-20 pl-5 pr-5 ">
         <Outlet />
- 
+      
       </main>
     </div>
   );

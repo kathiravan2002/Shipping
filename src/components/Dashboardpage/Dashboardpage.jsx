@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Dashboard from "../../shared/components/Dashboard";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Spinner from "../../shared/components/Spinner";
-import  {apigetTotalOrders,totalpending,totaldelivered,totaldispatch,apigetuser,apitoday,apiout}from "../../shared/services/Apidashboard/apidashboard.js"
+import { apigetTotalOrders, apitodayOrders, apitotaluser, totalDelivered, totalDispatched, totaloutfordelivery, totalPending } from "../../shared/services/Apidashboard/apidashboard";
 
 export default function Dashboardpage() {
   const [totalorder, setTotalorder] = useState(0);
@@ -22,16 +21,17 @@ export default function Dashboardpage() {
   const [out, setOut] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  
   const userRole = localStorage.getItem("role");
   const getregion =
     userRole === "admin" ? "admin" : localStorage.getItem("Region");
 
   const getTotalOrders = async () => {
     try {
-      const data = await apigetTotalOrders();
-      setTotalorder(data.total.count);
-      setSingleConsignee(data.singleConsignee.count);
-      setMultipleConsignee(data.multipleConsignee.count);
+      const response = await apigetTotalOrders(getregion);
+      setTotalorder(response.total.count);
+      setSingleConsignee(response.singleConsignee.count);
+      setMultipleConsignee(response.multipleConsignee.count);
 
       // setAllOrders(response.data.total.orders);
       // setSingleConsigneeOrders(response.data.singleConsignee.orders);
@@ -48,17 +48,19 @@ export default function Dashboardpage() {
     getTotalOrders();
   }, [getregion]);
 
+
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const data = await apitoday();
-        setTodayorder(data.today);
+        const response = await apitodayOrders(getregion);
+        setTodayorder(response.today);
       } catch (error) {
         console.error("Error fetching today's orders:", error);
       }
       const timer = setTimeout(() => {
         setLoading(false);
-      }, 400);
+      }, 500);
 
       return () => clearTimeout(timer);
     };
@@ -66,11 +68,11 @@ export default function Dashboardpage() {
     fetchOrders();
   }, [getregion]);
 
+
   const getuser = async () => {
     try {
-      const data = await apigetuser();
-      // console.log(userdata.data);
-      setTotaluser(data || []);
+      const userdata = await apitotaluser();
+      setTotaluser(userdata || []);
     } catch (error) {
       console.log("Error fetching user data", error);
     }
@@ -79,47 +81,52 @@ export default function Dashboardpage() {
     getuser();
   }, []);
 
+
   const fetchdispatched = async () => {
-    const data = await totaldispatch();
-    setDispatch(data);
+    const response = await totalDispatched(getregion);
+    setDispatch(response);
   };
 
   useEffect(() => {
     fetchdispatched();
-  }, []);
+  }, [getregion]);
+
 
   const fetchout = async () => {
-    const data = await apiout();
-    setOut(data);
+    const response = await totaloutfordelivery(getregion);
+    setOut(response);
   };
 
   useEffect(() => {
     fetchout();
-  }, []);
+  }, [getregion]);
+
+
 
   const fetchDeliveredOrders = async () => {
-    const data = await totaldelivered();
-    setOrders(data);
+    const response = await totalDelivered(getregion);
+    setOrders(response);
   };
 
   useEffect(() => {
     fetchDeliveredOrders();
-  }, []);
+  }, [getregion]);
+
 
   const fetchPendingOrders = async () => {
-    const data = await totalpending();
-    setPending(data);
+    const response = await totalPending(getregion);
+    setPending(response);
   };
 
   useEffect(() => {
     fetchPendingOrders();
-  }, []);
+  }, [getregion]);
 
   if (loading) return <Spinner />;
 
   const orderData = [
     { name: "Total Orders", value: Number(totalorder) || 0 },
-    { name: "Today Orders", value: Number(todayorder?.length) || 0 },
+    { name: "Today Orders", value: Number(todayorder.length) || 0 },
     { name: "Total Dispatched", value: Number(dispatch.length) || 0 },
     { name: "Total Out for Delivery", value: Number(out.length) || 0 },
     { name: "Total Delivered", value: Number(orders.length) || 0 },

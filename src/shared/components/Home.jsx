@@ -97,7 +97,7 @@ function Home({navigate,scrolltotop}) {
       {/* Hero Section */}
       <header className="bg-gradient-to-r from-red-800 to-purple-800 text-white " id='home'>
         <div className="container mx-auto px-6 py-24">
-          <div className="flex flex-col md:flex-row items-center">
+          <div className="flex flex-col md:flex-row items-center"> 
             <div className="md:w-1/2 mb-12 md:mb-0">
               <h1 className="text-4xl md:text-6xl font-bold mb-6">Fast & Reliable Courier Services</h1>
               <p className="text-xl mb-8">Delivering your packages safely and on time.</p>

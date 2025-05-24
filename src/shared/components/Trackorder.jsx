@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Apiendpoint from "../services/Apiendpoint/Apiendpoint";
+import apiurl from "../../shared/services/Apiendpoint";
 
 const Trackorder = () => {
   const [trackingId, setTrackingId] = useState("");
@@ -10,7 +10,7 @@ const Trackorder = () => {
   const fetchTrackingStatus = async () => {
     try {
       const response = await axios.get(
-        `${Apiendpoint}/api/order/track/${trackingId}`
+        `${apiurl()}/api/order/track/${trackingId}`
       );
       setTrackingData(response.data);
       setError("");

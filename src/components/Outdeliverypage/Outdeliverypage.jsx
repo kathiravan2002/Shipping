@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Outfordelivery from '../../shared/components/Outfordelivery';
 import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 import { toast } from 'react-toastify';
-import {apidelivery, apiout, apiupdateout} from '../../shared/services/Apioutdelivery/apioutdelivery.js'
-
+import apiurl from '../../shared/services/Apiendpoint';
+import { apidelivered, apiout, apioutupdate } from '../../shared/services/Apioutfordelivery/apioutfordelivery';
 
 function Outdeliverypage() {
   const { id } = useParams();
@@ -30,11 +31,12 @@ function Outdeliverypage() {
     }));
   };
 
-
+  const userRole = localStorage.getItem("role");
+  const outRegion = userRole === "admin" ? "admin" : localStorage.getItem("Region");
 
   const fetchOut = async () => {
     try {
-      const response = await apiout()
+      const response = await apiout(outRegion);
       setOut(Array.isArray(response) ? response : []);
     } catch (error) {
       console.error("Error fetching Out for Delivery orders:", error);
@@ -47,9 +49,12 @@ function Outdeliverypage() {
   }, []);
 
 
+  const UserRole = localStorage.getItem("role");
+  const getregion = UserRole === "admin" ? "admin" : localStorage.getItem("Region");
+
   const fetchDeliveredOrders = async () => {
     try {
-      const response = await apidelivery()
+      const response = await apidelivered(getregion);
       setOrders(response);
     } catch (err) {
       console.error('Error fetching delivered orders:', err);
@@ -59,29 +64,28 @@ function Outdeliverypage() {
 
   useEffect(() => {
     fetchDeliveredOrders();
-
   }, []);
 
   const updateOrder = async () => {
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append("cstatus", formData.cstatus);
-  
+      formDataToSend.append("cstatus", formData.cstatus); // Use cstatus for consignee
+
       if (formData.productImage) {
-        formDataToSend.append("productImage", formData.productImage);
+        formDataToSend.append("productImage", formData.productImage); // Match backend field
       }
-  
+
       console.log("Updating with cid:", formData.cid); // Debug log
-      const response = await apiupdateout(formData, formDataToSend);
-  
+      const response = await apioutupdate(formData, formDataToSend);
       toast.success("Consignee status updated successfully!");
       await fetchOut(); // Refresh orders after update
       setVisible(false);
     } catch (error) {
-      console.error("Error updating consignee status:", error.response || error.message);
+      console.error("Error updating consignee status:", error.response?.data || error.message);
       toast.error(error.response?.data?.error || "Failed to update consignee status.");
     }
   };
+
   const CONSIGNEE_STATUS = {
     PLACED: "Order Placed",
     DISPATCHED: "Order Dispatched",
@@ -130,4 +134,148 @@ function Outdeliverypage() {
     </div>
   );
 }
+
 export default Outdeliverypage;
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from "react";
+// import Outfordelivery from "../../shared/components/Outfordelivery";
+// import axios from "axios";
+// import { useNavigate, useParams } from "react-router-dom";
+
+// function Outdeliverypage() {
+//   const { id } = useParams();
+//   const [out, setOut] = useState([]);
+//   const navigate = useNavigate();
+//   const [visible, setVisible] = useState(false);
+//   const [formData, setFormData] = useState({});
+
+//   const editOrder = ({ _id }) => {
+//     navigate(`/Addorder/${_id}`);
+//   };
+
+//   const UserRole = localStorage.getItem("role");
+//   const getregion = UserRole === "admin" ? "admin" : localStorage.getItem("Region");
+
+//   const fetchout = async () => {
+//     try {
+//       const response = await axios.get(`http://192.168.29.12:5000/api/order/orders/out/${getregion}`);
+//       setOut(response.data);
+//     } catch (error) {
+//       console.error("Error fetching orders:", error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchout();
+//   }, []);
+
+//   const updateOrder = async () => {
+//     if (!formData._id) {
+//       alert("No order selected for update.");
+//       return;
+//     }
+//     try {
+//       await axios.put(`http://192.168.29.12:5000/api/order/${formData._id}`, formData);
+//       alert("Order updated successfully!");
+//       setVisible(false);
+//       fetchout(); // Refresh order list after update
+//     } catch (error) {
+//       console.error("Error updating order:", error);
+//       alert("Failed to update order.");
+//     }
+//   };
+
+//   return (
+//     <div>
+//       <Outfordelivery 
+//         updateOrder={updateOrder} 
+//         formData={formData} 
+//         setFormData={setFormData} 
+//         out={out} 
+//         editOrder={editOrder} 
+//         visible={visible} 
+//         setVisible={setVisible} 
+//       />
+//     </div>
+//   );
+// }
+
+// export default Outdeliverypage;
+
+
+
+
+
+// import React , { useState, useEffect } from 'react'
+// import Outfordelivery from '../../shared/components/Outfordelivery';
+// import axios from 'axios'
+// import { useNavigate, useParams } from 'react-router-dom';
+
+// function Outdeliverypage() {
+
+//   const { id } = useParams();
+//   const [out, setOut] = useState([]);
+
+//   const navigate = useNavigate();
+//   const [visible, setVisible] = useState(false);
+//   const [formData, setFormData] = useState([])
+//   const editOrder = ({ _id }) => {
+//       navigate(`/Addorder/${_id}`); // Redirect to Add Order page with the order ID
+//   };
+
+
+
+//   const UserRole = localStorage.getItem("role");
+//   const getregion = UserRole === "admin" ? "admin" : localStorage.getItem("Region");
+
+//   const fetchout = async () => {
+//       const response = await axios.get(`http://192.168.29.12:5000/api/order/orders/out/${getregion}`)
+//       setOut(response.data);
+
+//   }
+
+//   useEffect(() => {
+//       fetchout();
+//   }, []);
+
+//   useEffect(() => {
+//     if (id) {
+//       // Fetch order details for editing
+//       const fetchOrderDetails = async () => {
+//         try {
+//           const response = await axios.get(
+//             `http://192.168.29.12:5000/api/order/${id}`
+//           );
+//           setFormData(response.data); // Pre-fill the form
+//         } catch (error) {
+//           console.error("Error fetching order details:", error);
+//         }
+//       };
+
+//       fetchOrderDetails();
+//     }
+//   }, [id]);
+
+  
+//   const updateOrder = async () => {
+//     try {
+//       await axios.put(`http://192.168.29.12:5000/api/order/${id}`, formData);
+//       alert("Order updated successfully!");
+//       fetchout(); // Refresh the orders list after updating
+//     } catch (error) {
+//       console.error("Error updating order:", error);
+//       alert("Failed to update order.");
+//     }
+//   };
+//   return (
+//     <div> <Outfordelivery fetchOrderDetails={fetchOrderDetails} updateOrder={updateOrder} formData={formData} setFormData={setFormData} out={out} editOrder={editOrder} visible={visible} setVisible={setVisible}/></div>
+//   )
+// }
+
+// export default Outdeliverypage;

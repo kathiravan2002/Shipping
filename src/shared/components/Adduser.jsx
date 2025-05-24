@@ -3,7 +3,7 @@ import React,{useEffect, useState} from "react";
 import {useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Apiendpoint from "../services/Apiendpoint/Apiendpoint";
+import apiurl from "../services/Apiendpoint";
 
 const Adduser = () => {
     const { id } = useParams(); // Get the user ID  
@@ -23,8 +23,8 @@ const Adduser = () => {
   // Fetch user details if `id` is present
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`${Apiendpoint}/api/add/${id}`);
-      setUser(response.data); // Assuming `response.data` contains the user object
+      const response = await axios.get(`${apiurl()}/api/add/${id}`);
+      setUser(response.data); 
     } catch (error) {
       toast.error("Failed to fetch user details. Please try again.");
       console.error("Error fetching user details:", error);
@@ -49,7 +49,8 @@ const Adduser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validateInputs = () => {
-      
+      if (!user.Name) return "Name is required.";
+      if (!user.email.match(/^\S+@\S+\.\S+$/)) return "Invalid email format.";
       if (user.password.length < 6) return "Password must be at least 6 characters.";
       if (!user.ContactNo.match(/^\d{10}$/)) return "Contact number must be 10 digits.";
       return null;
@@ -66,7 +67,7 @@ const Adduser = () => {
       if (id) {
         // Update user
         await axios.put(
-          `${Apiendpoint}/api/add/${id}`,user,{
+          `${apiurl()}/api/add/${id}`,user,{
             headers : {
                "Authorization": `Bearer ${localStorage.getItem("authToken")}`
             }
@@ -75,7 +76,7 @@ const Adduser = () => {
         navigate("/User");
       }
       else{
-        await axios.post(`${Apiendpoint}/api/add/adduser`, user,{
+        await axios.post(`${apiurl()}/api/add/adduser`, user,{
           headers : {
              "Authorization": `Bearer ${localStorage.getItem("authToken")}`
           }
@@ -148,7 +149,8 @@ const Adduser = () => {
             <label className="block text-sm font-medium text-gray-700">
               Contact No <span className="text-red-500">*</span>
             </label>
-            <input type="tel" maxlength="12"  
+            <input
+              type="number"
               name="ContactNo"
               value={user.ContactNo}
               onChange= {(e) => {
